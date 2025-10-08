@@ -32,6 +32,7 @@ class Person extends Model
         'last_name',
         'dni',
         'previous_dni',
+        'gender',
         'country',
         'zip_code',
         'birth_place',
@@ -209,6 +210,38 @@ class Person extends Model
     public function scopeEmploymentStatus($query, string $status)
     {
         return $query->where('employment_status', $status);
+    }
+
+    /**
+     * Obtener el conteo total de personas registradas
+     */
+    public static function getTotalCount(): int
+    {
+        return self::count();
+    }
+
+    /**
+     * Obtener el conteo de personas registradas hoy
+     */
+    public static function getTodayCount(): int
+    {
+        return self::whereDate('created_at', today())->count();
+    }
+
+    /**
+     * Obtener el último número consecutivo del día actual
+     */
+    public static function getLastConsecutiveNumber(): int
+    {
+        $lastPerson = self::whereDate('created_at', today())
+            ->orderBy('id', 'desc')
+            ->first();
+        
+        if ($lastPerson && $lastPerson->code_unique) {
+            return (int) substr($lastPerson->code_unique, 0, 2);
+        }
+        
+        return 0;
     }
 }
 

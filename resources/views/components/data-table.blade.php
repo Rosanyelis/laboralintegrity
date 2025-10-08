@@ -5,6 +5,8 @@
     'filterable' => true,
     'selectable' => true,
     'actions' => [],
+    'rowActions' => [],
+    'badgeColumns' => [],
     'perPageOptions' => [10, 25, 50, 100],
     'defaultPerPage' => 10
 ])
@@ -16,6 +18,8 @@
     filterable: @js($filterable),
     selectable: @js($selectable),
     actions: @js($actions),
+    rowActions: @js($rowActions),
+    badgeColumns: @js($badgeColumns),
     perPageOptions: @js($perPageOptions),
     defaultPerPage: @js($defaultPerPage)
 })">
@@ -46,7 +50,7 @@
             </div>
             
             <!-- Búsqueda y filtros -->
-            <div class="flex items-center space-x-4">
+            <div class="flex items-end space-x-4">
                 <!-- Búsqueda -->
                 <div x-show="searchable" class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -100,11 +104,11 @@
                 </div>
                 
                 <!-- Otros controles -->
-                <button class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <!-- <button class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
                     </svg>
-                </button>
+                </button> -->
             </div>
         </div>
     </div>
@@ -137,6 +141,11 @@
                             </div>
                         </th>
                     </template>
+                    
+                    <!-- Columna de acciones -->
+                    <th x-show="rowActions.length > 0" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        &nbsp;
+                    </th>
                 </tr>
             </thead>
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -156,9 +165,39 @@
                         <!-- Celdas de datos -->
                         <template x-for="column in columns" :key="column.key">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                <span x-text="getColumnValue(item, column.key)"></span>
+                                <template x-if="isBadgeColumn(column.key)">
+                                    <span x-html="renderBadge(getColumnValue(item, column.key), column.key)"></span>
+                                </template>
+                                <template x-if="!isBadgeColumn(column.key)">
+                                    <span x-text="getColumnValue(item, column.key)"></span>
+                                </template>
                             </td>
                         </template>
+                        
+                        <!-- Celda de acciones -->
+                        <td x-show="rowActions.length > 0" class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="relative inline-block text-left" x-data="{ open: false }">
+                                <button @click="open = !open" @click.away="open = false" class="inline-flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-full">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                    </svg>
+                                </button>
+                                
+                                <!-- Dropdown de acciones -->
+                                <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" class="absolute right-0 z-10 mt-2 w-48 origin-top-right bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                    <div class="py-1">
+                                        <template x-for="action in rowActions" :key="action.name">
+                                            <button @click="executeRowAction(action, item)" class="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                                <svg x-show="action.icon" class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x-bind:d="action.icon"></path>
+                                                </svg>
+                                                <span x-text="action.label"></span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                 </template>
             </tbody>
@@ -177,7 +216,7 @@
             <div class="flex items-center space-x-4">
                 <!-- Selector de registros por página -->
                 <div class="flex items-center space-x-2">
-                    <span class="text-sm text-gray-700 dark:text-gray-300">por página</span>
+                    <span class="text-sm text-gray-700 dark:text-gray-300"></span>
                     <select x-model="perPage" @change="changePerPage()" class="block w-20 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                         <template x-for="option in perPageOptions" :key="option">
                             <option :value="option" x-text="option"></option>
@@ -188,7 +227,7 @@
                 <!-- Navegación de páginas -->
                 <div class="flex items-center space-x-2">
                     <button @click="previousPage()" :disabled="currentPage === 1" class="px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Anterior
+                        <
                     </button>
                     
                     <template x-for="page in getPageNumbers()" :key="page">
@@ -198,7 +237,7 @@
                     </template>
                     
                     <button @click="nextPage()" :disabled="currentPage === totalPages" class="px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Siguiente
+                        >
                     </button>
                 </div>
             </div>
@@ -216,6 +255,8 @@ function dataTable(config) {
         filterable: config.filterable,
         selectable: config.selectable,
         actions: config.actions,
+        rowActions: config.rowActions,
+        badgeColumns: config.badgeColumns,
         perPageOptions: config.perPageOptions,
         
         // Estado
@@ -372,10 +413,45 @@ function dataTable(config) {
         },
         
         executeAction(action) {
-            if (action.callback) {
-                action.callback(this.selectedItems);
+            if (action.callback && typeof window[action.callback] === 'function') {
+                window[action.callback](this.selectedItems);
             }
             this.openActions = false;
+        },
+        
+        executeRowAction(action, item) {
+            if (action.callback && typeof window[action.callback] === 'function') {
+                window[action.callback](item);
+            }
+        },
+        
+        isBadgeColumn(columnKey) {
+            return this.badgeColumns.some(badge => badge.column === columnKey);
+        },
+        
+        renderBadge(value, columnKey) {
+            const badgeConfig = this.badgeColumns.find(badge => badge.column === columnKey);
+            if (!badgeConfig) return value;
+            
+            const statusConfig = badgeConfig.statuses[value] || badgeConfig.statuses['default'];
+            if (!statusConfig) return value;
+            
+            const colorClasses = this.getBadgeColorClasses(statusConfig.color);
+            return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colorClasses}">${statusConfig.label || value}</span>`;
+        },
+        
+        getBadgeColorClasses(color) {
+            const colorMap = {
+                'green': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+                'blue': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+                'yellow': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+                'red': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+                'purple': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+                'indigo': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
+                'pink': 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
+                'gray': 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+            };
+            return colorMap[color] || colorMap['gray'];
         }
     }
 }
