@@ -19,6 +19,7 @@ Route::middleware('auth')->group(function () {
     
     // Rutas para el módulo de Personas Individuales
         Route::resource('people', PersonController::class);
+        Route::patch('/people/{person}/personal-info', [PersonController::class, 'updatePersonalInfo'])->name('people.update-personal-info');
         Route::get('/people-api', [PersonController::class, 'api'])->name('people.api');
         Route::get('/people-statistics', [PersonController::class, 'statistics'])->name('people.statistics');
 });

@@ -11,6 +11,7 @@ use App\Http\Requests\Person\StorePersonRequest;
 use App\Http\Requests\Person\UpdatePersonRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class PersonController extends Controller
 {
@@ -94,7 +95,69 @@ class PersonController extends Controller
      */
     public function show(Person $person)
     {
+        $person->load([
+            'residenceInformation.province.regional',
+            'residenceInformation.municipality',
+            'residenceInformation.district',
+            'educationalSkills',
+            'workExperiences',
+            'personalReferences',
+            'aspirations'
+        ]);
+        
         return view('people.show', compact('person'));
+    }
+
+    /**
+     * Update personal information from the show page.
+     */
+    public function updatePersonalInfo(Request $request, Person $person)
+    {
+        $request->validate([
+            'code_unique' => 'nullable|string|max:255',
+            'name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'dni' => 'required|string|max:13|unique:people,dni,' . $person->id,
+            'previous_dni' => 'nullable|string|max:13',
+            'gender' => 'nullable|in:masculino,femenino,otro',
+            'position_applied_for' => 'nullable|string|max:255',
+            'marital_status' => 'nullable|in:' . implode(',', Person::MARITAL_STATUS_OPTIONS),
+            'birth_date' => 'required|date|before:today',
+            'age' => 'nullable|integer|min:0|max:120',
+            'birth_place' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:255',
+            'cell_phone' => 'required|string|max:12',
+            'home_phone' => 'nullable|string|max:255',
+            'email' => 'required|email|max:255',
+            'social_media_1' => 'nullable|string|max:255',
+            'social_media_2' => 'nullable|string|max:255',
+            'blood_type' => 'nullable|string|max:10',
+            'medication_allergies' => 'nullable|string|max:500',
+            'illnesses' => 'nullable|string|max:500',
+            'emergency_contact_name' => 'required|string|max:255',
+            'emergency_contact_phone' => 'required|string|max:255',
+            'other_emergency_contacts' => 'nullable|string|max:500',
+            'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:800',
+        ]);
+
+        $data = $request->except('profile_photo');
+
+        // Handle profile photo upload
+        if ($request->hasFile('profile_photo')) {
+            // Delete old photo if exists
+            if ($person->profile_photo && \Storage::disk('public')->exists($person->profile_photo)) {
+                \Storage::disk('public')->delete($person->profile_photo);
+            }
+
+            // Store new photo
+            $photoPath = $request->file('profile_photo')->store('profile-photos', 'public');
+            $data['profile_photo'] = $photoPath;
+        }
+
+        $person->update($data);
+
+        return redirect()->route('people.show', $person)
+            ->with('success', 'Información personal actualizada correctamente.');
     }
 
     /**
