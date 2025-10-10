@@ -14,14 +14,6 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    @if(session('success'))
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                showSuccess('{{ session('success') }}', 'Éxito');
-                            });
-                        </script>
-                    @endif
-
                     <x-data-table 
                         :columns="[
                             ['key' => 'code_unique', 'label' => 'CODIGO', 'filterable' => false],

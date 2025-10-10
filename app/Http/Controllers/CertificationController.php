@@ -85,14 +85,21 @@ class CertificationController extends Controller
     public function destroy(Certification $certification)
     {
         // Verificar si tiene códigos de referencia asociados
-        if ($certification->referenceCodes()->count() > 0) {
+        $codesCount = $certification->referenceCodes()->count();
+        
+        if ($codesCount > 0) {
+            $mensaje = $codesCount === 1 
+                ? "No se puede eliminar \"{$certification->name}\" porque tiene 1 código de referencia asociado."
+                : "No se puede eliminar \"{$certification->name}\" porque tiene {$codesCount} códigos de referencia asociados.";
+            
             return redirect()->route('config.certifications.index')
-                ->with('error', 'No se puede eliminar esta certificación porque tiene códigos de referencia asociados.');
+                ->with('error', $mensaje);
         }
 
+        $certificationName = $certification->name;
         $certification->delete();
 
         return redirect()->route('config.certifications.index')
-            ->with('success', 'Tipo de certificación eliminado correctamente.');
+            ->with('success', "Tipo de certificación \"{$certificationName}\" eliminado correctamente.");
     }
 }

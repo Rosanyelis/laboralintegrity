@@ -19,22 +19,6 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    @if(session('success'))
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                showSuccess('{{ session('success') }}', 'Éxito');
-                            });
-                        </script>
-                    @endif
-
-                    @if(session('error'))
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                showError('{{ session('error') }}', 'Error');
-                            });
-                        </script>
-                    @endif
-
                     <x-data-table 
                         :columns="[
                             ['key' => 'certification_name', 'label' => 'TIPO DE CERTIFICACIÓN', 'filterable' => true],
@@ -77,15 +61,19 @@
     </div>
 
     <script>
-        function editCode(id) {
+        function editCode(item) {
+            const id = item.id || item;
             window.location.href = `{{ url('configuraciones/reference-codes') }}/${id}/edit`;
         }
 
-        async function deleteCode(id) {
+        async function deleteCode(item) {
+            const id = item.id || item;
+            const code = item.code || 'este código';
+            
             try {
                 const confirmed = await showConfirmation({
                     title: 'Eliminar Código de Referencia',
-                    message: '¿Está seguro de eliminar este código de referencia? Esta acción no se puede deshacer.',
+                    message: `¿Está seguro de eliminar el código "${code}"? Esta acción no se puede deshacer.`,
                     confirmText: 'Eliminar',
                     cancelText: 'Cancelar',
                     icon: 'danger',

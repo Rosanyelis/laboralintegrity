@@ -19,22 +19,6 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    @if(session('success'))
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                showSuccess('{{ session('success') }}', 'Éxito');
-                            });
-                        </script>
-                    @endif
-
-                    @if(session('error'))
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                showError('{{ session('error') }}', 'Error');
-                            });
-                        </script>
-                    @endif
-
                     <x-data-table 
                         :columns="[
                             ['key' => 'name', 'label' => 'NOMBRE', 'filterable' => true],
@@ -64,15 +48,19 @@
     </div>
 
     <script>
-        function editCertification(id) {
+        function editCertification(item) {
+            const id = item.id || item;
             window.location.href = `{{ url('configuraciones/certifications') }}/${id}/edit`;
         }
 
-        async function deleteCertification(id) {
+        async function deleteCertification(item) {
+            const id = item.id || item;
+            const name = item.name || 'esta certificación';
+            
             try {
                 const confirmed = await showConfirmation({
                     title: 'Eliminar Tipo de Certificación',
-                    message: '¿Está seguro de eliminar este tipo de certificación? No se puede eliminar si tiene códigos de referencia asociados.',
+                    message: `¿Está seguro de eliminar "${name}"? No se puede eliminar si tiene códigos de referencia asociados.`,
                     confirmText: 'Eliminar',
                     cancelText: 'Cancelar',
                     icon: 'danger',
