@@ -113,13 +113,13 @@ class Person extends Model
 
     /**
      * Relación con el usuario.
-     * Una persona puede estar asociada a un usuario.
+     * Una persona puede tener un usuario asociado.
      *
-     * @return BelongsTo
+     * @return HasOne
      */
-    public function user(): BelongsTo
+    public function user(): HasOne
     {
-        return $this->belongsTo(User::class);
+        return $this->hasOne(User::class, 'person_id');
     }
 
     /**

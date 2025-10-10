@@ -23,6 +23,7 @@ class ReferenceCode extends Model
     protected $fillable = [
         'certification_id',
         'code',
+        'name',
         'result',
         'description',
         'is_active',

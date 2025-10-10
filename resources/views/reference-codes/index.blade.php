@@ -23,6 +23,7 @@
                         :columns="[
                             ['key' => 'certification_name', 'label' => 'TIPO DE CERTIFICACIÓN', 'filterable' => true],
                             ['key' => 'code', 'label' => 'CÓDIGO', 'filterable' => true],
+                            ['key' => 'name', 'label' => 'NOMBRE', 'filterable' => true],
                             ['key' => 'result', 'label' => 'RESULTADO', 'filterable' => false],
                             ['key' => 'is_active', 'label' => 'ESTADO', 'filterable' => true]
                         ]"
@@ -31,6 +32,7 @@
                                 'id' => $referenceCode->id,
                                 'certification_name' => $referenceCode->certification->name ?? 'N/A',
                                 'code' => $referenceCode->code,
+                                'name' => $referenceCode->name,
                                 'result' => $referenceCode->result,
                                 'is_active' => $referenceCode->is_active ? 'activo' : 'inactivo',
                                 'created_at' => $referenceCode->created_at->format('d/m/Y')
@@ -49,11 +51,7 @@
                                 ]
                             ]
                         ]"
-                        :per-page-options="[10, 25, 50, 100]"
-                        :per-page="10"
-                        :total="$referenceCodes->total()"
-                        :current-page="$referenceCodes->currentPage()"
-                        :pagination-links="$referenceCodes->links()->toHtml()"
+                        empty-message="No hay códigos de referencia registrados."
                     />
                 </div>
             </div>

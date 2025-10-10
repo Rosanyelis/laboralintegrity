@@ -4,7 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -50,13 +50,13 @@ class User extends Authenticatable
     }
 
     /**
-     * Relación con la información personal.
-     * Un usuario puede tener una información personal asociada.
+     * Relación con la persona.
+     * Un usuario pertenece a una persona.
      *
-     * @return HasOne
+     * @return BelongsTo
      */
-    public function person(): HasOne
+    public function person(): BelongsTo
     {
-        return $this->hasOne(Person::class);
+        return $this->belongsTo(Person::class);
     }
 }

@@ -7,6 +7,8 @@ use App\Http\Controllers\CertificationController;
 use App\Http\Controllers\ReferenceCodeController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RecruiterController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\WorkIntegrityController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -46,6 +48,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/recruiters/search-by-dni', [RecruiterController::class, 'searchByDni'])->name('recruiters.search-by-dni');
     Route::resource('recruiters', RecruiterController::class);
     
+    // Rutas para el módulo de Integridad Laboral
+    Route::get('/work-integrities/search-company', [WorkIntegrityController::class, 'searchCompanyByRnc'])->name('work-integrities.search-company');
+    Route::get('/work-integrities/search-person', [WorkIntegrityController::class, 'searchPersonByDni'])->name('work-integrities.search-person');
+    Route::get('/work-integrities/reference-codes', [WorkIntegrityController::class, 'getReferenceCodesByCertification'])->name('work-integrities.reference-codes');
+    Route::resource('work-integrities', WorkIntegrityController::class);
+    
     // Rutas para el módulo de Configuraciones
     Route::prefix('configuraciones')->name('config.')->group(function () {
         // Certificaciones (Tipos de Referencia)
@@ -56,6 +64,9 @@ Route::middleware('auth')->group(function () {
         
         // Roles
         Route::resource('roles', RoleController::class)->names('roles');
+        
+        // Usuarios
+        Route::resource('users', UserController::class)->names('users');
     });
     
     // Ruta temporal para pruebas de toast

@@ -61,8 +61,27 @@
                                 @enderror
                             </div>
 
-                            <!-- Resultado -->
+                            <!-- Nombre -->
                             <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Nombre <span class="text-red-500">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    name="name" 
+                                    id="name"
+                                    value="{{ old('name', $referenceCode->name) }}"
+                                    required
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                                    placeholder="Ej: Procedimientos Judiciales"
+                                >
+                                @error('name')
+                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Resultado -->
+                            <div class="md:col-span-2">
                                 <label for="result" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Resultado <span class="text-red-500">*</span>
                                 </label>

@@ -27,10 +27,13 @@
                             </svg>
                         </div>
 
-                        <div x-show="open" @mouseenter="open = true" @mouseleave="open = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" class="absolute left-0 w-48 mt-2 origin-top-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50">
+                        <div x-show="open" @mouseenter="open = true" @mouseleave="open = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" class="absolute left-0 w-56 mt-2 origin-top-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50">
                             <div class="py-2">
                                 <a href="{{ route('people.index') }}" class="block px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
                                     Personal Individual
+                                </a>
+                                <a href="{{ route('work-integrities.index') }}" class="block px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    Integridad Laboral
                                 </a>
                             </div>
                         </div>
@@ -65,8 +68,8 @@
                                 <a href="{{ route('config.roles.index') }}" class="block px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
                                     Roles
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-500 dark:text-gray-500 cursor-not-allowed">
-                                    Usuarios <span class="text-xs">(Próximamente)</span>
+                                <a href="{{ route('config.users.index') }}" class="block px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    Usuarios
                                 </a>
                             </div>
                         </div>
@@ -160,6 +163,9 @@
                     <a href="{{ route('people.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
                         Personal Individual
                     </a>
+                    <a href="{{ route('work-integrities.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+                        Integridad Laboral
+                    </a>
                 </div>
             </div>
             
@@ -185,8 +191,8 @@
                     <a href="{{ route('config.roles.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
                         Roles
                     </a>
-                    <a href="#" class="block px-4 py-2 text-sm text-gray-500 dark:text-gray-500 cursor-not-allowed rounded-md">
-                        Usuarios <span class="text-xs">(Próximamente)</span>
+                    <a href="{{ route('config.users.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+                        Usuarios
                     </a>
                 </div>
             </div>

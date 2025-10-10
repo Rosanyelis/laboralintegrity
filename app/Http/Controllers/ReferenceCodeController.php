@@ -35,7 +35,8 @@ class ReferenceCodeController extends Controller
     {
         $validated = $request->validate([
             'certification_id' => 'required|exists:certifications,id',
-            'code' => 'required|string|max:255|unique:reference_codes,code',
+            'code' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:reference_codes,name',
             'result' => 'required|string|max:255',
             'description' => 'nullable|string',
             'is_active' => 'boolean',
@@ -43,7 +44,8 @@ class ReferenceCodeController extends Controller
             'certification_id.required' => 'El tipo de certificación es obligatorio.',
             'certification_id.exists' => 'El tipo de certificación seleccionado no es válido.',
             'code.required' => 'El código es obligatorio.',
-            'code.unique' => 'Este código ya existe en el sistema.',
+            'name.required' => 'El nombre es obligatorio.',
+            'name.unique' => 'Este nombre ya existe en el sistema.',
             'result.required' => 'El resultado es obligatorio.',
         ]);
 
@@ -82,7 +84,8 @@ class ReferenceCodeController extends Controller
     {
         $validated = $request->validate([
             'certification_id' => 'required|exists:certifications,id',
-            'code' => 'required|string|max:255|unique:reference_codes,code,' . $referenceCode->id,
+            'code' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:reference_codes,name,' . $referenceCode->id,
             'result' => 'required|string|max:255',
             'description' => 'nullable|string',
             'is_active' => 'boolean',
@@ -90,7 +93,8 @@ class ReferenceCodeController extends Controller
             'certification_id.required' => 'El tipo de certificación es obligatorio.',
             'certification_id.exists' => 'El tipo de certificación seleccionado no es válido.',
             'code.required' => 'El código es obligatorio.',
-            'code.unique' => 'Este código ya existe en el sistema.',
+            'name.required' => 'El nombre es obligatorio.',
+            'name.unique' => 'Este nombre ya existe en el sistema.',
             'result.required' => 'El resultado es obligatorio.',
         ]);
 
