@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PersonController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CertificationController;
 use App\Http\Controllers\ReferenceCodeController;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,11 @@ Route::middleware('auth')->group(function () {
         Route::delete('/people/{person}/personal-references/{personalReference}', [PersonController::class, 'destroyPersonalReference'])->name('people.personal-references.destroy');
         Route::get('/people-api', [PersonController::class, 'api'])->name('people.api');
         Route::get('/people-statistics', [PersonController::class, 'statistics'])->name('people.statistics');
+    
+    // Rutas para el módulo de Empresas
+    Route::get('/companies/check-rnc/{rnc}', [CompanyController::class, 'checkRnc'])->name('companies.check-rnc');
+    Route::resource('companies', CompanyController::class);
+    Route::get('/companies/municipalities/{province}', [CompanyController::class, 'getMunicipalities'])->name('companies.municipalities');
     
     // Rutas para el módulo de Configuraciones
     Route::prefix('configuraciones')->name('config.')->group(function () {

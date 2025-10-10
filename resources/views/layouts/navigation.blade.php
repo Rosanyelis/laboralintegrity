@@ -36,6 +36,11 @@
                         </div>
                     </div>
                     
+                    <!-- Empresas -->
+                    <x-nav-link :href="route('companies.index')" :active="request()->routeIs('companies.*')">
+                        Empresas
+                    </x-nav-link>
+                    
                     <!-- Configuraciones Dropdown -->
                     <div class="relative" x-data="{ open: false }">
                         <div @mouseenter="open = true" @mouseleave="open = false" class="inline-flex items-center">
@@ -152,6 +157,11 @@
                     </a>
                 </div>
             </div>
+            
+            <!-- Empresas Mobile -->
+            <x-responsive-nav-link :href="route('companies.index')" :active="request()->routeIs('companies.*')">
+                Empresas
+            </x-responsive-nav-link>
             
             <!-- Configuraciones Mobile -->
             <div class="px-4 py-2">
