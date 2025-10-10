@@ -51,18 +51,18 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg shadow-sm transition-colors duration-200 uppercase tracking-wide">
+                <a href="{{ route('people.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg shadow-sm transition-colors duration-200 uppercase tracking-wide text-center">
                     Agregar Personas
-                </button>
-                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg shadow-sm transition-colors duration-200 uppercase tracking-wide">
+                </a>
+                <a href="{{ route('companies.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg shadow-sm transition-colors duration-200 uppercase tracking-wide text-center">
                     Agregar Empresa
-                </button>
-                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg shadow-sm transition-colors duration-200 uppercase tracking-wide">
+                </a>
+                <a href="{{ route('recruiters.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg shadow-sm transition-colors duration-200 uppercase tracking-wide text-center">
                     Agregar Integradores
-                </button>
-                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg shadow-sm transition-colors duration-200 uppercase tracking-wide">
+                </a>
+                <a href="{{ route('people.index') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg shadow-sm transition-colors duration-200 uppercase tracking-wide text-center">
                     Consulta
-                </button>
+                </a>
             </div>
         </div>
     </div>
