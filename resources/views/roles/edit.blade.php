@@ -1,3 +1,7 @@
+@php
+    use App\Helpers\PermissionHelper;
+@endphp
+
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
@@ -66,9 +70,6 @@
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                @php
-                                    use App\Helpers\PermissionHelper;
-                                @endphp
                                 @foreach($groupedPermissions as $module => $permissions)
                                     @php
                                         $colors = PermissionHelper::getModuleColor($module);
@@ -102,13 +103,13 @@
                                                     <input 
                                                         type="checkbox" 
                                                         name="permissions[]" 
-                                                        value="{{ $permission->name }}"
+                                                        value="{{ $permission['name'] }}"
                                                         data-module="{{ $module }}"
                                                         class="mt-0.5 rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-700"
-                                                        {{ in_array($permission->name, old('permissions', $rolePermissions)) ? 'checked' : '' }}
+                                                        {{ in_array($permission['name'], old('permissions', $rolePermissions)) ? 'checked' : '' }}
                                                     >
                                                     <span class="flex-1 group-hover:font-medium transition-all">
-                                                        {{ PermissionHelper::getPermissionLabel($permission->name) }}
+                                                        {{ PermissionHelper::getPermissionLabel($permission['name']) }}
                                                     </span>
                                                 </label>
                                             @endforeach

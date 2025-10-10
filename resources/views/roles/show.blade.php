@@ -1,3 +1,7 @@
+@php
+    use App\Helpers\PermissionHelper;
+@endphp
+
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
@@ -13,7 +17,7 @@
                     <span>Editar</span>
                 </a>
                 <a href="{{ route('config.roles.index') }}" 
-                   class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200">
+                class="inline-flex items-center px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium rounded-lg transition-colors duration-150">
                     Volver al Listado
                 </a>
             </div>
@@ -57,9 +61,6 @@
                     
                     @if($role->permissions->count() > 0)
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            @php
-                                use App\Helpers\PermissionHelper;
-                            @endphp
                             @foreach($groupedPermissions as $module => $permissions)
                                 @php
                                     $colors = PermissionHelper::getModuleColor($module);
@@ -82,7 +83,7 @@
                                                 <svg class="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                                 </svg>
-                                                <span>{{ PermissionHelper::getPermissionLabel($permission->name) }}</span>
+                                                <span>{{ PermissionHelper::getPermissionLabel($permission['name']) }}</span>
                                             </li>
                                         @endforeach
                                     </ul>
