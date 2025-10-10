@@ -37,6 +37,9 @@
                                 'municipality' => $recruiter->person->residenceInformation->municipality->name ?? 'N/A',
                             ];
                         })"
+                        :actions="[
+                            ['name' => 'export', 'label' => 'Exportar a PDF', 'callback' => 'exportSelected'],
+                        ]"
                         :searchable="true"
                         :filterable="false"
                         search-placeholder="Buscar reclutador por nombre o correo electrónico"
@@ -52,6 +55,37 @@
     </div>
 
     <script>
+        // Función para exportar seleccionados
+        window.exportSelected = function(selectedIds) {
+            if (selectedIds.length === 0) {
+                alert('Por favor, seleccione al menos un registro para exportar');
+                return;
+            }
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route('recruiters.export-pdf') }}';
+            form.target = '_blank'; // Abrir en nueva pestaña
+            
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            form.appendChild(csrfToken);
+            
+            selectedIds.forEach(id => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'ids[]';
+                input.value = id;
+                form.appendChild(input);
+            });
+            
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+        };
+
         // Funciones globales para acciones por fila
         window.viewRecruiter = function(recruiter) {
             window.location.href = `/recruiters/${recruiter.id}`;

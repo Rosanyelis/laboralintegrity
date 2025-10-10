@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Models\Province;
 use App\Models\Municipality;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CompanyController extends Controller
 {
@@ -180,5 +181,38 @@ class CompanyController extends Controller
         }
 
         return response()->json(['exists' => false]);
+    }
+
+    /**
+     * Exportar empresas seleccionadas a PDF
+     */
+    public function exportToPdf(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        
+        if (empty($ids)) {
+            return back()->with('error', 'No hay registros seleccionados para exportar.');
+        }
+
+        // Cargar empresas con sus relaciones y mapear los datos
+        $companies = Company::with(['province', 'municipality'])
+            ->whereIn('id', $ids)
+            ->get()
+            ->map(function($company) {
+                return [
+                    'code_unique' => $company->code_unique ?? 'N/A',
+                    'business_name' => $company->business_name ?? 'N/A',
+                    'rnc' => $company->rnc ?? 'N/A',
+                    'province' => $company->province?->name ?? 'N/A',
+                    'municipality' => $company->municipality?->name ?? 'N/A',
+                    'representative_name' => $company->representative_name ?? 'N/A',
+                    'landline_phone' => $company->landline_phone ?? 'N/A',
+                    'representative_email' => $company->representative_email ?? 'N/A',
+                ];
+            });
+        
+        $pdf = Pdf::loadView('companies.pdf', compact('companies'));
+        
+        return $pdf->stream('empresas_' . date('Y-m-d_H-i-s') . '.pdf');
     }
 }

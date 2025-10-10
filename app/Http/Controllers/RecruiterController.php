@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\Person;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class RecruiterController extends Controller
 {
@@ -190,5 +191,38 @@ class RecruiterController extends Controller
             'cell_phone' => $person->cell_phone,
             'email' => $person->email,
         ]);
+    }
+
+    /**
+     * Exportar reclutadores seleccionados a PDF
+     */
+    public function exportToPdf(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        
+        if (empty($ids)) {
+            return back()->with('error', 'No hay registros seleccionados para exportar.');
+        }
+
+        // Cargar reclutadores con sus relaciones y mapear los datos
+        $recruiters = Recruiter::with(['company', 'person.residenceInformation.municipality.province'])
+            ->whereIn('id', $ids)
+            ->get()
+            ->map(function($recruiter) {
+                return [
+                    'code_unique' => $recruiter->code_unique ?? 'N/A',
+                    'company_name' => $recruiter->company ? $recruiter->company->business_name : 'No aplica',
+                    'person_name' => $recruiter->person->name . ' ' . $recruiter->person->last_name,
+                    'dni' => $recruiter->person->dni ?? 'N/A',
+                    'phone' => $recruiter->person->cell_phone ?? 'N/A',
+                    'email' => $recruiter->person->email ?? 'N/A',
+                    'province' => $recruiter->person->residenceInformation?->municipality?->province?->name ?? 'N/A',
+                    'municipality' => $recruiter->person->residenceInformation?->municipality?->name ?? 'N/A',
+                ];
+            });
+        
+        $pdf = Pdf::loadView('recruiters.pdf', compact('recruiters'));
+        
+        return $pdf->stream('reclutadores_' . date('Y-m-d_H-i-s') . '.pdf');
     }
 }

@@ -34,6 +34,9 @@
                                 'representative_name' => $company->representative_name ?? 'N/A',
                             ];
                         })->toArray()"
+                        :actions="[
+                            ['name' => 'export', 'label' => 'Exportar a PDF', 'callback' => 'exportSelected'],
+                        ]"
                         :row-actions="[
                             ['name' => 'view', 'label' => 'Ver', 'icon' => 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z', 'callback' => 'viewCompany'],
                             ['name' => 'edit', 'label' => 'Editar', 'icon' => 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z', 'callback' => 'editCompany'],
@@ -49,6 +52,37 @@
     </div>
 
     <script>
+        // Función para exportar seleccionados
+        window.exportSelected = function(selectedIds) {
+            if (selectedIds.length === 0) {
+                alert('Por favor, seleccione al menos un registro para exportar');
+                return;
+            }
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route('companies.export-pdf') }}';
+            form.target = '_blank'; // Abrir en nueva pestaña
+            
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            form.appendChild(csrfToken);
+            
+            selectedIds.forEach(id => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'ids[]';
+                input.value = id;
+                form.appendChild(input);
+            });
+            
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+        };
+
         function viewCompany(item) {
             const id = item.id || item;
             window.location.href = `{{ url('companies') }}/${id}`;

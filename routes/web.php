@@ -43,11 +43,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/companies/check-rnc/{rnc}', [CompanyController::class, 'checkRnc'])->name('companies.check-rnc');
     Route::resource('companies', CompanyController::class);
     Route::get('/companies/municipalities/{province}', [CompanyController::class, 'getMunicipalities'])->name('companies.municipalities');
+    Route::post('/companies/export-pdf', [CompanyController::class, 'exportToPdf'])->name('companies.export-pdf');
     
     // Rutas para el módulo de Reclutadores
     Route::get('/recruiters/search-by-rnc', [RecruiterController::class, 'searchByRnc'])->name('recruiters.search-by-rnc');
     Route::get('/recruiters/search-by-dni', [RecruiterController::class, 'searchByDni'])->name('recruiters.search-by-dni');
     Route::resource('recruiters', RecruiterController::class);
+    Route::post('/recruiters/export-pdf', [RecruiterController::class, 'exportToPdf'])->name('recruiters.export-pdf');
     
     // Rutas para el módulo de Integridad Laboral
     Route::get('/work-integrities/search-company', [WorkIntegrityController::class, 'searchCompanyByRnc'])->name('work-integrities.search-company');
