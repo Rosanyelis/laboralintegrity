@@ -21,7 +21,7 @@ class PersonController extends Controller
      */
     public function index()
     {
-        $people = Person::with('aspiration')->orderBy('created_at', 'desc')->paginate(10);
+        $people = Person::with('aspiration')->orderBy('created_at', 'desc')->get();
         
         return view('people.index', compact('people'));
     }

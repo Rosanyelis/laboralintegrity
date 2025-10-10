@@ -32,34 +32,41 @@ class DatabaseSeeder extends Seeder
 
         $this->command->info('Datos geográficos insertados exitosamente.');
 
+        // Ejecutar seeder de certificaciones
+        $this->call([
+            CertificationSeeder::class,
+        ]);
+
+        // Ejecutar seeder de permisos y roles
+        $this->call([
+            PermissionSeeder::class,
+        ]);
+
         // Crear usuario administrador por defecto
         $adminUser = User::create([
-            'name' => 'Administrador',
+            'name' => 'Administrador del Sistema',
             'email' => 'admin@sistema.com',
             'password' => Hash::make('password'),
         ]);
 
+        // Asignar rol de Super Administrador
+        $adminUser->assignRole('Super Administrador');
+
         $this->command->info('Usuario administrador creado:');
         $this->command->info('Email: admin@sistema.com');
         $this->command->info('Password: password');
+        $this->command->info('Rol: Super Administrador');
 
-        // Crear una persona de ejemplo asociada al administrador
-        $adminPerson = Person::create([
-            'user_id' => $adminUser->id,
-            'name' => 'Administrador',
-            'last_name' => 'del Sistema',
-            'dni' => '00000000000',
-            'country' => 'República Dominicana',
-            'birth_place' => 'Santo Domingo',
-            'birth_date' => '1990-01-01',
-            'verification_status' => 'certificado',
-            'employment_status' => 'contratado',
-        ]);
+        // Ejecutar seeders de datos de ejemplo (opcional)
+        if ($this->command->confirm('¿Desea generar datos de ejemplo? (30 personas y 30 empresas)', true)) {
+            $this->call([
+                PersonSeeder::class,
+                CompanySeeder::class,
+            ]);
+            
+            $this->command->info('Datos de ejemplo generados exitosamente.');
+        }
 
-        // Actualizar el usuario con la referencia a la persona
-        $adminUser->update(['person_id' => $adminPerson->id]);
-
-        $this->command->info('Persona de administrador creada exitosamente.');
         $this->command->info('Seeding completado exitosamente.');
     }
 }

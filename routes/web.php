@@ -5,6 +5,7 @@ use App\Http\Controllers\PersonController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CertificationController;
 use App\Http\Controllers\ReferenceCodeController;
+use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -46,6 +47,9 @@ Route::middleware('auth')->group(function () {
         
         // Códigos de Referencias
         Route::resource('reference-codes', ReferenceCodeController::class)->names('reference-codes');
+        
+        // Roles
+        Route::resource('roles', RoleController::class)->names('roles');
     });
     
     // Ruta temporal para pruebas de toast

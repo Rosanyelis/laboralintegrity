@@ -16,7 +16,7 @@ class CompanyController extends Controller
     {
         $companies = Company::with(['province', 'municipality', 'regional'])
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
         
         return view('companies.index', compact('companies'));
     }

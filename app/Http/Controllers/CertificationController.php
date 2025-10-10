@@ -12,7 +12,7 @@ class CertificationController extends Controller
      */
     public function index()
     {
-        $certifications = Certification::withCount('referenceCodes')->orderBy('created_at', 'desc')->paginate(10);
+        $certifications = Certification::withCount('referenceCodes')->orderBy('created_at', 'desc')->get();
         
         return view('certifications.index', compact('certifications'));
     }

@@ -13,7 +13,7 @@ class ReferenceCodeController extends Controller
      */
     public function index()
     {
-        $referenceCodes = ReferenceCode::with('certification')->orderBy('created_at', 'desc')->paginate(10);
+        $referenceCodes = ReferenceCode::with('certification')->orderBy('created_at', 'desc')->get();
         
         return view('reference-codes.index', compact('referenceCodes'));
     }

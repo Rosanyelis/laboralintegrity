@@ -57,8 +57,8 @@
                                 <a href="{{ route('config.reference-codes.index') }}" class="block px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
                                     Códigos de Referencias
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-500 dark:text-gray-500 cursor-not-allowed">
-                                    Roles <span class="text-xs">(Próximamente)</span>
+                                <a href="{{ route('config.roles.index') }}" class="block px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    Roles
                                 </a>
                                 <a href="#" class="block px-4 py-2 text-sm text-gray-500 dark:text-gray-500 cursor-not-allowed">
                                     Usuarios <span class="text-xs">(Próximamente)</span>
@@ -172,8 +172,8 @@
                     <a href="{{ route('config.reference-codes.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
                         Códigos de Referencias
                     </a>
-                    <a href="#" class="block px-4 py-2 text-sm text-gray-500 dark:text-gray-500 cursor-not-allowed rounded-md">
-                        Roles <span class="text-xs">(Próximamente)</span>
+                    <a href="{{ route('config.roles.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+                        Roles
                     </a>
                     <a href="#" class="block px-4 py-2 text-sm text-gray-500 dark:text-gray-500 cursor-not-allowed rounded-md">
                         Usuarios <span class="text-xs">(Próximamente)</span>
