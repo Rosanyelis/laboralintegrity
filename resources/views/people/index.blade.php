@@ -39,7 +39,7 @@
                                 'dni' => $person->dni ?? 'N/A',
                                 'age' => $person->age ?? 'N/A',
                                 'verification_status' => $person->verification_status ?? (rand(0, 1) ? 'verified' : 'pending'),
-                                'employment_status' => $person->employment_status ?? (['active', 'inactive', 'suspended'][rand(0, 2)]),
+                                'employment_status' => $person->aspiration?->employment_status ?? 'N/A',
                                 'created_at' => $person->created_at->format('d/m/Y')
                             ];
                         })->toArray()"

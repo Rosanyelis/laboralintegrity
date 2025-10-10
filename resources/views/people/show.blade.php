@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                Personal Individual - Detalles de Persona
+            <h2 class="font-semibold text-md text-gray-800 dark:text-gray-200 leading-tight">
+                Personal Individual - {{ $person->name }} {{ $person->last_name }}
             </h2>
             <div class="flex space-x-2">
-                <a href="{{ route('people.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200">
+                <a href="{{ route('people.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-1 px-3 rounded-lg transition-colors duration-200">
                     Volver a Consulta
                 </a>
             </div>
@@ -27,32 +27,27 @@
                         <button @click="setActiveTab('residence')" 
                                 :class="activeTab === 'residence' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'"
                                 class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm uppercase transition-colors duration-200">
-                            Inf. Residencial
+                                Información Residencial
                         </button>
                         <button @click="setActiveTab('educational')" 
                                 :class="activeTab === 'educational' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'"
                                 class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm uppercase transition-colors duration-200">
-                            Hab. Educativas
+                            Habilidades Educativas
                         </button>
                         <button @click="setActiveTab('work')" 
                                 :class="activeTab === 'work' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'"
                                 class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm uppercase transition-colors duration-200">
-                            Exp. Laboral
+                            Experiencia Laborales
                         </button>
                         <button @click="setActiveTab('references')" 
                                 :class="activeTab === 'references' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'"
                                 class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm uppercase transition-colors duration-200">
-                            Ref. Personales
+                            Referencias Personales
                         </button>
                         <button @click="setActiveTab('aspirations')" 
                                 :class="activeTab === 'aspirations' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'"
                                 class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm uppercase transition-colors duration-200">
                             Aspiraciones
-                        </button>
-                        <button @click="setActiveTab('availability')" 
-                                :class="activeTab === 'availability' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'"
-                                class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm uppercase transition-colors duration-200">
-                            Disponibilidad
                         </button>
                     </nav>
                 </div>
@@ -771,222 +766,581 @@
                         </div>
                     </div>
 
-                    <!-- Tab: Experiencia Laboral -->
-                    <div x-show="activeTab === 'work'">
-                        @if($person->workExperiences->count() > 0)
-                            <div class="space-y-6">
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-2">
-                                    Experiencia Laboral
-                                </h3>
+                    <!-- Tab: Experiencias Laborales -->
+                    <div x-show="activeTab === 'work'" class="space-y-6">
+                        <!-- Formulario para agregar nuevas experiencias laborales -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                        
+                            <form action="{{ route('people.work-experiences.store', $person) }}" method="POST" class="space-y-4">
+                                @csrf
                                 
-                                <div class="grid grid-cols-1 gap-6">
-                                    @foreach($person->workExperiences as $experience)
-                                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
-                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                <div class="space-y-4">
-                                                    <div>
-                                                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Empresa</label>
-                                                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $experience->company_name ?? 'N/A' }}</p>
-                                                    </div>
-                                                    
-                                                    <div>
-                                                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Posición</label>
-                                                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $experience->position ?? 'N/A' }}</p>
-                                                    </div>
-                                                    
-                                                    <div class="grid grid-cols-2 gap-4">
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Fecha Inicio</label>
-                                                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $experience->from_date?->format('d/m/Y') ?? 'N/A' }}</p>
-                                                        </div>
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Fecha Fin</label>
-                                                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $experience->to_date?->format('d/m/Y') ?? 'N/A' }}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                <!-- Primera fila: 3 campos -->
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <!-- Nombre de la Empresa -->
+                                    <div>
+                                        <label for="company_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Nombre de la Empresa
+                                        </label>
+                                        <input 
+                                            type="text" 
+                                            name="company_name" 
+                                            id="company_name"
+                                            value="{{ old('company_name') }}"
+                                            required
+                                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                            placeholder="Nombre de la empresa"
+                                        >
+                                        @error('company_name')
+                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                        @enderror
+                                    </div>
 
-                                                <div class="space-y-4">
-                                                    <div>
-                                                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Responsabilidades</label>
-                                                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $experience->responsibilities ?? 'N/A' }}</p>
-                                                    </div>
-                                                    
-                                                    <div>
-                                                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Logros</label>
-                                                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $experience->achievements ?? 'N/A' }}</p>
-                                                    </div>
-                                                    
-                                                    <div>
-                                                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Habilidades</label>
-                                                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $experience->skills ?? 'N/A' }}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
+                                    <!-- Posición -->
+                                    <div>
+                                        <label for="position" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Posición
+                                        </label>
+                                        <input 
+                                            type="text" 
+                                            name="position" 
+                                            id="position"
+                                            value="{{ old('position') }}"
+                                            required
+                                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                            placeholder="Cargo ocupado"
+                                        >
+                                        @error('position')
+                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Año (Desde-Hasta) -->
+                                    <div>
+                                        <label for="year_range" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            AÑO (DESDE-HASTA)
+                                        </label>
+                                        <input 
+                                            type="text" 
+                                            name="year_range" 
+                                            id="year_range"
+                                            value="{{ old('year_range') }}"
+                                            required
+                                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                            placeholder="Ej: 2020-2023"
+                                        >
+                                        @error('year_range')
+                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                        @enderror
+                                    </div>
                                 </div>
-                            </div>
-                        @else
-                            <div class="text-center py-12">
-                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6"></path>
-                                </svg>
-                                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">Sin experiencia laboral</h3>
-                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">No se ha registrado experiencia laboral para esta persona.</p>
-                            </div>
-                        @endif
+
+                                <!-- Segunda fila: Textarea de logros -->
+                                <div>
+                                    <label for="achievements" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Logros
+                                    </label>
+                                    <textarea 
+                                        name="achievements" 
+                                        id="achievements"
+                                        rows="4"
+                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                        placeholder="Describa sus logros en esta posición..."
+                                    >{{ old('achievements') }}</textarea>
+                                    @error('achievements')
+                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Botón alineado a la derecha -->
+                                <div class="flex justify-end">
+                                    <button 
+                                        type="submit"
+                                        class="inline-flex items-center px-6 py-2.5 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                                    >
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                        Añadir Experiencia
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Tabla de experiencias laborales -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                           
+                            @if($person->workExperiences->count() > 0)
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                        <thead class="bg-gray-50 dark:bg-gray-700">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Empresa
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Posición
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Año
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Logros
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Acciones
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                            @foreach($person->workExperiences as $experience)
+                                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                        {{ $experience->company_name ?? 'N/A' }}
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                        {{ $experience->position ?? 'N/A' }}
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                        {{ $experience->year_range ?? 'N/A' }}
+                                                    </td>
+                                                    <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
+                                                        <div class="max-w-xs truncate" title="{{ $experience->achievements ?? 'N/A' }}">
+                                                            {{ $experience->achievements ?? 'N/A' }}
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                        <form action="{{ route('people.work-experiences.destroy', [$person, $experience]) }}" method="POST" class="inline-block delete-experience-form" data-company-name="{{ $experience->company_name }}">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button 
+                                                                type="submit"
+                                                                class="inline-flex items-center p-2 text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                                                                title="Eliminar"
+                                                            >
+                                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                                </svg>
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <div class="text-center py-12">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m8 0v2m-8-2v2m8 0v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2m8 0H8"></path>
+                                    </svg>
+                                    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">Sin experiencias laborales</h3>
+                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Agregue una experiencia laboral usando el formulario superior.</p>
+                                </div>
+                            @endif
+                        </div>
                     </div>
 
                     <!-- Tab: Referencias Personales -->
-                    <div x-show="activeTab === 'references'">
-                        @if($person->personalReferences->count() > 0)
-                            <div class="space-y-6">
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-2">
-                                    Referencias Personales
-                                </h3>
+                    <div x-show="activeTab === 'references'" class="space-y-6">
+                        <!-- Formulario para agregar nuevas referencias personales -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                        
+                            <form action="{{ route('people.personal-references.store', $person) }}" method="POST" class="space-y-4">
+                                @csrf
                                 
-                                <div class="grid grid-cols-1 gap-6">
-                                    @foreach($person->personalReferences as $reference)
-                                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
-                                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Relación</label>
-                                                    <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ ucfirst($reference->relationship ?? 'N/A') }}</p>
-                                                </div>
-                                                
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Nombre Completo</label>
-                                                    <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $reference->full_name ?? 'N/A' }}</p>
-                                                </div>
-                                                
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Cédula</label>
-                                                    <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $reference->cedula ?? 'N/A' }}</p>
-                                                </div>
-                                                
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Teléfono Celular</label>
-                                                    <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $reference->cell_phone ?? 'N/A' }}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
+                                <!-- Primera fila: 4 campos -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    <!-- Relación -->
+                                    <div>
+                                        <label for="relationship" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Relación
+                                        </label>
+                                        <select 
+                                            name="relationship" 
+                                            id="relationship"
+                                            required
+                                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                        >
+                                            <option value="">Seleccione...</option>
+                                            <option value="padre" {{ old('relationship') == 'padre' ? 'selected' : '' }}>Padre</option>
+                                            <option value="madre" {{ old('relationship') == 'madre' ? 'selected' : '' }}>Madre</option>
+                                            <option value="conyuge" {{ old('relationship') == 'conyuge' ? 'selected' : '' }}>Cónyuge</option>
+                                            <option value="hermano" {{ old('relationship') == 'hermano' ? 'selected' : '' }}>Hermano/a</option>
+                                            <option value="tio" {{ old('relationship') == 'tio' ? 'selected' : '' }}>Tío/a</option>
+                                            <option value="amigo" {{ old('relationship') == 'amigo' ? 'selected' : '' }}>Amigo/a</option>
+                                            <option value="otros" {{ old('relationship') == 'otros' ? 'selected' : '' }}>Otros</option>
+                                        </select>
+                                        @error('relationship')
+                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Nombre Completo -->
+                                    <div>
+                                        <label for="full_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Nombre Completo
+                                        </label>
+                                        <input 
+                                            type="text" 
+                                            name="full_name" 
+                                            id="full_name"
+                                            value="{{ old('full_name') }}"
+                                            required
+                                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                            placeholder="Nombre(s) y Apellidos"
+                                        >
+                                        @error('full_name')
+                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Cédula -->
+                                    <div>
+                                        <label for="cedula_reference" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Cédula
+                                        </label>
+                                        <input 
+                                            type="text" 
+                                            name="cedula" 
+                                            id="cedula_reference"
+                                            value="{{ old('cedula') }}"
+                                            required
+                                            maxlength="13"
+                                            pattern="\d{3}-\d{7}-\d{1}"
+                                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                            placeholder="Ej: 001-1234567-8"
+                                            title="Formato: 000-0000000-0"
+                                        >
+                                        @error('cedula')
+                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Teléfono Celular -->
+                                    <div>
+                                        <label for="cell_phone_reference" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Teléfono Celular
+                                        </label>
+                                        <input 
+                                            type="tel" 
+                                            name="cell_phone" 
+                                            id="cell_phone_reference"
+                                            value="{{ old('cell_phone') }}"
+                                            required
+                                            maxlength="13"
+                                            pattern="\d{4}-\d{3}-\d{4}"
+                                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                            placeholder="Ej: 8095-551-2345"
+                                            title="Formato: 0000-000-0000"
+                                        >
+                                        @error('cell_phone')
+                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                        @enderror
+                                    </div>
                                 </div>
-                            </div>
-                        @else
-                            <div class="text-center py-12">
-                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                </svg>
-                                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">Sin referencias personales</h3>
-                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">No se han registrado referencias personales para esta persona.</p>
-                            </div>
-                        @endif
+
+                                <!-- Botón alineado a la derecha -->
+                                <div class="flex justify-end">
+                                    <button 
+                                        type="submit"
+                                        class="inline-flex items-center px-6 py-2.5 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                                    >
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                        Añadir Referencia
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Tabla de referencias personales -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                           
+                            @if($person->personalReferences->count() > 0)
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                        <thead class="bg-gray-50 dark:bg-gray-700">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Relación
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Nombre Completo
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Cédula
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Teléfono
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Acciones
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                            @foreach($person->personalReferences as $reference)
+                                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                        {{ ucfirst($reference->relationship ?? 'N/A') }}
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                        {{ $reference->full_name ?? 'N/A' }}
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                        {{ $reference->cedula ?? 'N/A' }}
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                        {{ $reference->cell_phone ?? 'N/A' }}
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                        <form action="{{ route('people.personal-references.destroy', [$person, $reference]) }}" method="POST" class="inline-block delete-reference-form" data-reference-name="{{ $reference->full_name }}">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button 
+                                                                type="submit"
+                                                                class="inline-flex items-center p-2 text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                                                                title="Eliminar"
+                                                            >
+                                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                                </svg>
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <div class="text-center py-12">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    </svg>
+                                    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">Sin referencias personales</h3>
+                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Agregue una referencia personal usando el formulario superior.</p>
+                                </div>
+                            @endif
+                        </div>
                     </div>
 
                     <!-- Tab: Aspiraciones -->
                     <div x-show="activeTab === 'aspirations'">
-                        @if($person->aspirations->count() > 0)
-                            <div class="space-y-6">
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-2">
-                                    Aspiraciones
-                                </h3>
-                                
-                                <div class="grid grid-cols-1 gap-6">
-                                    @foreach($person->aspirations as $aspiration)
-                                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
-                                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Ocupación</label>
-                                                    <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $aspiration->occupation ?? 'N/A' }}</p>
-                                                </div>
-                                                
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Disponibilidad</label>
-                                                    <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $aspiration->availability ?? 'N/A' }}</p>
-                                                </div>
-                                                
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Rango de Horas</label>
-                                                    <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $aspiration->hour_range ?? 'N/A' }}</p>
-                                                </div>
-                                                
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Horas por Semana</label>
-                                                    <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $aspiration->hours_per_week ?? 'N/A' }}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @else
-                            <div class="text-center py-12">
-                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                </svg>
-                                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">Sin aspiraciones</h3>
-                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">No se han registrado aspiraciones para esta persona.</p>
-                            </div>
-                        @endif
-                    </div>
-
-                    <!-- Tab: Disponibilidad -->
-                    <div x-show="activeTab === 'availability'">
-                        <div class="space-y-6">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-2">
-                                Estados y Disponibilidad
-                            </h3>
+                        <form action="{{ route('people.update-aspiration', $person) }}" method="POST">
+                            @csrf
+                            @method('PATCH')
                             
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                <div class="space-y-6">
+                            <div class="space-y-6">
+                                <!-- Formulario de Aspiraciones -->
+                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                                     <div class="space-y-4">
-                                        <h4 class="text-md font-medium text-gray-900 dark:text-gray-100">Estados del Sistema</h4>
-                                        <div class="grid grid-cols-1 gap-4">
+                                        <!-- Primera fila: Puesto Deseado y Sector de Interés -->
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <!-- Puesto Deseado -->
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Estado de Verificación</label>
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                                    @if($person->verification_status === 'certificado') bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
-                                                    @elseif($person->verification_status === 'pendiente') bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200
-                                                    @elseif($person->verification_status === 'parcial') bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
-                                                    @else bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 @endif">
-                                                    {{ ucfirst($person->verification_status ?? 'N/A') }}
-                                                </span>
+                                                <label for="desired_position" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                    Puesto Deseado
+                                                </label>
+                                                <input 
+                                                    type="text" 
+                                                    name="desired_position" 
+                                                    id="desired_position"
+                                                    value="{{ old('desired_position', $person->aspiration->desired_position ?? '') }}"
+                                                    placeholder="Ej. Gerente de Proyectos"
+                                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-800 dark:text-white sm:text-sm"
+                                                >
+                                                @error('desired_position')
+                                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                                @enderror
                                             </div>
+
+                                            <!-- Sector de Interés -->
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Estado de Empleo</label>
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                                    @if($person->employment_status === 'disponible') bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
-                                                    @elseif($person->employment_status === 'contratado') bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
-                                                    @elseif($person->employment_status === 'pendiente') bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200
-                                                    @elseif($person->employment_status === 'en_proceso') bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200
-                                                    @elseif($person->employment_status === 'part_time') bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
-                                                    @else bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 @endif">
-                                                    {{ ucfirst($person->employment_status ?? 'N/A') }}
-                                                </span>
+                                                <label for="sector_of_interest" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                    Sector de Interés
+                                                </label>
+                                                <input 
+                                                    type="text" 
+                                                    name="sector_of_interest" 
+                                                    id="sector_of_interest"
+                                                    value="{{ old('sector_of_interest', $person->aspiration->sector_of_interest ?? '') }}"
+                                                    placeholder="Ej. Tecnología, Salud, Finanzas"
+                                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-800 dark:text-white sm:text-sm"
+                                                >
+                                                @error('sector_of_interest')
+                                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <!-- Segunda fila: Salario Esperado -->
+                                        <div>
+                                            <label for="expected_salary" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Salario Esperado (USD)
+                                            </label>
+                                            <input 
+                                                type="number" 
+                                                name="expected_salary" 
+                                                id="expected_salary"
+                                                value="{{ old('expected_salary', $person->aspiration->expected_salary ?? '') }}"
+                                                placeholder="Ej. 50000"
+                                                step="0.01"
+                                                min="0"
+                                                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-800 dark:text-white sm:text-sm"
+                                            >
+                                            @error('expected_salary')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                        <!-- Tipo de Contrato Preferido (Checkboxes múltiples) -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                Tipo de Contrato Preferido
+                                            </label>
+                                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                                @php
+                                                    $contractTypes = [
+                                                        'tiempo_completo' => 'Tiempo Completo',
+                                                        'medio_tiempo' => 'Medio Tiempo',
+                                                        'remoto' => 'Remoto',
+                                                        'hibrido' => 'Híbrido'
+                                                    ];
+                                                    $selectedTypes = old('contract_type_preference', $person->aspiration->contract_type_preference ?? []);
+                                                @endphp
+                                                
+                                                @foreach($contractTypes as $value => $label)
+                                                    <div class="flex items-center">
+                                                        <input 
+                                                            type="checkbox" 
+                                                            name="contract_type_preference[]" 
+                                                            id="contract_{{ $value }}"
+                                                            value="{{ $value }}"
+                                                            {{ in_array($value, (array)$selectedTypes) ? 'checked' : '' }}
+                                                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                                        >
+                                                        <label for="contract_{{ $value }}" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                                                            {{ $label }}
+                                                        </label>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                            @error('contract_type_preference')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                        <!-- Objetivos a Corto Plazo -->
+                                        <div>
+                                            <label for="short_term_goals" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Objetivos a Corto Plazo (1-2 años)
+                                            </label>
+                                            <textarea 
+                                                name="short_term_goals" 
+                                                id="short_term_goals"
+                                                rows="4"
+                                                placeholder="Describa sus metas profesionales para los próximos 1 a 2 años."
+                                                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-800 dark:text-white sm:text-sm"
+                                            >{{ old('short_term_goals', $person->aspiration->short_term_goals ?? '') }}</textarea>
+                                            @error('short_term_goals')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                        <!-- Estatus y Alcance Laboral -->
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <!-- Estatus Laboral -->
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">
+                                                    Estatus Laboral
+                                                </label>
+                                                <div class="space-y-2">
+                                                    @php
+                                                        $employmentStatuses = [
+                                                            'contratado' => 'Contratado',
+                                                            'disponible' => 'Disponible',
+                                                            'en_proceso' => 'En Proceso',
+                                                            'discapacitado' => 'Discapacitado',
+                                                            'fallecido' => 'Fallecido'
+                                                        ];
+                                                        $selectedStatus = old('employment_status', $person->aspiration->employment_status ?? 'disponible');
+                                                    @endphp
+                                                    
+                                                    @foreach($employmentStatuses as $value => $label)
+                                                        <div class="flex items-center">
+                                                            <input 
+                                                                type="radio" 
+                                                                name="employment_status" 
+                                                                id="status_{{ $value }}"
+                                                                value="{{ $value }}"
+                                                                {{ $selectedStatus == $value ? 'checked' : '' }}
+                                                                required
+                                                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                                            >
+                                                            <label for="status_{{ $value }}" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                                                                {{ $label }}
+                                                            </label>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                                @error('employment_status')
+                                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                                @enderror
+                                            </div>
+
+                                            <!-- Alcance Laboral -->
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">
+                                                    Alcance Laboral
+                                                </label>
+                                                <div class="space-y-2">
+                                                    @php
+                                                        $workScopes = [
+                                                            'provincial' => 'Provincial',
+                                                            'nacional' => 'Nacional'
+                                                        ];
+                                                        $selectedScope = old('work_scope', $person->aspiration->work_scope ?? 'provincial');
+                                                    @endphp
+                                                    
+                                                    @foreach($workScopes as $value => $label)
+                                                        <div class="flex items-center">
+                                                            <input 
+                                                                type="radio" 
+                                                                name="work_scope" 
+                                                                id="scope_{{ $value }}"
+                                                                value="{{ $value }}"
+                                                                {{ $selectedScope == $value ? 'checked' : '' }}
+                                                                required
+                                                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                                            >
+                                                            <label for="scope_{{ $value }}" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                                                                {{ $label }}
+                                                            </label>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                                @error('work_scope')
+                                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                                @enderror
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="space-y-6">
-                                    <div class="space-y-4">
-                                        <h4 class="text-md font-medium text-gray-900 dark:text-gray-100">Información del Sistema</h4>
-                                        <div class="grid grid-cols-1 gap-4">
-                                            <div>
-                                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Fecha de Creación</label>
-                                                <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $person->created_at->format('d/m/Y H:i') }}</p>
-                                            </div>
-                                            <div>
-                                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Última Actualización</label>
-                                                <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $person->updated_at->format('d/m/Y H:i') }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <!-- Botón Actualizar -->
+                                <div class="flex justify-end pt-4">
+                                    <button type="submit" 
+                                            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors duration-200 flex items-center space-x-2">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span>Actualizar Aspiraciones</span>
+                                    </button>
                                 </div>
                             </div>
-                        </div>
+                        </form>
                     </div>
 
                 </div>
@@ -1026,6 +1380,118 @@
                     }
                 });
             });
+
+            // Interceptar todos los formularios de eliminación de experiencias laborales
+            const deleteExperienceForms = document.querySelectorAll('.delete-experience-form');
+            
+            deleteExperienceForms.forEach(form => {
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const companyName = this.dataset.companyName || 'esta experiencia laboral';
+                    
+                    try {
+                        const confirmed = await showConfirmation({
+                            title: 'Eliminar Experiencia Laboral',
+                            message: `¿Está seguro de eliminar la experiencia en "${companyName}"? Esta acción no se puede deshacer.`,
+                            confirmText: 'Eliminar',
+                            cancelText: 'Cancelar',
+                            icon: 'danger',
+                            confirmClass: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
+                            cancelClass: 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600'
+                        });
+                        
+                        if (confirmed) {
+                            // Si el usuario confirma, enviar el formulario
+                            this.submit();
+                        }
+                    } catch (error) {
+                        // Usuario canceló la acción
+                        console.log('Eliminación cancelada');
+                    }
+                });
+            });
+
+            // Interceptar todos los formularios de eliminación de referencias personales
+            const deleteReferenceForms = document.querySelectorAll('.delete-reference-form');
+            
+            deleteReferenceForms.forEach(form => {
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const referenceName = this.dataset.referenceName || 'esta referencia personal';
+                    
+                    try {
+                        const confirmed = await showConfirmation({
+                            title: 'Eliminar Referencia Personal',
+                            message: `¿Está seguro de eliminar la referencia de "${referenceName}"? Esta acción no se puede deshacer.`,
+                            confirmText: 'Eliminar',
+                            cancelText: 'Cancelar',
+                            icon: 'danger',
+                            confirmClass: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
+                            cancelClass: 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600'
+                        });
+                        
+                        if (confirmed) {
+                            // Si el usuario confirma, enviar el formulario
+                            this.submit();
+                        }
+                    } catch (error) {
+                        // Usuario canceló la acción
+                        console.log('Eliminación cancelada');
+                    }
+                });
+            });
+
+            // Formato automático para cédula (000-0000000-0)
+            const cedulaInput = document.getElementById('cedula_reference');
+            if (cedulaInput) {
+                cedulaInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, ''); // Solo números
+                    
+                    if (value.length > 11) {
+                        value = value.substring(0, 11);
+                    }
+                    
+                    let formattedValue = '';
+                    if (value.length > 0) {
+                        formattedValue = value.substring(0, 3);
+                        if (value.length >= 4) {
+                            formattedValue += '-' + value.substring(3, 10);
+                            if (value.length >= 11) {
+                                formattedValue += '-' + value.substring(10, 11);
+                            }
+                        }
+                    }
+                    
+                    e.target.value = formattedValue;
+                });
+            }
+
+            // Formato automático para teléfono (0000-000-0000)
+            const phoneInput = document.getElementById('cell_phone_reference');
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, ''); // Solo números
+                    
+                    if (value.length > 11) {
+                        value = value.substring(0, 11);
+                    }
+                    
+                    let formattedValue = '';
+                    if (value.length > 0) {
+                        formattedValue = value.substring(0, 4);
+                        if (value.length >= 5) {
+                            formattedValue += '-' + value.substring(4, 7);
+                            if (value.length >= 8) {
+                                formattedValue += '-' + value.substring(7, 11);
+                            }
+                        }
+                    }
+                    
+                    e.target.value = formattedValue;
+                });
+            }
         });
     </script>
 </x-app-layout>

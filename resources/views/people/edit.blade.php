@@ -177,29 +177,6 @@
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
-
-                            <div>
-                                <label for="employment_status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Estado de Empleo
-                                </label>
-                                <select name="employment_status" id="employment_status" 
-                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">
-                                    <option value="">Seleccionar...</option>
-                                    <option value="pendiente" {{ old('employment_status', $person->employment_status) == 'pendiente' ? 'selected' : '' }}>Pendiente</option>
-                                    <option value="disponible" {{ old('employment_status', $person->employment_status) == 'disponible' ? 'selected' : '' }}>Disponible</option>
-                                    <option value="en_proceso" {{ old('employment_status', $person->employment_status) == 'en_proceso' ? 'selected' : '' }}>En Proceso</option>
-                                    <option value="contratado" {{ old('employment_status', $person->employment_status) == 'contratado' ? 'selected' : '' }}>Contratado</option>
-                                    <option value="part_time" {{ old('employment_status', $person->employment_status) == 'part_time' ? 'selected' : '' }}>Tiempo Parcial</option>
-                                    <option value="despido" {{ old('employment_status', $person->employment_status) == 'despido' ? 'selected' : '' }}>Despido</option>
-                                    <option value="desaucio" {{ old('employment_status', $person->employment_status) == 'desaucio' ? 'selected' : '' }}>Desahucio</option>
-                                    <option value="renuncia" {{ old('employment_status', $person->employment_status) == 'renuncia' ? 'selected' : '' }}>Renuncia</option>
-                                    <option value="aplica" {{ old('employment_status', $person->employment_status) == 'aplica' ? 'selected' : '' }}>Aplica</option>
-                                    <option value="no_aplica" {{ old('employment_status', $person->employment_status) == 'no_aplica' ? 'selected' : '' }}>No Aplica</option>
-                                </select>
-                                @error('employment_status')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
                         </div>
 
                         <!-- Botones -->

@@ -21,7 +21,7 @@ class PersonController extends Controller
      */
     public function index()
     {
-        $people = Person::orderBy('created_at', 'desc')->paginate(10);
+        $people = Person::with('aspiration')->orderBy('created_at', 'desc')->paginate(10);
         
         return view('people.index', compact('people'));
     }
@@ -103,7 +103,7 @@ class PersonController extends Controller
             'educationalSkills',
             'workExperiences',
             'personalReferences',
-            'aspirations'
+            'aspiration'
         ]);
         
         // Cargar todos los distritos con sus relaciones para el formulario de residencia
@@ -386,5 +386,136 @@ class PersonController extends Controller
         return redirect()->route('people.show', $person)
             ->with('success', 'Habilidad educativa eliminada correctamente.')
             ->with('activeTab', 'educational');
+    }
+
+    /**
+     * Almacena una nueva experiencia laboral para una persona.
+     */
+    public function storeWorkExperience(Request $request, Person $person)
+    {
+        $validated = $request->validate([
+            'company_name' => 'required|string|max:255',
+            'position' => 'required|string|max:255',
+            'year_range' => 'required|string|max:50',
+            'achievements' => 'nullable|string|max:2000',
+        ], [
+            'company_name.required' => 'El nombre de la empresa es obligatorio.',
+            'position.required' => 'La posición es obligatoria.',
+            'year_range.required' => 'El rango de años es obligatorio.',
+        ]);
+
+        $person->workExperiences()->create($validated);
+
+        return redirect()->route('people.show', $person)
+            ->with('success', 'Experiencia laboral agregada correctamente.')
+            ->with('activeTab', 'work');
+    }
+
+    /**
+     * Elimina una experiencia laboral.
+     */
+    public function destroyWorkExperience(Person $person, \App\Models\WorkExperience $workExperience)
+    {
+        // Verificar que la experiencia laboral pertenece a la persona
+        if ($workExperience->person_id !== $person->id) {
+            return redirect()->route('people.show', $person)
+                ->with('error', 'La experiencia laboral no pertenece a esta persona.')
+                ->with('activeTab', 'work');
+        }
+
+        $workExperience->delete();
+
+        return redirect()->route('people.show', $person)
+            ->with('success', 'Experiencia laboral eliminada correctamente.')
+            ->with('activeTab', 'work');
+    }
+
+    /**
+     * Almacena una nueva referencia personal para una persona.
+     */
+    public function storePersonalReference(Request $request, Person $person)
+    {
+        $validated = $request->validate([
+            'relationship' => 'required|in:padre,madre,conyuge,hermano,tio,amigo,otros',
+            'full_name' => 'required|string|max:255',
+            'cedula' => ['required', 'string', 'max:13', 'regex:/^\d{3}-\d{7}-\d{1}$/'],
+            'cell_phone' => ['required', 'string', 'max:13', 'regex:/^\d{4}-\d{3}-\d{4}$/'],
+        ], [
+            'relationship.required' => 'La relación es obligatoria.',
+            'relationship.in' => 'La relación seleccionada no es válida.',
+            'full_name.required' => 'El nombre completo es obligatorio.',
+            'cedula.required' => 'La cédula es obligatoria.',
+            'cedula.regex' => 'El formato de la cédula debe ser: 000-0000000-0',
+            'cell_phone.required' => 'El teléfono celular es obligatorio.',
+            'cell_phone.regex' => 'El formato del teléfono debe ser: 0000-000-0000',
+        ]);
+
+        $person->personalReferences()->create($validated);
+
+        return redirect()->route('people.show', $person)
+            ->with('success', 'Referencia personal agregada correctamente.')
+            ->with('activeTab', 'references');
+    }
+
+    /**
+     * Elimina una referencia personal.
+     */
+    public function destroyPersonalReference(Person $person, \App\Models\PersonalReference $personalReference)
+    {
+        // Verificar que la referencia personal pertenece a la persona
+        if ($personalReference->person_id !== $person->id) {
+            return redirect()->route('people.show', $person)
+                ->with('error', 'La referencia personal no pertenece a esta persona.')
+                ->with('activeTab', 'references');
+        }
+
+        $personalReference->delete();
+
+        return redirect()->route('people.show', $person)
+            ->with('success', 'Referencia personal eliminada correctamente.')
+            ->with('activeTab', 'references');
+    }
+
+    /**
+     * Actualiza o crea las aspiraciones de una persona.
+     */
+    public function updateAspiration(Request $request, Person $person)
+    {
+        $validated = $request->validate([
+            'desired_position' => 'nullable|string|max:255',
+            'sector_of_interest' => 'nullable|string|max:255',
+            'expected_salary' => 'nullable|numeric|min:0',
+            'contract_type_preference' => 'nullable|array',
+            'contract_type_preference.*' => 'in:tiempo_completo,medio_tiempo,remoto,hibrido',
+            'short_term_goals' => 'nullable|string|max:1000',
+            'employment_status' => 'required|in:contratado,disponible,en_proceso,discapacitado,fallecido',
+            'work_scope' => 'required|in:provincial,nacional',
+        ], [
+            'employment_status.required' => 'El estatus laboral es obligatorio.',
+            'employment_status.in' => 'El estatus laboral seleccionado no es válido.',
+            'work_scope.required' => 'El alcance laboral es obligatorio.',
+            'work_scope.in' => 'El alcance laboral seleccionado no es válido.',
+            'expected_salary.numeric' => 'El salario esperado debe ser un número válido.',
+            'expected_salary.min' => 'El salario esperado debe ser mayor o igual a 0.',
+        ]);
+
+        try {
+            // Actualizar o crear las aspiraciones
+            $person->aspiration()->updateOrCreate(
+                ['person_id' => $person->id],
+                $validated
+            );
+
+            return redirect()->route('people.show', $person)
+                ->with('success', 'Aspiraciones actualizadas correctamente.')
+                ->with('activeTab', 'aspirations');
+                
+        } catch (\Exception $e) {
+            \Log::error('Error al actualizar aspiraciones: ' . $e->getMessage());
+            
+            return redirect()->route('people.show', $person)
+                ->with('error', 'Error al actualizar las aspiraciones. Por favor, intente nuevamente.')
+                ->with('activeTab', 'aspirations');
+        }
     }
 }

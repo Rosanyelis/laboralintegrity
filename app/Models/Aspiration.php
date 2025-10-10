@@ -23,10 +23,13 @@ class Aspiration extends Model
      */
     protected $fillable = [
         'person_id',
-        'occupation',
-        'availability',
-        'hour_range',
-        'hours_per_week',
+        'desired_position',
+        'sector_of_interest',
+        'expected_salary',
+        'contract_type_preference',
+        'short_term_goals',
+        'employment_status',
+        'work_scope',
     ];
 
     /**
@@ -35,7 +38,8 @@ class Aspiration extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'hours_per_week' => 'integer',
+        'expected_salary' => 'decimal:2',
+        'contract_type_preference' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -52,86 +56,73 @@ class Aspiration extends Model
     }
 
     /**
-     * Scope para filtrar por ocupación.
+     * Scope para filtrar por puesto deseado.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $occupation
+     * @param string $position
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeOccupation($query, string $occupation)
+    public function scopeDesiredPosition($query, string $position)
     {
-        return $query->where('occupation', 'like', "%{$occupation}%");
+        return $query->where('desired_position', 'like', "%{$position}%");
     }
 
     /**
-     * Scope para filtrar por disponibilidad.
+     * Scope para filtrar por sector de interés.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $availability
+     * @param string $sector
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeAvailability($query, string $availability)
+    public function scopeSectorOfInterest($query, string $sector)
     {
-        return $query->where('availability', $availability);
+        return $query->where('sector_of_interest', 'like', "%{$sector}%");
     }
 
     /**
-     * Scope para filtrar por rango de horas.
+     * Scope para filtrar por estatus laboral.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $hourRange
+     * @param string $status
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeHourRange($query, string $hourRange)
+    public function scopeEmploymentStatus($query, string $status)
     {
-        return $query->where('hour_range', $hourRange);
+        return $query->where('employment_status', $status);
     }
 
     /**
-     * Scope para filtrar por horas por semana.
+     * Scope para filtrar por alcance laboral.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param int $hours
+     * @param string $scope
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeHoursPerWeek($query, int $hours)
+    public function scopeWorkScope($query, string $scope)
     {
-        return $query->where('hours_per_week', $hours);
+        return $query->where('work_scope', $scope);
     }
 
     /**
-     * Scope para filtrar por rango de horas por semana.
+     * Scope para filtrar aspiraciones disponibles.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param int $minHours
-     * @param int $maxHours
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeHoursPerWeekRange($query, int $minHours, int $maxHours)
+    public function scopeAvailable($query)
     {
-        return $query->whereBetween('hours_per_week', [$minHours, $maxHours]);
+        return $query->where('employment_status', 'disponible');
     }
 
     /**
-     * Scope para filtrar aspiraciones de tiempo completo.
+     * Scope para filtrar aspiraciones contratadas.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeFullTime($query)
+    public function scopeHired($query)
     {
-        return $query->where('hours_per_week', '>=', 40);
-    }
-
-    /**
-     * Scope para filtrar aspiraciones de medio tiempo.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopePartTime($query)
-    {
-        return $query->where('hours_per_week', '<', 40);
+        return $query->where('employment_status', 'contratado');
     }
 }
 

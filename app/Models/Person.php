@@ -54,7 +54,6 @@ class Person extends Model
         'company_code',
         'company_name',
         'verification_status',
-        'employment_status',
     ];
 
     /**
@@ -169,13 +168,13 @@ class Person extends Model
 
     /**
      * Relación con las aspiraciones.
-     * Una persona puede tener múltiples aspiraciones.
+     * Una persona tiene un conjunto de aspiraciones laborales.
      *
-     * @return HasMany
+     * @return HasOne
      */
-    public function aspirations(): HasMany
+    public function aspiration(): HasOne
     {
-        return $this->hasMany(Aspiration::class);
+        return $this->hasOne(Aspiration::class);
     }
 
     /**
@@ -198,18 +197,6 @@ class Person extends Model
     public function scopeVerificationStatus($query, string $status)
     {
         return $query->where('verification_status', $status);
-    }
-
-    /**
-     * Scope para filtrar por estado de empleo.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $status
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeEmploymentStatus($query, string $status)
-    {
-        return $query->where('employment_status', $status);
     }
 
     /**
