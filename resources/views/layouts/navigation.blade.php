@@ -27,10 +27,36 @@
                             </svg>
                         </div>
 
-                        <div x-show="open" @mouseenter="open = true" @mouseleave="open = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" class="absolute left-0 w-48 mt-2 origin-top-left bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                        <div x-show="open" @mouseenter="open = true" @mouseleave="open = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" class="absolute left-0 w-48 mt-2 origin-top-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50">
                             <div class="py-2">
-                                <a href="{{ route('people.index') }}" class="block px-4 py-2 text-sm text-gray-800 hover:text-gray-600 hover:bg-gray-50">
+                                <a href="{{ route('people.index') }}" class="block px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
                                     Personal Individual
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Configuraciones Dropdown -->
+                    <div class="relative" x-data="{ open: false }">
+                        <div @mouseenter="open = true" @mouseleave="open = false" class="inline-flex items-center">
+                            <x-nav-link href="#" :active="request()->routeIs('config.*')">
+                                Configuraciones
+                            </x-nav-link>
+                            <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+
+                        <div x-show="open" @mouseenter="open = true" @mouseleave="open = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" class="absolute left-0 w-56 mt-2 origin-top-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50">
+                            <div class="py-2">
+                                <a href="{{ route('config.reference-codes.index') }}" class="block px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    Códigos de Referencias
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-500 dark:text-gray-500 cursor-not-allowed">
+                                    Roles <span class="text-xs">(Próximamente)</span>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-500 dark:text-gray-500 cursor-not-allowed">
+                                    Usuarios <span class="text-xs">(Próximamente)</span>
                                 </a>
                             </div>
                         </div>
@@ -118,11 +144,29 @@
             <!-- Personal Individual Mobile -->
             <div class="px-4 py-2">
                 <div class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Personal Individual
+                    Consulta
                 </div>
                 <div class="mt-1 space-y-1">
-                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
-                        Consulta
+                    <a href="{{ route('people.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+                        Personal Individual
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Configuraciones Mobile -->
+            <div class="px-4 py-2">
+                <div class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Configuraciones
+                </div>
+                <div class="mt-1 space-y-1">
+                    <a href="{{ route('config.reference-codes.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+                        Códigos de Referencias
+                    </a>
+                    <a href="#" class="block px-4 py-2 text-sm text-gray-500 dark:text-gray-500 cursor-not-allowed rounded-md">
+                        Roles <span class="text-xs">(Próximamente)</span>
+                    </a>
+                    <a href="#" class="block px-4 py-2 text-sm text-gray-500 dark:text-gray-500 cursor-not-allowed rounded-md">
+                        Usuarios <span class="text-xs">(Próximamente)</span>
                     </a>
                 </div>
             </div>

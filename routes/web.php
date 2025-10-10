@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PersonController;
+use App\Http\Controllers\CertificationController;
+use App\Http\Controllers\ReferenceCodeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -30,6 +32,15 @@ Route::middleware('auth')->group(function () {
         Route::delete('/people/{person}/personal-references/{personalReference}', [PersonController::class, 'destroyPersonalReference'])->name('people.personal-references.destroy');
         Route::get('/people-api', [PersonController::class, 'api'])->name('people.api');
         Route::get('/people-statistics', [PersonController::class, 'statistics'])->name('people.statistics');
+    
+    // Rutas para el módulo de Configuraciones
+    Route::prefix('configuraciones')->name('config.')->group(function () {
+        // Certificaciones (Tipos de Referencia)
+        Route::resource('certifications', CertificationController::class)->names('certifications');
+        
+        // Códigos de Referencias
+        Route::resource('reference-codes', ReferenceCodeController::class)->names('reference-codes');
+    });
     
     // Ruta temporal para pruebas de toast
     Route::get('/test-toast', function () {
