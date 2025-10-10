@@ -30,6 +30,7 @@ function showToast(options) {
     // Crear elemento del toast
     const toastElement = document.createElement('div');
     toastElement.className = 'fixed top-4 right-4 z-50 max-w-sm w-full';
+    toastElement.setAttribute('data-toast-id', toast.id);
     toastElement.innerHTML = `
         <div class="rounded-lg shadow-lg border p-4 ${getToastClasses(toast.type)}">
             <div class="flex items-start">
@@ -213,6 +214,13 @@ document.addEventListener('alpine:init', () => {
             if (fileInput) {
                 fileInput.value = '';
             }
+        }
+    }));
+
+    // Toast Manager para Alpine.js
+    Alpine.data('toastManager', () => ({
+        init() {
+            console.log('ToastManager inicializado');
         }
     }));
 });

@@ -15,9 +15,11 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     @if(session('success'))
-                        <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                            {{ session('success') }}
-                        </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                showSuccess('{{ session('success') }}', 'Éxito');
+                            });
+                        </script>
                     @endif
 
                     <x-data-table 
@@ -91,19 +93,47 @@
         alert(`Exportando ${selectedIds.length} registros seleccionados`);
     };
 
-    window.activateSelected = function(selectedIds) {
-        if (confirm(`¿Está seguro de activar ${selectedIds.length} registros?`)) {
-            // Aquí puedes implementar la lógica de activación
-            console.log('Activando registros:', selectedIds);
-            alert(`${selectedIds.length} registros activados`);
+    window.activateSelected = async function(selectedIds) {
+        try {
+            const confirmed = await showConfirmation({
+                title: 'Activar Registros',
+                message: `¿Está seguro de activar ${selectedIds.length} registro(s) seleccionado(s)?`,
+                confirmText: 'Activar',
+                cancelText: 'Cancelar',
+                icon: 'question',
+                confirmClass: 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500',
+                cancelClass: 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600'
+            });
+            
+            if (confirmed) {
+                console.log('Activando registros:', selectedIds);
+                // Aquí implementar la lógica real de activación
+                showSuccess(`${selectedIds.length} registro(s) activado(s) exitosamente`, 'Éxito');
+            }
+        } catch (error) {
+            console.log('Activación cancelada');
         }
     };
 
-    window.deactivateSelected = function(selectedIds) {
-        if (confirm(`¿Está seguro de desactivar ${selectedIds.length} registros?`)) {
-            // Aquí puedes implementar la lógica de desactivación
-            console.log('Desactivando registros:', selectedIds);
-            alert(`${selectedIds.length} registros desactivados`);
+    window.deactivateSelected = async function(selectedIds) {
+        try {
+            const confirmed = await showConfirmation({
+                title: 'Desactivar Registros',
+                message: `¿Está seguro de desactivar ${selectedIds.length} registro(s) seleccionado(s)?`,
+                confirmText: 'Desactivar',
+                cancelText: 'Cancelar',
+                icon: 'warning',
+                confirmClass: 'bg-orange-600 hover:bg-orange-700 text-white focus:ring-orange-500',
+                cancelClass: 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600'
+            });
+            
+            if (confirmed) {
+                console.log('Desactivando registros:', selectedIds);
+                // Aquí implementar la lógica real de desactivación
+                showSuccess(`${selectedIds.length} registro(s) desactivado(s) exitosamente`, 'Éxito');
+            }
+        } catch (error) {
+            console.log('Desactivación cancelada');
         }
     };
 
@@ -120,11 +150,32 @@
         window.location.href = `/people/${person.id}/edit`;
     };
 
-    window.deletePerson = function(person) {
-        if (confirm(`¿Está seguro de eliminar a ${person.nombre_completo}?`)) {
-            console.log('Eliminando persona:', person);
-            // Aquí puedes implementar la lógica para eliminar
-            alert(`Persona ${person.nombre_completo} eliminada`);
+    window.deletePerson = async function(person) {
+        try {
+            const confirmed = await showConfirmation({
+                title: 'Eliminar Persona',
+                message: `¿Está seguro de eliminar a ${person.nombre_completo}? Esta acción no se puede deshacer.`,
+                confirmText: 'Eliminar',
+                cancelText: 'Cancelar',
+                icon: 'danger',
+                confirmClass: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
+                cancelClass: 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600'
+            });
+            
+            if (confirmed) {
+                console.log('Eliminando persona:', person);
+                // Aquí implementar la lógica real de eliminación
+                // Por ejemplo, hacer una petición DELETE al servidor
+                showSuccess(`Persona ${person.nombre_completo} eliminada exitosamente`, 'Eliminado');
+                
+                // Recargar la página o actualizar la tabla
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            }
+        } catch (error) {
+            // Usuario canceló la acción
+            console.log('Eliminación cancelada');
         }
     };
 </script>

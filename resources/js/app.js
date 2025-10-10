@@ -2,8 +2,13 @@ import './bootstrap';
 
 import Alpine from 'alpinejs';
 
+// Hacer Alpine disponible globalmente ANTES de importar toast-system
 window.Alpine = Alpine;
 
+// Importar toast-system para registrar componentes de Alpine
+import './toast-system';
+
+// Iniciar Alpine después de registrar todos los componentes
 Alpine.start();
 
 // Theme toggle functionality

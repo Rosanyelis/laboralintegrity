@@ -17,7 +17,6 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <script src="{{ asset('js/toast-system.js') }}"></script>
     </head>
     <body class="font-sans antialiased">
         <x-toast-container>
@@ -39,5 +38,38 @@
                 </main>
             </div>
         </x-toast-container>
+        
+        <!-- Modal de confirmación global -->
+        <x-confirmation-modal />
+        
+        @if(session('success'))
+            <script>
+                window.addEventListener('load', function() {
+                    if (typeof showSuccess === 'function') {
+                        showSuccess('{{ session('success') }}', 'Éxito');
+                    }
+                });
+            </script>
+        @endif
+
+        @if(session('error'))
+            <script>
+                window.addEventListener('load', function() {
+                    if (typeof showError === 'function') {
+                        showError('{{ session('error') }}', 'Error');
+                    }
+                });
+            </script>
+        @endif
+
+        @if($errors->any())
+            <script>
+                window.addEventListener('load', function() {
+                    if (typeof showError === 'function') {
+                        showError('{{ $errors->first() }}', 'Error de validación');
+                    }
+                });
+            </script>
+        @endif
     </body>
 </html>

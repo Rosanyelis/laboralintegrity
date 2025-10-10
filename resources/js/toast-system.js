@@ -11,9 +11,14 @@ function initToastContainer() {
 
 // Función para mostrar un toast
 function showToast(options) {
+    console.log('[Toast] showToast iniciado con opciones:', options);
     const container = initToastContainer();
+    console.log('[Toast] Container encontrado:', container);
+    
     if (!container) {
-        console.warn('Toast container no encontrado');
+        console.error('[Toast] Toast container NO encontrado. Verifica que <x-toast-container> esté en el layout.');
+        console.log('[Toast] Buscando elemento con selector: [x-data*="toastManager"]');
+        console.log('[Toast] Elementos x-data encontrados:', document.querySelectorAll('[x-data]'));
         return;
     }
 
@@ -26,25 +31,49 @@ function showToast(options) {
         dismissible: options.dismissible !== false,
         position: options.position || 'top-right'
     };
+    
+    console.log('[Toast] Toast creado:', toast);
+
+    // Calcular la posición vertical basada en toasts existentes
+    const existingToasts = document.querySelectorAll('[data-toast-id]');
+    let topPosition = 16; // 1rem = 16px (top-4 en Tailwind)
+    
+    existingToasts.forEach(existingToast => {
+        topPosition += existingToast.offsetHeight + 16; // altura del toast + gap
+    });
+    
+    console.log('[Toast] Posición calculada:', topPosition, 'Toasts existentes:', existingToasts.length);
 
     // Crear elemento del toast
     const toastElement = document.createElement('div');
-    toastElement.className = 'fixed top-4 right-4 z-50 max-w-sm w-full';
+    toastElement.style.cssText = `
+        position: fixed;
+        right: 16px;
+        top: ${topPosition}px;
+        z-index: 9999;
+        max-width: 400px;
+        min-width: 300px;
+        width: auto;
+        opacity: 0;
+        transform: translateX(100%);
+        pointer-events: auto;
+    `;
+    toastElement.setAttribute('data-toast-id', toast.id);
     toastElement.innerHTML = `
-        <div class="rounded-lg shadow-lg border p-4 ${getToastClasses(toast.type)}">
-            <div class="flex items-start">
+        <div class="rounded-lg shadow-2xl border p-4 bg-white dark:bg-green-500 ${getBorderColor(toast.type)}">
+            <div class="flex items-start gap-3">
                 <div class="flex-shrink-0">
                     <svg class="h-5 w-5 ${getIconColor(toast.type)}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${getIconPath(toast.type)}"></path>
                     </svg>
                 </div>
-                <div class="ml-3 flex-1">
-                    ${toast.title ? `<h3 class="text-sm font-medium ${getTextColor(toast.type)}">${toast.title}</h3>` : ''}
-                    ${toast.message ? `<div class="mt-1 text-sm ${getTextColor(toast.type)}">${toast.message}</div>` : ''}
+                <div class="flex-1 min-w-0">
+                    ${toast.title ? `<h3 class="text-sm font-semibold ${getTextColor(toast.type)} mb-1">${toast.title}</h3>` : ''}
+                    ${toast.message ? `<p class="text-sm ${getTextColor(toast.type)}">${toast.message}</p>` : ''}
                 </div>
                 ${toast.dismissible ? `
-                    <div class="ml-4 flex-shrink-0">
-                        <button onclick="dismissToast('${toast.id}')" class="inline-flex ${getTextColor(toast.type)} hover:opacity-75 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent focus:ring-current rounded-md">
+                    <div class="flex-shrink-0">
+                        <button onclick="dismissToast('${toast.id}')" class="inline-flex ${getTextColor(toast.type)} hover:opacity-75 focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-md p-1 transition-opacity">
                             <span class="sr-only">Cerrar</span>
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -56,17 +85,19 @@ function showToast(options) {
         </div>
     `;
 
-    // Agregar animación de entrada
-    toastElement.style.opacity = '0';
-    toastElement.style.transform = 'translateX(100%)';
+    // Agregar al body
     document.body.appendChild(toastElement);
+    console.log('[Toast] Elemento agregado al DOM:', toastElement);
 
-    // Animar entrada
-    setTimeout(() => {
-        toastElement.style.transition = 'all 0.3s ease-out';
-        toastElement.style.opacity = '1';
-        toastElement.style.transform = 'translateX(0)';
-    }, 10);
+    // Animar entrada con requestAnimationFrame para mejor rendimiento
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            toastElement.style.transition = 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+            toastElement.style.opacity = '1';
+            toastElement.style.transform = 'translateX(0)';
+            console.log('[Toast] Animación de entrada iniciada');
+        });
+    });
 
     // Auto dismiss
     if (toast.duration > 0) {
@@ -82,42 +113,43 @@ function showToast(options) {
 function dismissToast(toastId) {
     const toastElement = document.querySelector(`[data-toast-id="${toastId}"]`);
     if (toastElement) {
-        toastElement.style.transition = 'all 0.3s ease-in';
+        toastElement.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 1, 1)';
         toastElement.style.opacity = '0';
-        toastElement.style.transform = 'translateX(100%)';
+        toastElement.style.transform = 'translateX(120%)';
         setTimeout(() => {
             toastElement.remove();
+            console.log('[Toast] Toast eliminado:', toastId);
         }, 300);
     }
 }
 
 // Funciones auxiliares para estilos
-function getToastClasses(type) {
-    const classes = {
-        success: 'bg-green-50 dark:bg-green-900 border-green-200 dark:border-green-700',
-        error: 'bg-red-50 dark:bg-red-900 border-red-200 dark:border-red-700',
-        warning: 'bg-yellow-50 dark:bg-yellow-900 border-yellow-200 dark:border-yellow-700',
-        info: 'bg-blue-50 dark:bg-blue-900 border-blue-200 dark:border-blue-700'
+function getBorderColor(type) {
+    const colors = {
+        success: 'border-green-400 border-l-4',
+        error: 'border-red-400 border-l-4',
+        warning: 'border-yellow-400 border-l-4',
+        info: 'border-blue-400 border-l-4'
     };
-    return classes[type] || classes.info;
+    return colors[type] || colors.info;
 }
 
 function getTextColor(type) {
     const colors = {
-        success: 'text-green-800 dark:text-green-200',
-        error: 'text-red-800 dark:text-red-200',
-        warning: 'text-yellow-800 dark:text-yellow-200',
-        info: 'text-blue-800 dark:text-blue-200'
+        success: 'text-green-700 dark:text-green-300',
+        error: 'text-red-700 dark:text-red-300',
+        warning: 'text-yellow-700 dark:text-yellow-300',
+        info: 'text-blue-700 dark:text-blue-300'
     };
     return colors[type] || colors.info;
 }
 
 function getIconColor(type) {
     const colors = {
-        success: 'text-green-400',
-        error: 'text-red-400',
-        warning: 'text-yellow-400',
-        info: 'text-blue-400'
+        success: 'text-green-500',
+        error: 'text-red-500',
+        warning: 'text-yellow-500',
+        info: 'text-blue-500'
     };
     return colors[type] || colors.info;
 }
@@ -135,6 +167,7 @@ function getIconPath(type) {
 // Funciones globales para facilitar el uso
 window.showToast = showToast;
 window.showSuccess = function(message, title = 'Éxito', options = {}) {
+    console.log('[Toast] showSuccess llamado:', message, title);
     return showToast({
         type: 'success',
         title,
@@ -144,6 +177,7 @@ window.showSuccess = function(message, title = 'Éxito', options = {}) {
 };
 
 window.showError = function(message, title = 'Error', options = {}) {
+    console.log('[Toast] showError llamado:', message, title);
     return showToast({
         type: 'error',
         title,
@@ -154,6 +188,7 @@ window.showError = function(message, title = 'Error', options = {}) {
 };
 
 window.showWarning = function(message, title = 'Advertencia', options = {}) {
+    console.log('[Toast] showWarning llamado:', message, title);
     return showToast({
         type: 'warning',
         title,
@@ -163,6 +198,7 @@ window.showWarning = function(message, title = 'Advertencia', options = {}) {
 };
 
 window.showInfo = function(message, title = 'Información', options = {}) {
+    console.log('[Toast] showInfo llamado:', message, title);
     return showToast({
         type: 'info',
         title,
@@ -173,13 +209,36 @@ window.showInfo = function(message, title = 'Información', options = {}) {
 
 window.dismissToast = dismissToast;
 
+// Log de confirmación de carga
+console.log('[Toast System] Sistema de toast cargado correctamente. Funciones disponibles:', {
+    showToast: typeof window.showToast,
+    showSuccess: typeof window.showSuccess,
+    showError: typeof window.showError,
+    showWarning: typeof window.showWarning,
+    showInfo: typeof window.showInfo
+});
+
 // Sistema de tabs con Alpine.js
-document.addEventListener('alpine:init', () => {
-    Alpine.data('tabManager', () => ({
+// Registrar componentes de Alpine cuando esté disponible
+if (window.Alpine) {
+    registerAlpineComponents();
+} else {
+    document.addEventListener('alpine:init', registerAlpineComponents);
+}
+
+function registerAlpineComponents() {
+    if (!window.Alpine) return;
+    
+    window.Alpine.data('tabManager', () => ({
         activeTab: 'personal',
         previewImage: null,
         
         init() {
+            // Leer el tab activo desde el data-attribute si existe
+            const savedTab = this.$el.getAttribute('data-active-tab');
+            if (savedTab) {
+                this.activeTab = savedTab;
+            }
             console.log('TabManager inicializado, tab activo:', this.activeTab);
             // Verificar que Alpine.js esté funcionando
             this.$nextTick(() => {
@@ -215,4 +274,11 @@ document.addEventListener('alpine:init', () => {
             }
         }
     }));
-});
+
+    // Toast Manager para Alpine.js
+    window.Alpine.data('toastManager', () => ({
+        init() {
+            console.log('ToastManager inicializado');
+        }
+    }));
+}

@@ -15,16 +15,48 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div>
+        <x-toast-container>
+            <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
+                <div>
+                    <a href="/">
+                        <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+                    </a>
+                </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
+                <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
+                    {{ $slot }}
+                </div>
             </div>
-        </div>
+        </x-toast-container>
+
+        @if(session('success'))
+            <script>
+                window.addEventListener('load', function() {
+                    if (typeof showSuccess === 'function') {
+                        showSuccess('{{ session('success') }}', 'Éxito');
+                    }
+                });
+            </script>
+        @endif
+
+        @if(session('status'))
+            <script>
+                window.addEventListener('load', function() {
+                    if (typeof showInfo === 'function') {
+                        showInfo('{{ session('status') }}', 'Información');
+                    }
+                });
+            </script>
+        @endif
+
+        @if($errors->any())
+            <script>
+                window.addEventListener('load', function() {
+                    if (typeof showError === 'function') {
+                        showError('{{ $errors->first() }}', 'Error de validación');
+                    }
+                });
+            </script>
+        @endif
     </body>
 </html>

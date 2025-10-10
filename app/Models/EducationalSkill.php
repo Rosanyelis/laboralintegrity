@@ -25,7 +25,6 @@ class EducationalSkill extends Model
         'person_id',
         'career',
         'educational_center',
-        'province',
         'year',
     ];
 
@@ -74,18 +73,6 @@ class EducationalSkill extends Model
     public function scopeYearRange($query, int $fromYear, int $toYear)
     {
         return $query->whereBetween('year', [$fromYear, $toYear]);
-    }
-
-    /**
-     * Scope para filtrar por provincia.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $province
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeProvince($query, string $province)
-    {
-        return $query->where('province', $province);
     }
 
     /**

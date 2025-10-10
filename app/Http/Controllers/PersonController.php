@@ -7,6 +7,7 @@ use App\Models\Regional;
 use App\Models\Province;
 use App\Models\Municipality;
 use App\Models\District;
+use App\Models\EducationalSkill;
 use App\Http\Requests\Person\StorePersonRequest;
 use App\Http\Requests\Person\UpdatePersonRequest;
 use Illuminate\Http\Request;
@@ -105,7 +106,25 @@ class PersonController extends Controller
             'aspirations'
         ]);
         
-        return view('people.show', compact('person'));
+        // Cargar todos los distritos con sus relaciones para el formulario de residencia
+        $districts = District::with(['municipality.province.regional'])
+            ->whereHas('municipality', function($query) {
+                $query->whereHas('province', function($query) {
+                    $query->whereHas('regional');
+                });
+            })
+            ->orderBy('name')
+            ->get();
+            
+        // Cargar municipios para el caso de "No aplica" en distrito
+        $municipalities = Municipality::with(['province.regional'])
+            ->whereHas('province', function($query) {
+                $query->whereHas('regional');
+            })
+            ->orderBy('name')
+            ->get();
+        
+        return view('people.show', compact('person', 'districts', 'municipalities'));
     }
 
     /**
@@ -158,6 +177,69 @@ class PersonController extends Controller
 
         return redirect()->route('people.show', $person)
             ->with('success', 'Información personal actualizada correctamente.');
+    }
+
+    /**
+     * Update residence information from the show page.
+     */
+    public function updateResidenceInfo(Request $request, Person $person)
+    {
+        $request->validate([
+            'regional_id' => 'nullable|exists:regionals,id',
+            'province_id' => 'nullable|exists:provinces,id',
+            'municipality_id' => 'nullable|exists:municipalities,id',
+            'district_id' => 'nullable',
+            'sector' => 'nullable|string|max:255',
+            'neighborhood' => 'nullable|string|max:255',
+            'street_and_number' => 'nullable|string|max:500',
+            'arrival_reference' => 'nullable|string|max:500',
+        ]);
+
+        try {
+            // Si no hay municipality_id, no se puede guardar información de residencia
+            if (!$request->municipality_id) {
+            return redirect()->route('people.show', $person)
+                ->with('error', 'Debe seleccionar al menos un municipio.')
+                ->with('activeTab', 'residence');
+            }
+
+            // Obtener la información necesaria para guardar
+            $data = [
+                'municipality_id' => $request->municipality_id,
+                'sector' => $request->sector,
+                'neighborhood' => $request->neighborhood,
+                'street_and_number' => $request->street_and_number,
+                'arrival_reference' => $request->arrival_reference,
+            ];
+
+            // Obtener province_id del municipality seleccionado
+            $municipality = Municipality::with('province')->find($request->municipality_id);
+            if ($municipality) {
+                $data['province_id'] = $municipality->province_id;
+            }
+
+            // Si hay distrito seleccionado, agregarlo
+            if ($request->district_id && $request->district_id !== 'no_aplica') {
+                $data['district_id'] = $request->district_id;
+            }
+
+            // Actualizar o crear la información de residencia
+            $person->residenceInformation()->updateOrCreate(
+                ['person_id' => $person->id],
+                $data
+            );
+
+            return redirect()->route('people.show', $person)
+                ->with('success', 'Información de residencia actualizada correctamente.')
+                ->with('activeTab', 'residence');
+                
+        } catch (\Exception $e) {
+            \Log::error('Error al actualizar información de residencia: ' . $e->getMessage());
+            
+            return redirect()->route('people.show', $person)
+                ->with('error', 'Error al actualizar la información de residencia. Por favor, intente nuevamente.')
+                ->with('activeTab', 'residence');
+        }
     }
 
     /**
@@ -260,5 +342,49 @@ class PersonController extends Controller
             'last_consecutive_number' => $lastConsecutiveNumber,
             'next_code' => str_pad($lastConsecutiveNumber + 1, 2, '0', STR_PAD_LEFT) . '-' . now()->format('dmY')
         ]);
+    }
+
+    /**
+     * Almacena una nueva habilidad educativa para una persona.
+     */
+    public function storeEducationalSkill(Request $request, Person $person)
+    {
+        $validated = $request->validate([
+            'career' => 'required|string|max:255',
+            'educational_center' => 'required|string|max:255',
+            'year' => 'required|integer|min:1900|max:' . (date('Y') + 10),
+        ], [
+            'career.required' => 'El nombre de la carrera es obligatorio.',
+            'educational_center.required' => 'El centro educativo es obligatorio.',
+            'year.required' => 'El año de graduación es obligatorio.',
+            'year.integer' => 'El año debe ser un número válido.',
+            'year.min' => 'El año debe ser mayor a 1900.',
+            'year.max' => 'El año no puede ser mayor a ' . (date('Y') + 10) . '.',
+        ]);
+
+        $person->educationalSkills()->create($validated);
+
+        return redirect()->route('people.show', $person)
+            ->with('success', 'Habilidad educativa agregada correctamente.')
+            ->with('activeTab', 'educational');
+    }
+
+    /**
+     * Elimina una habilidad educativa.
+     */
+    public function destroyEducationalSkill(Person $person, EducationalSkill $educationalSkill)
+    {
+        // Verificar que la habilidad educativa pertenece a la persona
+        if ($educationalSkill->person_id !== $person->id) {
+            return redirect()->route('people.show', $person)
+                ->with('error', 'La habilidad educativa no pertenece a esta persona.')
+                ->with('activeTab', 'educational');
+        }
+
+        $educationalSkill->delete();
+
+        return redirect()->route('people.show', $person)
+            ->with('success', 'Habilidad educativa eliminada correctamente.')
+            ->with('activeTab', 'educational');
     }
 }

@@ -1,4 +1,4 @@
-<div class="relative">
+<div class="relative" x-data="toastManager()">
     <!-- Contenido principal -->
     {{ $slot }}
     

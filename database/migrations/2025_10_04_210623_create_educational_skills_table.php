@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('person_id')->constrained('people')->onDelete('cascade');
             $table->string('career')->nullable()->comment('Carrera');
             $table->string('educational_center')->nullable()->comment('Centro educativo');
-            $table->string('province')->nullable()->comment('Provincia');
             $table->year('year')->nullable()->comment('Año de graduación');
             $table->timestamps();
         });

@@ -116,7 +116,7 @@
     <!-- Tabla -->
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700 sticky top-0 z-10">
                 <tr>
                     <!-- Checkbox de selección múltiple -->
                     <th x-show="selectable" class="px-6 py-3 text-left">
@@ -150,7 +150,7 @@
             </thead>
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 <template x-for="(item, index) in paginatedData" :key="item.id || index">
-                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-150">
                         <!-- Checkbox de fila -->
                         <td x-show="selectable" class="px-6 py-4 whitespace-nowrap">
                             <input 
@@ -164,7 +164,7 @@
                         
                         <!-- Celdas de datos -->
                         <template x-for="column in columns" :key="column.key">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
                                 <template x-if="isBadgeColumn(column.key)">
                                     <span x-html="renderBadge(getColumnValue(item, column.key), column.key)"></span>
                                 </template>
@@ -176,23 +176,90 @@
                         
                         <!-- Celda de acciones -->
                         <td x-show="rowActions.length > 0" class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div class="relative inline-block text-left" x-data="{ open: false }">
-                                <button @click="open = !open" @click.away="open = false" class="inline-flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-full">
+                            <div class="relative inline-block text-left" x-data="{ 
+                                open: false,
+                                toggleMenu() {
+                                    this.open = !this.open;
+                                    if (this.open) {
+                                        this.$nextTick(() => {
+                                            const button = this.$refs.menuButton;
+                                            const menu = this.$refs.menu;
+                                            const rect = button.getBoundingClientRect();
+                                            const menuHeight = menu.offsetHeight;
+                                            const spaceBelow = window.innerHeight - rect.bottom;
+                                            const spaceAbove = rect.top;
+                                            
+                                            // Posicionar el menú
+                                            menu.style.position = 'fixed';
+                                            menu.style.right = (window.innerWidth - rect.right) + 'px';
+                                            
+                                            // Decidir si mostrar arriba o abajo
+                                            if (spaceBelow >= menuHeight || spaceBelow > spaceAbove) {
+                                                menu.style.top = (rect.bottom + 8) + 'px';
+                                                menu.style.bottom = 'auto';
+                                            } else {
+                                                menu.style.bottom = (window.innerHeight - rect.top + 8) + 'px';
+                                                menu.style.top = 'auto';
+                                            }
+                                        });
+                                    }
+                                }
+                            }">
+                                <button 
+                                    x-ref="menuButton"
+                                    @click="toggleMenu()" 
+                                    class="inline-flex items-center justify-center w-9 h-9 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-lg transition-all duration-150"
+                                    title="Acciones"
+                                >
                                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
                                     </svg>
                                 </button>
                                 
-                                <!-- Dropdown de acciones -->
-                                <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" class="absolute right-0 z-10 mt-2 w-48 origin-top-right bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                <!-- Dropdown de acciones mejorado -->
+                                <div 
+                                    x-ref="menu"
+                                    x-show="open" 
+                                    @click.away="open = false"
+                                    x-transition:enter="transition ease-out duration-100" 
+                                    x-transition:enter-start="transform opacity-0 scale-95" 
+                                    x-transition:enter-end="transform opacity-100 scale-100" 
+                                    x-transition:leave="transition ease-in duration-75" 
+                                    x-transition:leave-start="transform opacity-100 scale-100" 
+                                    x-transition:leave-end="transform opacity-0 scale-95" 
+                                    class="fixed z-[9999] w-56 origin-top-right bg-white dark:bg-gray-800 rounded-lg shadow-2xl ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 dark:divide-gray-700 focus:outline-none"
+                                    style="box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);"
+                                >
                                     <div class="py-1">
-                                        <template x-for="action in rowActions" :key="action.name">
-                                            <button @click="executeRowAction(action, item)" class="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                                <svg x-show="action.icon" class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x-bind:d="action.icon"></path>
-                                                </svg>
-                                                <span x-text="action.label"></span>
-                                            </button>
+                                        <template x-for="(action, index) in rowActions" :key="action.name">
+                                            <div>
+                                                <button 
+                                                    @click="executeRowAction(action, item); open = false" 
+                                                    :class="{
+                                                        'text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20': action.name === 'view',
+                                                        'text-yellow-700 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20': action.name === 'edit',
+                                                        'text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20': action.name === 'delete',
+                                                        'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700': !['view', 'edit', 'delete'].includes(action.name)
+                                                    }"
+                                                    class="group flex items-center w-full px-4 py-2.5 text-sm transition-colors duration-150"
+                                                >
+                                                    <svg 
+                                                        x-show="action.icon" 
+                                                        class="w-5 h-5 mr-3 flex-shrink-0" 
+                                                        fill="none" 
+                                                        stroke="currentColor" 
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x-bind:d="action.icon"></path>
+                                                    </svg>
+                                                    <span class="flex-1 text-left font-medium" x-text="action.label"></span>
+                                                </button>
+                                                <!-- Separador entre acciones (excepto la última) -->
+                                                <div 
+                                                    x-show="index < rowActions.length - 1" 
+                                                    class="border-t border-gray-100 dark:border-gray-700"
+                                                ></div>
+                                            </div>
                                         </template>
                                     </div>
                                 </div>
