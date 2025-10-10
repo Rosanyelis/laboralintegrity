@@ -95,17 +95,17 @@ function dismissToast(toastId) {
 // Funciones auxiliares para estilos
 function getToastClasses(type) {
     const classes = {
-        success: 'bg-green-50 dark:bg-green-900 border-green-200 dark:border-green-700',
-        error: 'bg-red-50 dark:bg-red-900 border-red-200 dark:border-red-700',
-        warning: 'bg-yellow-50 dark:bg-yellow-900 border-yellow-200 dark:border-yellow-700',
-        info: 'bg-blue-50 dark:bg-blue-900 border-blue-200 dark:border-blue-700'
+        success: 'bg-green-50 dark:bg-green-900 border-green-500 border-l-4 dark:border-green-700',
+        error: 'bg-red-50 dark:bg-red-900 border-red-400 border-l-4 dark:border-red-700',
+        warning: 'bg-yellow-50 dark:bg-yellow-900 border-yellow-400 border-l-4 dark:border-yellow-700',
+        info: 'bg-blue-50 dark:bg-blue-900 border-blue-400 border-l-4 dark:border-blue-700'
     };
     return classes[type] || classes.info;
 }
 
 function getTextColor(type) {
     const colors = {
-        success: 'text-green-800 dark:text-green-200',
+        success: 'text-green-600 dark:text-green-400',
         error: 'text-red-800 dark:text-red-200',
         warning: 'text-yellow-800 dark:text-yellow-200',
         info: 'text-blue-800 dark:text-blue-200'
@@ -115,7 +115,7 @@ function getTextColor(type) {
 
 function getIconColor(type) {
     const colors = {
-        success: 'text-green-400',
+        success: 'text-green-600',
         error: 'text-red-400',
         warning: 'text-yellow-400',
         info: 'text-blue-400'

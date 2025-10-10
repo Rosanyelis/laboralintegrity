@@ -126,7 +126,7 @@ function dismissToast(toastId) {
 // Funciones auxiliares para estilos
 function getBorderColor(type) {
     const colors = {
-        success: 'border-green-400 border-l-4',
+        success: 'border-green-500 border-l-4',
         error: 'border-red-400 border-l-4',
         warning: 'border-yellow-400 border-l-4',
         info: 'border-blue-400 border-l-4'
@@ -136,7 +136,7 @@ function getBorderColor(type) {
 
 function getTextColor(type) {
     const colors = {
-        success: 'text-green-700 dark:text-green-300',
+        success: 'text-green-600 dark:text-green-400',
         error: 'text-red-700 dark:text-red-300',
         warning: 'text-yellow-700 dark:text-yellow-300',
         info: 'text-blue-700 dark:text-blue-300'
@@ -146,7 +146,7 @@ function getTextColor(type) {
 
 function getIconColor(type) {
     const colors = {
-        success: 'text-green-500',
+        success: 'text-green-600',
         error: 'text-red-500',
         warning: 'text-yellow-500',
         info: 'text-blue-500'

@@ -51,7 +51,7 @@ class ReferenceCodeController extends Controller
 
         ReferenceCode::create($validated);
 
-        return redirect()->route('reference-codes.index')
+        return redirect()->route('config.reference-codes.index')
             ->with('success', 'Código de referencia creado correctamente.');
     }
 
@@ -98,7 +98,7 @@ class ReferenceCodeController extends Controller
 
         $referenceCode->update($validated);
 
-        return redirect()->route('reference-codes.index')
+        return redirect()->route('config.reference-codes.index')
             ->with('success', 'Código de referencia actualizado correctamente.');
     }
 
@@ -109,7 +109,7 @@ class ReferenceCodeController extends Controller
     {
         $referenceCode->delete();
 
-        return redirect()->route('reference-codes.index')
+        return redirect()->route('config.reference-codes.index')
             ->with('success', 'Código de referencia eliminado correctamente.');
     }
 }
