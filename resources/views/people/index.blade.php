@@ -36,9 +36,7 @@
                             ];
                         })->toArray()"
                         :actions="[
-                            ['name' => 'export', 'label' => 'Exportar Seleccionados', 'callback' => 'exportSelected'],
-                            ['name' => 'activate', 'label' => 'Activar Seleccionados', 'callback' => 'activateSelected'],
-                            ['name' => 'deactivate', 'label' => 'Desactivar Seleccionados', 'callback' => 'deactivateSelected']
+                            ['name' => 'export', 'label' => 'Exportar a PDF', 'callback' => 'exportSelected'],
                         ]"
                         :row-actions="[
                             ['name' => 'view', 'label' => 'Ver', 'icon' => 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z', 'callback' => 'viewPerson'],
@@ -80,9 +78,37 @@
 <script>
     // Funciones globales para acciones masivas
     window.exportSelected = function(selectedIds) {
-        console.log('Exportando registros:', selectedIds);
-        // Aquí puedes implementar la lógica de exportación
-        alert(`Exportando ${selectedIds.length} registros seleccionados`);
+        if (selectedIds.length === 0) {
+            alert('Por favor, seleccione al menos un registro para exportar');
+            return;
+        }
+
+        // Crear un formulario para enviar los IDs
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route('people.export-pdf') }}';
+        form.target = '_blank'; // Abrir en nueva pestaña
+        
+        // Agregar token CSRF
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        form.appendChild(csrfToken);
+        
+        // Agregar los IDs seleccionados
+        selectedIds.forEach(id => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'ids[]';
+            input.value = id;
+            form.appendChild(input);
+        });
+        
+        // Agregar el formulario al body, enviarlo y luego eliminarlo
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
     };
 
     window.activateSelected = async function(selectedIds) {

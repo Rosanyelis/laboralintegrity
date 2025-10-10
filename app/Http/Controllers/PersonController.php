@@ -13,6 +13,7 @@ use App\Http\Requests\Person\UpdatePersonRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PersonController extends Controller
 {
@@ -517,5 +518,38 @@ class PersonController extends Controller
                 ->with('error', 'Error al actualizar las aspiraciones. Por favor, intente nuevamente.')
                 ->with('activeTab', 'aspirations');
         }
+    }
+
+    /**
+     * Exportar personas seleccionadas a PDF
+     */
+    public function exportToPdf(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        
+        if (empty($ids)) {
+            return back()->with('error', 'No hay registros seleccionados para exportar.');
+        }
+
+        // Cargar personas con sus relaciones y mapear los datos
+        $people = Person::with('aspiration')
+            ->whereIn('id', $ids)
+            ->get()
+            ->map(function($person) {
+                return [
+                    'code_unique' => $person->code_unique ?? 'N/A',
+                    'nombre_completo' => $person->name . ' ' . $person->last_name,
+                    'dni' => $person->dni ?? 'N/A',
+                    'age' => $person->age ?? 'N/A',
+                    'cell_phone' => $person->cell_phone ?? 'N/A',
+                    'email' => $person->email ?? 'N/A',
+                    'verification_status' => $person->verification_status ?? 'N/A',
+                    'employment_status' => $person->aspiration?->employment_status ?? 'N/A',
+                ];
+            });
+        
+        $pdf = Pdf::loadView('people.pdf', compact('people'));
+        
+        return $pdf->stream('personas_' . date('Y-m-d_H-i-s') . '.pdf');
     }
 }

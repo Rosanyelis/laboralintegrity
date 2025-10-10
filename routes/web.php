@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
     // Rutas para el módulo de Personas Individuales
+        Route::post('/people/export-pdf', [PersonController::class, 'exportToPdf'])->name('people.export-pdf');
         Route::resource('people', PersonController::class);
         Route::patch('/people/{person}/personal-info', [PersonController::class, 'updatePersonalInfo'])->name('people.update-personal-info');
         Route::patch('/people/{person}/residence-info', [PersonController::class, 'updateResidenceInfo'])->name('people.update-residence-info');
