@@ -27,23 +27,23 @@ class PersonObserver
 
     /**
      * Generar código único con formato: número consecutivo + fecha
-     * Ejemplo: 01-11092025
+     * Ejemplo: 01-11092025, 02-11092025, 03-12092025
+     * El número NO se reinicia cada día, sigue la secuencia general
      */
     private function generateUniqueCode(): string
     {
         $today = now()->format('dmY'); // Formato: 11092025
         
-        // Obtener el último número consecutivo del día actual
-        $lastPerson = Person::whereDate('created_at', today())
-            ->orderBy('id', 'desc')
-            ->first();
+        // Obtener el último registro en general (sin filtrar por fecha)
+        $lastPerson = Person::orderBy('id', 'desc')->first();
         
         if ($lastPerson && $lastPerson->code_unique) {
-            // Extraer el número del código existente
-            $lastNumber = (int) substr($lastPerson->code_unique, 0, 2);
+            // Extraer el número del código existente (antes del guión)
+            $parts = explode('-', $lastPerson->code_unique);
+            $lastNumber = (int) $parts[0];
             $nextNumber = $lastNumber + 1;
         } else {
-            // Si es el primer registro del día, empezar con 01
+            // Si es el primer registro, empezar con 01
             $nextNumber = 1;
         }
         
