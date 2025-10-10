@@ -41,6 +41,11 @@
                         Empresas
                     </x-nav-link>
                     
+                    <!-- Reclutadores -->
+                    <x-nav-link :href="route('recruiters.index')" :active="request()->routeIs('recruiters.*')">
+                        Reclutadores
+                    </x-nav-link>
+                    
                     <!-- Configuraciones Dropdown -->
                     <div class="relative" x-data="{ open: false }">
                         <div @mouseenter="open = true" @mouseleave="open = false" class="inline-flex items-center">
@@ -161,6 +166,11 @@
             <!-- Empresas Mobile -->
             <x-responsive-nav-link :href="route('companies.index')" :active="request()->routeIs('companies.*')">
                 Empresas
+            </x-responsive-nav-link>
+            
+            <!-- Reclutadores Mobile -->
+            <x-responsive-nav-link :href="route('recruiters.index')" :active="request()->routeIs('recruiters.*')">
+                Reclutadores
             </x-responsive-nav-link>
             
             <!-- Configuraciones Mobile -->

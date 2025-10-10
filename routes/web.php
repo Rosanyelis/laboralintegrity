@@ -6,6 +6,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CertificationController;
 use App\Http\Controllers\ReferenceCodeController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\RecruiterController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -39,6 +40,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/companies/check-rnc/{rnc}', [CompanyController::class, 'checkRnc'])->name('companies.check-rnc');
     Route::resource('companies', CompanyController::class);
     Route::get('/companies/municipalities/{province}', [CompanyController::class, 'getMunicipalities'])->name('companies.municipalities');
+    
+    // Rutas para el módulo de Reclutadores
+    Route::get('/recruiters/search-by-rnc', [RecruiterController::class, 'searchByRnc'])->name('recruiters.search-by-rnc');
+    Route::get('/recruiters/search-by-dni', [RecruiterController::class, 'searchByDni'])->name('recruiters.search-by-dni');
+    Route::resource('recruiters', RecruiterController::class);
     
     // Rutas para el módulo de Configuraciones
     Route::prefix('configuraciones')->name('config.')->group(function () {
