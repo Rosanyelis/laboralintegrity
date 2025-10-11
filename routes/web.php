@@ -16,7 +16,13 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $stats = [
+        'people_count' => \App\Models\Person::count(),
+        'companies_count' => \App\Models\Company::count(),
+        'recruiters_count' => \App\Models\Recruiter::count(),
+    ];
+    
+    return view('dashboard', $stats);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

@@ -58,6 +58,20 @@ class PermissionSeeder extends Seeder
             'reference-codes.edit' => 'Editar Código de Referencia',
             'reference-codes.delete' => 'Eliminar Código de Referencia',
             
+            // Módulo de Reclutadores
+            'recruiters.index' => 'Ver Listado de Reclutadores',
+            'recruiters.create' => 'Crear Nuevo Reclutador',
+            'recruiters.show' => 'Ver Detalle de Reclutador',
+            'recruiters.edit' => 'Editar Reclutador',
+            'recruiters.delete' => 'Eliminar Reclutador',
+            
+            // Módulo de Integridad Laboral
+            'work-integrities.index' => 'Ver Listado de Depuraciones',
+            'work-integrities.create' => 'Crear Nueva Depuración',
+            'work-integrities.show' => 'Ver Detalle de Depuración',
+            'work-integrities.edit' => 'Editar Depuración',
+            'work-integrities.delete' => 'Eliminar Depuración',
+            
             // Módulo de Roles
             'roles.index' => 'Ver Listado de Roles',
             'roles.create' => 'Crear Nuevo Rol',
@@ -79,21 +93,20 @@ class PermissionSeeder extends Seeder
             'profile.delete' => 'Eliminar Mi Cuenta',
         ];
 
-        // Crear todos los permisos
+        // Crear todos los permisos (si no existen)
         foreach ($permissions as $name => $description) {
-            Permission::create([
-                'name' => $name,
-                'guard_name' => 'web',
-            ]);
+            Permission::firstOrCreate(
+                ['name' => $name, 'guard_name' => 'web']
+            );
         }
 
         // Crear rol de Super Administrador con todos los permisos
-        $superAdminRole = Role::create(['name' => 'Super Administrador']);
-        $superAdminRole->givePermissionTo(Permission::all());
+        $superAdminRole = Role::firstOrCreate(['name' => 'Super Administrador']);
+        $superAdminRole->syncPermissions(Permission::all());
 
         // Crear rol de Administrador con permisos básicos
-        $adminRole = Role::create(['name' => 'Administrador']);
-        $adminRole->givePermissionTo([
+        $adminRole = Role::firstOrCreate(['name' => 'Administrador']);
+        $adminRole->syncPermissions([
             'dashboard.view',
             'people.index',
             'people.create',
@@ -110,6 +123,14 @@ class PermissionSeeder extends Seeder
             'companies.show',
             'companies.edit',
             'companies.check-rnc',
+            'recruiters.index',
+            'recruiters.create',
+            'recruiters.show',
+            'recruiters.edit',
+            'work-integrities.index',
+            'work-integrities.create',
+            'work-integrities.show',
+            'work-integrities.edit',
             'certifications.index',
             'certifications.show',
             'reference-codes.index',
@@ -121,13 +142,17 @@ class PermissionSeeder extends Seeder
         ]);
 
         // Crear rol de Usuario con permisos de solo lectura
-        $userRole = Role::create(['name' => 'Usuario']);
-        $userRole->givePermissionTo([
+        $userRole = Role::firstOrCreate(['name' => 'Usuario']);
+        $userRole->syncPermissions([
             'dashboard.view',
             'people.index',
             'people.show',
             'companies.index',
             'companies.show',
+            'recruiters.index',
+            'recruiters.show',
+            'work-integrities.index',
+            'work-integrities.show',
             'certifications.index',
             'certifications.show',
             'reference-codes.index',

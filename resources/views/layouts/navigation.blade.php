@@ -12,11 +12,14 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex items-center">
+                    @can('dashboard.view')
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    @endcan
                     
                     <!-- Personal Individual Dropdown -->
+                    @if(auth()->user()->can('people.index') || auth()->user()->can('work-integrities.index'))
                     <div class="relative" x-data="{ open: false }">
                         <div @mouseenter="open = true" @mouseleave="open = false" class="inline-flex items-center">
                             <x-nav-link href="#" :active="request()->routeIs('people.*') || request()->routeIs('work-integrities.*')">
@@ -29,27 +32,37 @@
 
                         <div x-show="open" @mouseenter="open = true" @mouseleave="open = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" class="absolute left-0 w-56 mt-2 origin-top-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50">
                             <div class="py-2">
+                                @can('people.index')
                                 <a href="{{ route('people.index') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('people.*') ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-400 font-semibold' : 'text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                                     Personal Individual
                                 </a>
+                                @endcan
+                                @can('work-integrities.index')
                                 <a href="{{ route('work-integrities.index') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('work-integrities.*') ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-400 font-semibold' : 'text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                                     Integridad Laboral
                                 </a>
+                                @endcan
                             </div>
                         </div>
                     </div>
+                    @endif
                     
                     <!-- Empresas -->
+                    @can('companies.index')
                     <x-nav-link :href="route('companies.index')" :active="request()->routeIs('companies.*')">
                         Empresas
                     </x-nav-link>
+                    @endcan
                     
                     <!-- Reclutadores -->
+                    @can('recruiters.index')
                     <x-nav-link :href="route('recruiters.index')" :active="request()->routeIs('recruiters.*')">
                         Reclutadores
                     </x-nav-link>
+                    @endcan
                     
                     <!-- Configuraciones Dropdown -->
+                    @if(auth()->user()->can('certifications.index') || auth()->user()->can('reference-codes.index') || auth()->user()->can('roles.index') || auth()->user()->can('users.index'))
                     <div class="relative" x-data="{ open: false }">
                         <div @mouseenter="open = true" @mouseleave="open = false" class="inline-flex items-center">
                             <x-nav-link href="#" :active="request()->routeIs('config.*')">
@@ -62,21 +75,30 @@
 
                         <div x-show="open" @mouseenter="open = true" @mouseleave="open = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" class="absolute left-0 w-56 mt-2 origin-top-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50">
                             <div class="py-2">
+                                @can('certifications.index')
                                 <a href="{{ route('config.certifications.index') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('config.certifications.*') ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-400 font-semibold' : 'text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                                     Tipos de Depuración
                                 </a>
+                                @endcan
+                                @can('reference-codes.index')
                                 <a href="{{ route('config.reference-codes.index') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('config.reference-codes.*') ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-400 font-semibold' : 'text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                                     Códigos de Referencias
                                 </a>
+                                @endcan
+                                @can('roles.index')
                                 <a href="{{ route('config.roles.index') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('config.roles.*') ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-400 font-semibold' : 'text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                                     Roles
                                 </a>
+                                @endcan
+                                @can('users.index')
                                 <a href="{{ route('config.users.index') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('config.users.*') ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-400 font-semibold' : 'text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                                     Usuarios
                                 </a>
+                                @endcan
                             </div>
                         </div>
                     </div>
+                    @endif
                 </div>
             </div>
 
@@ -153,55 +175,77 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
+            @can('dashboard.view')
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            @endcan
             
             <!-- Personal Individual Mobile -->
+            @if(auth()->user()->can('people.index') || auth()->user()->can('work-integrities.index'))
             <div class="px-4 py-2">
                 <div class="text-sm font-medium {{ request()->routeIs('people.*') || request()->routeIs('work-integrities.*') ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400' }} uppercase tracking-wider">
                     Consulta
                 </div>
                 <div class="mt-1 space-y-1">
+                    @can('people.index')
                     <a href="{{ route('people.index') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('people.*') ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-400 font-semibold' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }} rounded-md">
                         Personal Individual
                     </a>
+                    @endcan
+                    @can('work-integrities.index')
                     <a href="{{ route('work-integrities.index') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('work-integrities.*') ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-400 font-semibold' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }} rounded-md">
                         Integridad Laboral
                     </a>
+                    @endcan
                 </div>
             </div>
+            @endif
             
             <!-- Empresas Mobile -->
+            @can('companies.index')
             <x-responsive-nav-link :href="route('companies.index')" :active="request()->routeIs('companies.*')">
                 Empresas
             </x-responsive-nav-link>
+            @endcan
             
             <!-- Reclutadores Mobile -->
+            @can('recruiters.index')
             <x-responsive-nav-link :href="route('recruiters.index')" :active="request()->routeIs('recruiters.*')">
                 Reclutadores
             </x-responsive-nav-link>
+            @endcan
             
             <!-- Configuraciones Mobile -->
+            @if(auth()->user()->can('certifications.index') || auth()->user()->can('reference-codes.index') || auth()->user()->can('roles.index') || auth()->user()->can('users.index'))
             <div class="px-4 py-2">
                 <div class="text-sm font-medium {{ request()->routeIs('config.*') ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400' }} uppercase tracking-wider">
                     Configuraciones
                 </div>
                 <div class="mt-1 space-y-1">
+                    @can('certifications.index')
                     <a href="{{ route('config.certifications.index') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('config.certifications.*') ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-400 font-semibold' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }} rounded-md">
                         Tipos de Depuración
                     </a>
+                    @endcan
+                    @can('reference-codes.index')
                     <a href="{{ route('config.reference-codes.index') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('config.reference-codes.*') ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-400 font-semibold' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }} rounded-md">
                         Códigos de Referencias
                     </a>
+                    @endcan
+                    @can('roles.index')
                     <a href="{{ route('config.roles.index') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('config.roles.*') ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-400 font-semibold' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }} rounded-md">
                         Roles
                     </a>
+                    @endcan
+                    @can('users.index')
                     <a href="{{ route('config.users.index') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('config.users.*') ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-400 font-semibold' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }} rounded-md">
                         Usuarios
                     </a>
+                    @endcan
                 </div>
             </div>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

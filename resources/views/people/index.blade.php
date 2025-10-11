@@ -4,9 +4,11 @@
             <h2 class="font-semibold text-md text-gray-800 dark:text-gray-200 leading-tight">
                 Personal Individual - Consulta
             </h2>
+            @can('people.create')
             <a href="{{ route('people.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-3 rounded-md transition-colors duration-200 text-sm">
                 Agregar Persona
             </a>
+            @endcan
         </div>
     </x-slot>
 
@@ -40,11 +42,11 @@
                         :actions="[
                             ['name' => 'export', 'label' => 'Exportar a PDF', 'callback' => 'exportSelected'],
                         ]"
-                        :row-actions="[
-                            ['name' => 'view', 'label' => 'Ver', 'icon' => 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z', 'callback' => 'viewPerson'],
-                            ['name' => 'create-integrity', 'label' => 'Crear Depuración', 'icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', 'callback' => 'createIntegrity'],
-                            ['name' => 'delete', 'label' => 'Eliminar', 'icon' => 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16', 'callback' => 'deletePerson']
-                        ]"
+                        :row-actions="array_filter([
+                            auth()->user()->can('people.show') ? ['name' => 'view', 'label' => 'Ver', 'icon' => 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z', 'callback' => 'viewPerson'] : null,
+                            auth()->user()->can('work-integrities.create') ? ['name' => 'create-integrity', 'label' => 'Crear Depuración', 'icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', 'callback' => 'createIntegrity'] : null,
+                            auth()->user()->can('people.delete') ? ['name' => 'delete', 'label' => 'Eliminar', 'icon' => 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16', 'callback' => 'deletePerson'] : null,
+                        ])"
                         :badge-columns="[
                             [
                                 'column' => 'verification_status',
