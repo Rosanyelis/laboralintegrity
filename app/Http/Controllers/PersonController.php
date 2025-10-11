@@ -104,7 +104,8 @@ class PersonController extends Controller
             'educationalSkills',
             'workExperiences',
             'personalReferences',
-            'aspiration'
+            'aspiration',
+            'workIntegrities.items'
         ]);
         
         // Cargar todos los distritos con sus relaciones para el formulario de residencia

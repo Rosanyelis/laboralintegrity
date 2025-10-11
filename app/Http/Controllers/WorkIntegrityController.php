@@ -72,6 +72,7 @@ class WorkIntegrityController extends Controller
             'items.*.reference_code_id' => 'required|exists:reference_codes,id',
             'items.*.reference_code' => 'required|string',
             'items.*.reference_name' => 'required|string',
+            'items.*.actual_result' => 'nullable|string',
             'items.*.evaluation_detail' => 'nullable|string',
             'return_to_people' => 'nullable|string',
         ], [
@@ -115,6 +116,7 @@ class WorkIntegrityController extends Controller
                     'reference_code_id' => $item['reference_code_id'],
                     'reference_code' => $item['reference_code'],
                     'reference_name' => $item['reference_name'],
+                    'actual_result' => $item['actual_result'] ?? null,
                     'evaluation_detail' => $item['evaluation_detail'] ?? null,
                 ]);
             }
@@ -165,9 +167,11 @@ class WorkIntegrityController extends Controller
         $items = $workIntegrity->items->map(function($item) {
             return [
                 'certification_id' => $item->certification_id,
+                'certification_name' => $item->certification?->name ?? 'N/A',
                 'reference_code_id' => $item->reference_code_id,
                 'reference_code' => $item->reference_code,
                 'reference_name' => $item->reference_name,
+                'actual_result' => $item->actual_result,
                 'evaluation_detail' => $item->evaluation_detail,
             ];
         });
@@ -205,6 +209,7 @@ class WorkIntegrityController extends Controller
             'items.*.reference_code_id' => 'required|exists:reference_codes,id',
             'items.*.reference_code' => 'required|string',
             'items.*.reference_name' => 'required|string',
+            'items.*.actual_result' => 'nullable|string',
             'items.*.evaluation_detail' => 'nullable|string',
         ]);
 
@@ -241,6 +246,7 @@ class WorkIntegrityController extends Controller
                     'reference_code_id' => $item['reference_code_id'],
                     'reference_code' => $item['reference_code'],
                     'reference_name' => $item['reference_name'],
+                    'actual_result' => $item['actual_result'] ?? null,
                     'evaluation_detail' => $item['evaluation_detail'] ?? null,
                 ]);
             }
@@ -252,6 +258,12 @@ class WorkIntegrityController extends Controller
             }
 
             DB::commit();
+
+            // Si viene de un perfil de persona, redirigir allí
+            if ($request->has('return_to_person')) {
+                return redirect()->route('people.show', ['person' => $request->return_to_person, 'activeTab' => 'depuraciones'])
+                    ->with('success', 'Registro de integridad laboral actualizado correctamente.');
+            }
 
             return redirect()->route('work-integrities.index')
                 ->with('success', 'Registro de integridad laboral actualizado correctamente.');
@@ -265,7 +277,7 @@ class WorkIntegrityController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(WorkIntegrity $workIntegrity)
+    public function destroy(Request $request, WorkIntegrity $workIntegrity)
     {
         try {
             $personId = $workIntegrity->person_id;
@@ -278,6 +290,12 @@ class WorkIntegrityController extends Controller
                 $person->updateVerificationStatus();
             }
 
+            // Si viene de un perfil de persona, redirigir allí
+            if ($request->has('return_to_person')) {
+                return redirect()->route('people.show', ['person' => $request->return_to_person, 'activeTab' => 'depuraciones'])
+                    ->with('success', 'Registro eliminado correctamente.');
+            }
+
             return redirect()->route('work-integrities.index')
                 ->with('success', 'Registro eliminado correctamente.');
         } catch (\Exception $e) {
@@ -286,12 +304,64 @@ class WorkIntegrityController extends Controller
     }
 
     /**
-     * Buscar empresa por RNC
+     * Buscar empresas para autocompletado
+     */
+    public function searchCompanies(Request $request)
+    {
+        $search = $request->get('search', '');
+        
+        if (strlen($search) < 2) {
+            return response()->json([
+                'success' => true,
+                'data' => []
+            ]);
+        }
+        
+        // Buscar por RNC o nombre de empresa (máximo 10 resultados)
+        $companies = Company::where('rnc', 'like', '%' . $search . '%')
+            ->orWhere('business_name', 'like', '%' . $search . '%')
+            ->limit(10)
+            ->get()
+            ->map(function($company) {
+                return [
+                    'id' => $company->id,
+                    'rnc' => $company->rnc,
+                    'code' => $company->code_unique ?? $company->rnc,
+                    'name' => $company->business_name,
+                    'display' => $company->rnc . ' - ' . $company->business_name,
+                    'branch' => $company->branch ?? 'Sede Central',
+                    'phone' => $company->landline_phone ?? '',
+                    'email' => $company->email ?? '',
+                    'representative_name' => $company->representative_name ?? '',
+                    'representative_phone' => $company->representative_mobile ?? '',
+                    'representative_email' => $company->representative_email ?? '',
+                ];
+            });
+        
+        return response()->json([
+            'success' => true,
+            'data' => $companies
+        ]);
+    }
+
+    /**
+     * Buscar empresa por RNC o nombre
      */
     public function searchCompanyByRnc(Request $request)
     {
-        $rnc = $request->get('rnc');
-        $company = Company::where('rnc', $rnc)->first();
+        $search = $request->get('rnc');
+        
+        if (empty($search)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Debe proporcionar un término de búsqueda.'
+            ], 400);
+        }
+        
+        // Buscar por RNC (exacto o parcial) o nombre de empresa (parcial)
+        $company = Company::where('rnc', 'like', '%' . $search . '%')
+            ->orWhere('business_name', 'like', '%' . $search . '%')
+            ->first();
         
         if ($company) {
             return response()->json([
@@ -312,8 +382,49 @@ class WorkIntegrityController extends Controller
         
         return response()->json([
             'success' => false,
-            'message' => 'No se encontró ninguna empresa con este RNC.'
+            'message' => 'No se encontró ninguna empresa con este RNC o nombre.'
         ], 404);
+    }
+
+    /**
+     * Buscar personas para autocompletado
+     */
+    public function searchPeople(Request $request)
+    {
+        $search = $request->get('search', '');
+        
+        if (strlen($search) < 3) {
+            return response()->json([
+                'success' => true,
+                'data' => []
+            ]);
+        }
+        
+        // Buscar por DNI o nombre (máximo 10 resultados)
+        $people = Person::with(['residenceInformation.province', 'residenceInformation.municipality'])
+            ->where('dni', 'like', '%' . $search . '%')
+            ->orWhere('name', 'like', '%' . $search . '%')
+            ->orWhere('last_name', 'like', '%' . $search . '%')
+            ->limit(10)
+            ->get()
+            ->map(function($person) {
+                return [
+                    'id' => $person->id,
+                    'dni' => $person->dni,
+                    'name' => $person->name . ' ' . $person->last_name,
+                    'display' => $person->dni . ' - ' . $person->name . ' ' . $person->last_name,
+                    'previous_dni' => $person->previous_dni,
+                    'birth_date' => $person->birth_date?->format('Y-m-d'),
+                    'birth_place' => $person->birth_place,
+                    'province' => $person->residenceInformation?->province?->name ?? '',
+                    'municipality' => $person->residenceInformation?->municipality?->name ?? '',
+                ];
+            });
+        
+        return response()->json([
+            'success' => true,
+            'data' => $people
+        ]);
     }
 
     /**

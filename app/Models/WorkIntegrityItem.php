@@ -16,6 +16,7 @@ class WorkIntegrityItem extends Model
         'reference_code_id',
         'reference_code',
         'reference_name',
+        'actual_result',
         'evaluation_detail',
     ];
 

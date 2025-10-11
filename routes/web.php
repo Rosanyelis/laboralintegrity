@@ -64,7 +64,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/recruiters/export-pdf', [RecruiterController::class, 'exportToPdf'])->name('recruiters.export-pdf');
     
     // Rutas para el módulo de Integridad Laboral
+    Route::get('/work-integrities/search-companies', [WorkIntegrityController::class, 'searchCompanies'])->name('work-integrities.search-companies');
     Route::get('/work-integrities/search-company', [WorkIntegrityController::class, 'searchCompanyByRnc'])->name('work-integrities.search-company');
+    Route::get('/work-integrities/search-people', [WorkIntegrityController::class, 'searchPeople'])->name('work-integrities.search-people');
     Route::get('/work-integrities/search-person', [WorkIntegrityController::class, 'searchPersonByDni'])->name('work-integrities.search-person');
     Route::get('/work-integrities/reference-codes', [WorkIntegrityController::class, 'getReferenceCodesByCertification'])->name('work-integrities.reference-codes');
     Route::resource('work-integrities', WorkIntegrityController::class);

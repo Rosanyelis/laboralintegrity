@@ -4,10 +4,17 @@
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ __('Editar Integridad Laboral') }}
             </h2>
-            <a href="{{ route('work-integrities.index') }}" 
-               class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200">
-                Volver al Listado
-            </a>
+            @if(request('return_to_person'))
+                <a href="{{ route('people.show', ['person' => request('return_to_person'), 'activeTab' => 'depuraciones']) }}" 
+                   class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200">
+                    Volver a Persona
+                </a>
+            @else
+                <a href="{{ route('work-integrities.index') }}" 
+                   class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200">
+                    Volver al Listado
+                </a>
+            @endif
         </div>
     </x-slot>
 
@@ -17,31 +24,23 @@
             <form @submit.prevent="submitForm" method="POST" action="{{ route('work-integrities.update', $workIntegrity) }}">
                 @csrf
                 @method('PUT')
+                
+                @if(request('return_to_person'))
+                    <input type="hidden" name="return_to_person" value="{{ request('return_to_person') }}">
+                @endif
 
                 <!-- Datos de la Empresa -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                     <div class="p-6">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Datos de la Empresa <span class="text-sm text-gray-500 dark:text-gray-400 font-normal">(Opcional)</span></h3>
                         
-                        <!-- Búsqueda y campos de empresa -->
+                        <!-- Búsqueda de empresa con autocompletado -->
                         <div class="mb-4">
-                            <div class="flex gap-2 mb-4">
-                                <input 
-                                    type="text" 
-                                    x-model="companyRnc"
-                                    placeholder="Buscar empresas o integraciones..."
-                                    class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                >
-                                <button 
-                                    type="button"
-                                    @click="searchCompany"
-                                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors flex items-center"
-                                >
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                    </svg>
-                                </button>
-                            </div>
+                            <x-company-search 
+                                label="Buscar Empresa"
+                                placeholder="Buscar por RNC o nombre de empresa..."
+                                x-model="formData"
+                            />
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -187,28 +186,14 @@
                                 >
                             </div>
                             
-                            <!-- Cédula con búsqueda -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    CÉDULA <span class="text-red-500">*</span>
-                                </label>
-                                <div class="flex gap-2">
-                                    <input 
-                                        type="text" 
-                                        x-model="personDni"
-                                        placeholder="000-0000000-0"
-                                        class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                    >
-                                    <button 
-                                        type="button"
-                                        @click="searchPerson"
-                                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
-                                    >
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                        </svg>
-                                    </button>
-                                </div>
+                            <!-- Búsqueda de persona con autocompletado -->
+                            <div class="md:col-span-2">
+                                <x-person-search 
+                                    label="Buscar Persona por Cédula"
+                                    placeholder="Buscar por cédula o nombre..."
+                                    x-model="formData"
+                                    required
+                                />
                                 <input type="hidden" name="person_id" x-model="formData.person_id" required>
                                 <input type="hidden" name="person_dni" x-model="formData.person_dni">
                             </div>
@@ -307,7 +292,7 @@
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Hoja Integral de Vida</h3>
                         
                         <!-- Selector de Código de Referencia -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     TIPO DE DEPURACIÓN
@@ -334,8 +319,8 @@
                                 >
                                     <option value="">Seleccione...</option>
                                     @foreach($referenceCodes as $code)
-                                        <option value="{{ $code->id }}" data-code="{{ $code->code }}" data-name="{{ $code->result }}">
-                                            {{ $code->code }} - {{ $code->result }}
+                                        <option value="{{ $code->id }}" data-code="{{ $code->code }}" data-result="{{ $code->result }}" data-actual-result="{{ $code->actual_result }}">
+                                            {{ $code->code }} 
                                         </option>
                                     @endforeach
                                 </select>
@@ -343,17 +328,29 @@
                             
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    DETALLE
+                                    RESULTADO REAL
+                                </label>
+                                <input 
+                                    type="text" 
+                                    x-model="currentItem.actual_result"
+                                    placeholder="Resultado real..."
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                >
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    DESCRIPCIÓN
                                 </label>
                                 <input 
                                     type="text" 
                                     x-model="currentItem.evaluation_detail"
-                                    placeholder="Detalle de evaluación..."
+                                    placeholder="Descripción..."
                                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                 >
                             </div>
 
-                            <div class="col-span-3 text-right">
+                            <div class="col-span-4 text-right">
                                 <button 
                                     type="button"
                                     @click="addItem"
@@ -376,14 +373,15 @@
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Tipo</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Código</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Resultado</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Resultado Real</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Descripción</th>
                                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                     <template x-if="items.length === 0">
                                         <tr>
-                                            <td colspan="4" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                                            <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                                                 No hay items agregados
                                             </td>
                                         </tr>
@@ -392,6 +390,7 @@
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100" x-text="item.certification_name || 'N/A'"></td>
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100" x-text="item.reference_code"></td>
+                                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100" x-text="item.actual_result"></td>
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100" x-text="item.reference_name"></td>
                                             <td class="px-6 py-4 text-right">
                                                 <button 
@@ -409,6 +408,7 @@
                                             <input type="hidden" :name="'items['+index+'][reference_code_id]'" :value="item.reference_code_id">
                                             <input type="hidden" :name="'items['+index+'][reference_code]'" :value="item.reference_code">
                                             <input type="hidden" :name="'items['+index+'][reference_name]'" :value="item.reference_name">
+                                            <input type="hidden" :name="'items['+index+'][actual_result]'" :value="item.actual_result">
                                             <input type="hidden" :name="'items['+index+'][evaluation_detail]'" :value="item.evaluation_detail">
                                         </tr>
                                     </template>
@@ -440,8 +440,6 @@
     <script>
         function workIntegrityForm() {
             return {
-                companyRnc: '',
-                personDni: '',
                 formData: {
                     fecha: '{{ $workIntegrity->fecha->format('Y-m-d') }}',
                     resultado: '{{ $workIntegrity->resultado }}',
@@ -470,66 +468,11 @@
                     reference_code_id: '',
                     reference_code: '',
                     reference_name: '',
+                    actual_result: '',
                     evaluation_detail: '',
                 },
                 items: @json($items),
                 certifications: @json($certifications),
-                
-                async searchCompany() {
-                    if (!this.companyRnc) {
-                        alert('Por favor ingrese un RNC');
-                        return;
-                    }
-                    
-                    try {
-                        const response = await fetch(`{{ route('work-integrities.search-company') }}?rnc=${this.companyRnc}`);
-                        const data = await response.json();
-                        
-                        if (data.success) {
-                            this.formData.company_id = data.data.id;
-                            this.formData.company_code = data.data.code;
-                            this.formData.company_name = data.data.name;
-                            this.formData.company_branch = data.data.branch;
-                            this.formData.company_phone = data.data.phone;
-                            this.formData.company_email = data.data.email;
-                            this.formData.representative_name = data.data.representative_name;
-                            this.formData.representative_phone = data.data.representative_phone;
-                            this.formData.representative_email = data.data.representative_email;
-                        } else {
-                            alert('No se encontró la empresa');
-                        }
-                    } catch (error) {
-                        alert('Error al buscar la empresa');
-                    }
-                },
-                
-                async searchPerson() {
-                    if (!this.personDni) {
-                        alert('Por favor ingrese una cédula');
-                        return;
-                    }
-                    
-                    try {
-                        const response = await fetch(`{{ route('work-integrities.search-person') }}?dni=${this.personDni}`);
-                        const data = await response.json();
-                        
-                        if (data.success) {
-                            this.formData.person_id = data.data.id;
-                            this.formData.person_dni = data.data.dni;
-                            this.formData.person_name = data.data.name;
-                            this.formData.dni = data.data.dni;
-                            this.formData.previous_dni = data.data.previous_dni || '';
-                            this.formData.birth_date = data.data.birth_date || '';
-                            this.formData.birth_place = data.data.birth_place || '';
-                            this.formData.province = data.data.province || '';
-                            this.formData.municipality = data.data.municipality || '';
-                        } else {
-                            alert('No se encontró la persona');
-                        }
-                    } catch (error) {
-                        alert('Error al buscar la persona');
-                    }
-                },
                 
                 updateReferenceCode() {
                     if (!this.currentItem.reference_code_id) {
@@ -540,9 +483,10 @@
                     const select = event.target;
                     const selectedOption = select.options[select.selectedIndex];
                     this.currentItem.reference_code = selectedOption.getAttribute('data-code');
-                    this.currentItem.reference_name = selectedOption.getAttribute('data-name');
-                    // Llenar automáticamente el campo detalle con el resultado
-                    this.currentItem.evaluation_detail = selectedOption.getAttribute('data-name');
+                    this.currentItem.reference_name = selectedOption.getAttribute('data-result');
+                    this.currentItem.actual_result = selectedOption.getAttribute('data-actual-result');
+                    // Llenar automáticamente ambos campos
+                    this.currentItem.evaluation_detail = selectedOption.getAttribute('data-result');
                 },
                 
                 addItem() {
@@ -566,6 +510,7 @@
                         reference_code_id: '',
                         reference_code: '',
                         reference_name: '',
+                        actual_result: '',
                         evaluation_detail: '',
                     };
                 },

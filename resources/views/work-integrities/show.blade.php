@@ -5,17 +5,24 @@
                 {{ __('Detalle de Integridad Laboral') }}
             </h2>
             <div class="flex space-x-2">
-                <a href="{{ route('work-integrities.edit', $workIntegrity) }}" 
+                <a href="{{ route('work-integrities.edit', ['work_integrity' => $workIntegrity, 'return_to_person' => request('return_to_person')]) }}" 
                    class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center space-x-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                     </svg>
                     <span>Editar</span>
                 </a>
-                <a href="{{ route('work-integrities.index') }}" 
-                   class="inline-flex items-center px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium rounded-lg transition-colors duration-150">
-                    Volver al Listado
-                </a>
+                @if(request('return_to_person'))
+                    <a href="{{ route('people.show', ['person' => request('return_to_person'), 'activeTab' => 'depuraciones']) }}" 
+                       class="inline-flex items-center px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium rounded-lg transition-colors duration-150">
+                        Volver a Persona
+                    </a>
+                @else
+                    <a href="{{ route('work-integrities.index') }}" 
+                       class="inline-flex items-center px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium rounded-lg transition-colors duration-150">
+                        Volver al Listado
+                    </a>
+                @endif
             </div>
         </div>
     </x-slot>
@@ -159,7 +166,10 @@
                                             Código
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Resultado
+                                            Resultado Real
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Descripción
                                         </th>
                                     </tr>
                                 </thead>
@@ -171,6 +181,9 @@
                                             </td>
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
                                                 {{ $item->reference_code }}
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
+                                                {{ $item->actual_result ?? 'N/A' }}
                                             </td>
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
                                                 {{ $item->reference_name }}
