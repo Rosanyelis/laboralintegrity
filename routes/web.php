@@ -31,8 +31,16 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
     // Rutas para el módulo de Personas Individuales
+        // Rutas específicas ANTES del resource (para evitar conflictos con {person})
+        Route::get('/people/districts-by-municipality', [PersonController::class, 'getDistrictsByMunicipality'])->name('people.districts-by-municipality');
+        Route::get('/people-api', [PersonController::class, 'api'])->name('people.api');
+        Route::get('/people-statistics', [PersonController::class, 'statistics'])->name('people.statistics');
         Route::post('/people/export-pdf', [PersonController::class, 'exportToPdf'])->name('people.export-pdf');
+        
+        // Ruta resource
         Route::resource('people', PersonController::class);
+        
+        // Rutas adicionales con parámetros
         Route::patch('/people/{person}/personal-info', [PersonController::class, 'updatePersonalInfo'])->name('people.update-personal-info');
         Route::patch('/people/{person}/residence-info', [PersonController::class, 'updateResidenceInfo'])->name('people.update-residence-info');
         Route::patch('/people/{person}/aspiration', [PersonController::class, 'updateAspiration'])->name('people.update-aspiration');
@@ -42,8 +50,6 @@ Route::middleware('auth')->group(function () {
         Route::delete('/people/{person}/work-experiences/{workExperience}', [PersonController::class, 'destroyWorkExperience'])->name('people.work-experiences.destroy');
         Route::post('/people/{person}/personal-references', [PersonController::class, 'storePersonalReference'])->name('people.personal-references.store');
         Route::delete('/people/{person}/personal-references/{personalReference}', [PersonController::class, 'destroyPersonalReference'])->name('people.personal-references.destroy');
-        Route::get('/people-api', [PersonController::class, 'api'])->name('people.api');
-        Route::get('/people-statistics', [PersonController::class, 'statistics'])->name('people.statistics');
     
     // Rutas para el módulo de Empresas
     Route::get('/companies/check-rnc/{rnc}', [CompanyController::class, 'checkRnc'])->name('companies.check-rnc');

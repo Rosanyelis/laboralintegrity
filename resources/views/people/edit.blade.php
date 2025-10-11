@@ -179,6 +179,113 @@
                             </div>
                         </div>
 
+                        <!-- Datos de Residencia -->
+                        <div class="mt-8 border-t border-gray-200 dark:border-gray-700 pt-8">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">DATOS DE RESIDENCIA</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <!-- Regional (autocompletado) -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="regional">REGIONAL</label>
+                                    <input class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 focus:outline-none" 
+                                           id="regional" name="regional" type="text" value="{{ old('regional', $person->residenceInformation?->province?->regional?->name) }}" readonly />
+                                    @error('regional')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Provincia (autocompletado) -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="provincia">PROVINCIA</label>
+                                    <input class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 focus:outline-none" 
+                                           id="provincia" name="provincia" type="text" value="{{ old('provincia', $person->residenceInformation?->province?->name) }}" readonly />
+                                    @error('provincia')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Municipio (selector principal activo) -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="municipality_id">MUNICIPIO</label>
+                                    <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" 
+                                            id="municipality_id" name="municipality_id">
+                                        <option value="">Seleccione...</option>
+                                        @foreach($municipalities as $municipality)
+                                            @php
+                                                $regional = $municipality->province && $municipality->province->regional 
+                                                    ? $municipality->province->regional->name 
+                                                    : '';
+                                                $provincia = $municipality->province 
+                                                    ? $municipality->province->name 
+                                                    : '';
+                                            @endphp
+                                            <option value="{{ $municipality->id }}" 
+                                                    data-regional="{{ $regional }}"
+                                                    data-provincia="{{ $provincia }}"
+                                                    {{ old('municipality_id', $person->residenceInformation?->municipality_id) == $municipality->id ? 'selected' : '' }}>
+                                                {{ $municipality->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('municipality_id')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Distrito (filtrado dinámicamente) -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="district_id">DISTRITO</label>
+                                    <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" 
+                                            id="district_id" name="district_id">
+                                        <option value="">Seleccione primero un municipio...</option>
+                                        <option value="no_aplica" {{ old('district_id', $person->residenceInformation?->district_id) == 'no_aplica' ? 'selected' : '' }}>No aplica</option>
+                                    </select>
+                                    @error('district_id')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Sector -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="sector">SECTOR</label>
+                                    <input class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" 
+                                           id="sector" name="sector" type="text" value="{{ old('sector', $person->residenceInformation?->sector) }}" />
+                                    @error('sector')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Barrio -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="neighborhood">BARRIO</label>
+                                    <input class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" 
+                                           id="neighborhood" name="neighborhood" type="text" value="{{ old('neighborhood', $person->residenceInformation?->neighborhood) }}" />
+                                    @error('neighborhood')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Calle y Número -->
+                                <div class="lg:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="street_and_number">CALLE Y NÚMERO</label>
+                                    <input class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" 
+                                           id="street_and_number" name="street_and_number" type="text" value="{{ old('street_and_number', $person->residenceInformation?->street_and_number) }}" />
+                                    @error('street_and_number')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Referencia de Llegada -->
+                                <div class="lg:col-span-1">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="arrival_reference">REFERENCIA DE LLEGADA</label>
+                                    <input class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" 
+                                           id="arrival_reference" name="arrival_reference" type="text" value="{{ old('arrival_reference', $person->residenceInformation?->arrival_reference) }}" />
+                                    @error('arrival_reference')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Botones -->
                         <div class="flex justify-end space-x-4">
                             <a href="{{ route('people.index') }}" 
@@ -195,4 +302,84 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Función para cargar distritos según el municipio seleccionado
+        async function cargarDistritos(municipalityId, selectedDistrictId = null) {
+            const districtSelect = document.getElementById('district_id');
+            
+            if (!municipalityId) {
+                districtSelect.innerHTML = '<option value="">Seleccione primero un municipio...</option><option value="no_aplica">No aplica</option>';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`{{ route('people.districts-by-municipality') }}?municipality_id=${municipalityId}`);
+                const districts = await response.json();
+                
+                // Si hay distritos, mostrar opciones normales
+                if (districts.length > 0) {
+                    districtSelect.innerHTML = '<option value="">Seleccione...</option><option value="no_aplica">No aplica</option>';
+                    
+                    districts.forEach(district => {
+                        const option = document.createElement('option');
+                        option.value = district.id;
+                        option.textContent = district.name;
+                        if (selectedDistrictId && district.id == selectedDistrictId) {
+                            option.selected = true;
+                        }
+                        districtSelect.appendChild(option);
+                    });
+                } else {
+                    // Si no hay distritos, solo mostrar "No aplica" y seleccionarlo automáticamente
+                    districtSelect.innerHTML = '<option value="no_aplica" selected>No aplica</option>';
+                }
+            } catch (error) {
+                console.error('Error al cargar distritos:', error);
+                // En caso de error, mostrar solo "No aplica"
+                districtSelect.innerHTML = '<option value="no_aplica" selected>No aplica</option>';
+            }
+        }
+
+        // Función para auto-completar regional y provincia cuando se selecciona un municipio
+        document.getElementById('municipality_id').addEventListener('change', function() {
+            const municipioSeleccionado = this.options[this.selectedIndex];
+            const regionalInput = document.getElementById('regional');
+            const provinciaInput = document.getElementById('provincia');
+
+            if (municipioSeleccionado.value) {
+                // Auto-completar campos readonly
+                regionalInput.value = municipioSeleccionado.getAttribute('data-regional') || '';
+                provinciaInput.value = municipioSeleccionado.getAttribute('data-provincia') || '';
+                
+                // Cargar distritos del municipio seleccionado
+                cargarDistritos(municipioSeleccionado.value);
+            } else {
+                // Limpiar campos
+                regionalInput.value = '';
+                provinciaInput.value = '';
+                
+                // Limpiar distritos
+                const districtSelect = document.getElementById('district_id');
+                districtSelect.innerHTML = '<option value="">Seleccione primero un municipio...</option><option value="no_aplica">No aplica</option>';
+            }
+        });
+
+        // Verificar estado inicial al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Si hay un municipio seleccionado, cargar sus distritos
+            const municipalitySelect = document.getElementById('municipality_id');
+            const oldDistrictId = '{{ old("district_id", $person->residenceInformation?->district_id) }}';
+            
+            if (municipalitySelect.value) {
+                // Trigger change para cargar regional/provincia
+                const selectedOption = municipalitySelect.options[municipalitySelect.selectedIndex];
+                document.getElementById('regional').value = selectedOption.getAttribute('data-regional') || '';
+                document.getElementById('provincia').value = selectedOption.getAttribute('data-provincia') || '';
+                
+                // Cargar distritos
+                cargarDistritos(municipalitySelect.value, oldDistrictId);
+            }
+        });
+    </script>
 </x-app-layout>

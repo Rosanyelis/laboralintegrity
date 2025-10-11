@@ -248,7 +248,25 @@ class PersonController extends Controller
      */
     public function edit(Person $person)
     {
-        return view('people.edit', compact('person'));
+        $person->load(['residenceInformation.province.regional', 'residenceInformation.municipality', 'residenceInformation.district']);
+        
+        $districts = District::with(['municipality.province.regional'])
+            ->whereHas('municipality', function($query) {
+                $query->whereHas('province', function($query) {
+                    $query->whereHas('regional');
+                });
+            })
+            ->orderBy('name')
+            ->get();
+            
+        $municipalities = Municipality::with(['province.regional'])
+            ->whereHas('province', function($query) {
+                $query->whereHas('regional');
+            })
+            ->orderBy('name')
+            ->get();
+            
+        return view('people.edit', compact('person', 'districts', 'municipalities'));
     }
 
     /**
@@ -551,5 +569,23 @@ class PersonController extends Controller
         $pdf = Pdf::loadView('people.pdf', compact('people'));
         
         return $pdf->stream('personas_' . date('Y-m-d_H-i-s') . '.pdf');
+    }
+
+    /**
+     * Get districts by municipality ID for AJAX requests
+     */
+    public function getDistrictsByMunicipality(Request $request)
+    {
+        $municipalityId = $request->input('municipality_id');
+        
+        if (!$municipalityId) {
+            return response()->json([]);
+        }
+
+        $districts = District::where('municipality_id', $municipalityId)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+            
+        return response()->json($districts);
     }
 }
