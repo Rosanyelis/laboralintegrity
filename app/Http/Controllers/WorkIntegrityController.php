@@ -28,12 +28,18 @@ class WorkIntegrityController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
         $certifications = Certification::orderBy('name')->get();
         $referenceCodes = ReferenceCode::orderBy('code')->get();
         
-        return view('work-integrities.create', compact('certifications', 'referenceCodes'));
+        // Si se pasa un person_id, cargar la persona
+        $selectedPerson = null;
+        if ($request->has('person_id')) {
+            $selectedPerson = Person::find($request->person_id);
+        }
+        
+        return view('work-integrities.create', compact('certifications', 'referenceCodes', 'selectedPerson'));
     }
 
     /**
@@ -67,6 +73,7 @@ class WorkIntegrityController extends Controller
             'items.*.reference_code' => 'required|string',
             'items.*.reference_name' => 'required|string',
             'items.*.evaluation_detail' => 'nullable|string',
+            'return_to_people' => 'nullable|string',
         ], [
             'fecha.required' => 'La fecha es obligatoria.',
             'person_id.required' => 'Debe seleccionar una persona.',
@@ -119,6 +126,12 @@ class WorkIntegrityController extends Controller
             }
 
             DB::commit();
+
+            // Si viene del módulo de personas, redirigir allí
+            if (!empty($validated['return_to_people'])) {
+                return redirect()->route('people.index')
+                    ->with('success', 'Depuración creada correctamente.');
+            }
 
             return redirect()->route('work-integrities.index')
                 ->with('success', 'Registro de integridad laboral creado correctamente.');

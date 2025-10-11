@@ -16,11 +16,15 @@
             
             <form @submit.prevent="submitForm" method="POST" action="{{ route('work-integrities.store') }}">
                 @csrf
+                
+                @if(isset($selectedPerson) && $selectedPerson)
+                    <input type="hidden" name="return_to_people" value="1">
+                @endif
 
                 <!-- Datos de la Empresa -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                     <div class="p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Datos de la Empresa</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Datos de la Empresa <span class="text-sm text-gray-500 dark:text-gray-400 font-normal">(Opcional)</span></h3>
                         
                         <!-- Búsqueda y campos de empresa -->
                         <div class="mb-4">
@@ -474,6 +478,22 @@
                 },
                 items: [],
                 certifications: @json($certifications),
+                
+                init() {
+                    // Si hay una persona preseleccionada, cargar sus datos
+                    @if(isset($selectedPerson) && $selectedPerson)
+                        this.formData.person_id = '{{ $selectedPerson->id }}';
+                        this.formData.person_dni = '{{ $selectedPerson->dni }}';
+                        this.formData.person_name = '{{ $selectedPerson->name }} {{ $selectedPerson->last_name }}';
+                        this.formData.dni = '{{ $selectedPerson->dni }}';
+                        this.formData.previous_dni = '{{ $selectedPerson->previous_dni ?? '' }}';
+                        this.formData.birth_date = '{{ $selectedPerson->birth_date ? $selectedPerson->birth_date->format('Y-m-d') : '' }}';
+                        this.formData.birth_place = '{{ $selectedPerson->birth_place ?? '' }}';
+                        this.formData.province = '{{ $selectedPerson->residenceInformation->province->name ?? '' }}';
+                        this.formData.municipality = '{{ $selectedPerson->residenceInformation->municipality->name ?? '' }}';
+                        this.personDni = '{{ $selectedPerson->dni }}';
+                    @endif
+                },
                 
                 async searchCompany() {
                     if (!this.companyRnc) {

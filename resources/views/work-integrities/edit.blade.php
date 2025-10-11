@@ -21,7 +21,7 @@
                 <!-- Datos de la Empresa -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                     <div class="p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Datos de la Empresa</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Datos de la Empresa <span class="text-sm text-gray-500 dark:text-gray-400 font-normal">(Opcional)</span></h3>
                         
                         <!-- Búsqueda y campos de empresa -->
                         <div class="mb-4">
