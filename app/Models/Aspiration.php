@@ -39,7 +39,6 @@ class Aspiration extends Model
      */
     protected $casts = [
         'expected_salary' => 'decimal:2',
-        'contract_type_preference' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

@@ -12,6 +12,7 @@ class WorkIntegrityItem extends Model
 
     protected $fillable = [
         'work_integrity_id',
+        'certification_id',
         'reference_code_id',
         'reference_code',
         'reference_name',
@@ -24,6 +25,14 @@ class WorkIntegrityItem extends Model
     public function workIntegrity(): BelongsTo
     {
         return $this->belongsTo(WorkIntegrity::class);
+    }
+
+    /**
+     * Relación con el tipo de depuración
+     */
+    public function certification(): BelongsTo
+    {
+        return $this->belongsTo(Certification::class);
     }
 
     /**

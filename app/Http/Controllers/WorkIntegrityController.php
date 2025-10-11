@@ -30,9 +30,10 @@ class WorkIntegrityController extends Controller
      */
     public function create()
     {
+        $certifications = Certification::orderBy('name')->get();
         $referenceCodes = ReferenceCode::orderBy('code')->get();
         
-        return view('work-integrities.create', compact('referenceCodes'));
+        return view('work-integrities.create', compact('certifications', 'referenceCodes'));
     }
 
     /**
@@ -42,6 +43,7 @@ class WorkIntegrityController extends Controller
     {
         $validated = $request->validate([
             'fecha' => 'required|date',
+            'resultado' => 'nullable|string',
             'company_id' => 'nullable|exists:companies,id',
             'company_code' => 'nullable|string',
             'company_name' => 'nullable|string',
@@ -60,6 +62,7 @@ class WorkIntegrityController extends Controller
             'province' => 'nullable|string',
             'municipality' => 'nullable|string',
             'items' => 'required|array|min:1',
+            'items.*.certification_id' => 'nullable|exists:certifications,id',
             'items.*.reference_code_id' => 'required|exists:reference_codes,id',
             'items.*.reference_code' => 'required|string',
             'items.*.reference_name' => 'required|string',
@@ -77,6 +80,7 @@ class WorkIntegrityController extends Controller
             // Crear el registro principal
             $workIntegrity = WorkIntegrity::create([
                 'fecha' => $validated['fecha'],
+                'resultado' => $validated['resultado'] ?? null,
                 'company_id' => $validated['company_id'] ?? null,
                 'company_code' => $validated['company_code'] ?? null,
                 'company_name' => $validated['company_name'] ?? null,
@@ -100,13 +104,18 @@ class WorkIntegrityController extends Controller
             // Crear los items
             foreach ($validated['items'] as $item) {
                 $workIntegrity->items()->create([
-                    'certification_id' => $item['certification_id'],
-                    'certification_name' => $item['certification_name'],
+                    'certification_id' => $item['certification_id'] ?? null,
                     'reference_code_id' => $item['reference_code_id'],
                     'reference_code' => $item['reference_code'],
                     'reference_name' => $item['reference_name'],
                     'evaluation_detail' => $item['evaluation_detail'] ?? null,
                 ]);
+            }
+
+            // Actualizar el estado de verificación de la persona
+            $person = Person::find($validated['person_id']);
+            if ($person) {
+                $person->updateVerificationStatus();
             }
 
             DB::commit();
@@ -125,7 +134,7 @@ class WorkIntegrityController extends Controller
      */
     public function show(WorkIntegrity $workIntegrity)
     {
-        $workIntegrity->load(['items', 'person', 'company', 'creator']);
+        $workIntegrity->load(['items.certification', 'person', 'company', 'creator']);
         
         return view('work-integrities.show', compact('workIntegrity'));
     }
@@ -135,12 +144,14 @@ class WorkIntegrityController extends Controller
      */
     public function edit(WorkIntegrity $workIntegrity)
     {
-        $workIntegrity->load('items');
+        $workIntegrity->load('items.certification');
+        $certifications = Certification::orderBy('name')->get();
         $referenceCodes = ReferenceCode::orderBy('code')->get();
         
         // Transformar items para JavaScript
         $items = $workIntegrity->items->map(function($item) {
             return [
+                'certification_id' => $item->certification_id,
                 'reference_code_id' => $item->reference_code_id,
                 'reference_code' => $item->reference_code,
                 'reference_name' => $item->reference_name,
@@ -148,7 +159,7 @@ class WorkIntegrityController extends Controller
             ];
         });
         
-        return view('work-integrities.edit', compact('workIntegrity', 'referenceCodes', 'items'));
+        return view('work-integrities.edit', compact('workIntegrity', 'certifications', 'referenceCodes', 'items'));
     }
 
     /**
@@ -158,6 +169,7 @@ class WorkIntegrityController extends Controller
     {
         $validated = $request->validate([
             'fecha' => 'required|date',
+            'resultado' => 'nullable|string',
             'company_id' => 'nullable|exists:companies,id',
             'company_code' => 'nullable|string',
             'company_name' => 'nullable|string',
@@ -176,8 +188,7 @@ class WorkIntegrityController extends Controller
             'province' => 'nullable|string',
             'municipality' => 'nullable|string',
             'items' => 'required|array|min:1',
-            'items.*.certification_id' => 'required|exists:certifications,id',
-            'items.*.certification_name' => 'required|string',
+            'items.*.certification_id' => 'nullable|exists:certifications,id',
             'items.*.reference_code_id' => 'required|exists:reference_codes,id',
             'items.*.reference_code' => 'required|string',
             'items.*.reference_name' => 'required|string',
@@ -189,6 +200,7 @@ class WorkIntegrityController extends Controller
             // Actualizar el registro principal
             $workIntegrity->update([
                 'fecha' => $validated['fecha'],
+                'resultado' => $validated['resultado'] ?? null,
                 'company_id' => $validated['company_id'] ?? null,
                 'company_code' => $validated['company_code'] ?? null,
                 'company_name' => $validated['company_name'] ?? null,
@@ -212,13 +224,18 @@ class WorkIntegrityController extends Controller
             $workIntegrity->items()->delete();
             foreach ($validated['items'] as $item) {
                 $workIntegrity->items()->create([
-                    'certification_id' => $item['certification_id'],
-                    'certification_name' => $item['certification_name'],
+                    'certification_id' => $item['certification_id'] ?? null,
                     'reference_code_id' => $item['reference_code_id'],
                     'reference_code' => $item['reference_code'],
                     'reference_name' => $item['reference_name'],
                     'evaluation_detail' => $item['evaluation_detail'] ?? null,
                 ]);
+            }
+
+            // Actualizar el estado de verificación de la persona
+            $person = Person::find($validated['person_id']);
+            if ($person) {
+                $person->updateVerificationStatus();
             }
 
             DB::commit();
@@ -238,7 +255,16 @@ class WorkIntegrityController extends Controller
     public function destroy(WorkIntegrity $workIntegrity)
     {
         try {
+            $personId = $workIntegrity->person_id;
+            
             $workIntegrity->delete();
+
+            // Actualizar el estado de verificación de la persona después de eliminar
+            $person = Person::find($personId);
+            if ($person) {
+                $person->updateVerificationStatus();
+            }
+
             return redirect()->route('work-integrities.index')
                 ->with('success', 'Registro eliminado correctamente.');
         } catch (\Exception $e) {

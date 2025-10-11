@@ -14,6 +14,7 @@ class WorkIntegrity extends Model
 
     protected $fillable = [
         'fecha',
+        'resultado',
         'company_id',
         'company_code',
         'company_name',

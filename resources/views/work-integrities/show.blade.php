@@ -36,6 +36,12 @@
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Registrado por</label>
                             <p class="mt-1 text-base text-gray-900 dark:text-gray-100">{{ $workIntegrity->creator?->name ?? 'N/A' }}</p>
                         </div>
+                        @if($workIntegrity->resultado)
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Resultado</label>
+                            <p class="mt-1 text-base text-gray-900 dark:text-gray-100 whitespace-pre-wrap">{{ $workIntegrity->resultado }}</p>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -147,13 +153,13 @@
                                 <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Tipo de Depuración
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             Código
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             Resultado
-                                        </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Detalle de Evaluación
                                         </th>
                                     </tr>
                                 </thead>
@@ -161,13 +167,13 @@
                                     @foreach($workIntegrity->items as $item)
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
+                                                {{ $item->certification?->name ?? 'N/A' }}
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
                                                 {{ $item->reference_code }}
                                             </td>
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
                                                 {{ $item->reference_name }}
-                                            </td>
-                                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
-                                                {{ $item->evaluation_detail ?? 'N/A' }}
                                             </td>
                                         </tr>
                                     @endforeach

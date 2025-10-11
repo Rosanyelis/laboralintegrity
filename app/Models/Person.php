@@ -112,6 +112,17 @@ class Person extends Model
     ];
 
     /**
+     * Relación con las integridades laborales.
+     * Una persona puede tener múltiples registros de integridad laboral.
+     *
+     * @return HasMany
+     */
+    public function workIntegrities(): HasMany
+    {
+        return $this->hasMany(WorkIntegrity::class);
+    }
+
+    /**
      * Relación con el usuario.
      * Una persona puede tener un usuario asociado.
      *
@@ -229,6 +240,44 @@ class Person extends Model
         }
         
         return 0;
+    }
+
+    /**
+     * Actualizar el estado de verificación según las depuraciones registradas
+     * 
+     * @return void
+     */
+    public function updateVerificationStatus(): void
+    {
+        // Obtener todos los tipos de certificación únicos que tiene esta persona en sus depuraciones
+        $certificationIds = \DB::table('work_integrity_items')
+            ->join('work_integrities', 'work_integrity_items.work_integrity_id', '=', 'work_integrities.id')
+            ->where('work_integrities.person_id', $this->id)
+            ->whereNull('work_integrities.deleted_at')
+            ->whereNotNull('work_integrity_items.certification_id')
+            ->distinct()
+            ->pluck('work_integrity_items.certification_id')
+            ->toArray();
+
+        // Contar cuántos tipos de certificación existen en total
+        $totalCertifications = \App\Models\Certification::count();
+
+        // Determinar el estado
+        if (empty($certificationIds)) {
+            // No tiene ninguna depuración registrada
+            $newStatus = 'pendiente';
+        } elseif (count($certificationIds) < $totalCertifications) {
+            // Tiene algunas pero no todas
+            $newStatus = 'parcial';
+        } else {
+            // Tiene todas las certificaciones
+            $newStatus = 'certificado';
+        }
+
+        // Actualizar el estado si cambió
+        if ($this->verification_status !== $newStatus) {
+            $this->update(['verification_status' => $newStatus]);
+        }
     }
 }
 

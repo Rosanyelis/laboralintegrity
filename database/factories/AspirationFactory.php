@@ -44,11 +44,10 @@ class AspirationFactory extends Factory
         ];
 
         $contractTypes = [
-            ['tiempo_completo'],
-            ['tiempo_completo', 'hibrido'],
-            ['tiempo_completo', 'remoto'],
-            ['medio_tiempo'],
-            ['remoto'],
+            'tiempo_completo',
+            'medio_tiempo',
+            'remoto',
+            'hibrido',
         ];
 
         return [

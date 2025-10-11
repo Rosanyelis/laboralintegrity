@@ -282,8 +282,8 @@
                                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-600 text-gray-900 dark:text-gray-100"
                                 >
                             </div>
-                            
-                            
+
+                           
                         </div>
                     </div>
                 </div>
@@ -294,7 +294,22 @@
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Hoja Integral de Vida</h3>
                         
                         <!-- Selector de Código de Referencia -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    TIPO DE DEPURACIÓN
+                                </label>
+                                <select 
+                                    x-model="currentItem.certification_id"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                >
+                                    <option value="">Seleccione...</option>
+                                    @foreach($certifications as $certification)
+                                        <option value="{{ $certification->id }}">{{ $certification->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     CÓDIGO DE REFERENCIA
@@ -307,7 +322,7 @@
                                     <option value="">Seleccione...</option>
                                     @foreach($referenceCodes as $code)
                                         <option value="{{ $code->id }}" data-code="{{ $code->code }}" data-name="{{ $code->result }}">
-                                            {{ $code->code }} - {{ $code->result }}
+                                            {{ $code->code }} 
                                         </option>
                                     @endforeach
                                 </select>
@@ -325,11 +340,11 @@
                                 >
                             </div>
 
-                            <div class="col-span-2 text-right">
+                            <div class="col-span-3 text-right">
                                 <button 
                                     type="button"
                                     @click="addItem"
-                                    class="mb-4 px-4 py-2  bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors"
+                                    class="mb-4 px-4 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors"
                                 >
                                     <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -340,13 +355,13 @@
                         </div>
                         
                         <!-- Tabla de Items -->
-                        <div class="overflow-x-auto">
+                        <div class="overflow-x-auto mb-4">
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Tipo</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Código</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Resultado</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Detalle</th>
                                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Acciones</th>
                                     </tr>
                                 </thead>
@@ -360,9 +375,9 @@
                                     </template>
                                     <template x-for="(item, index) in items" :key="index">
                                         <tr>
+                                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100" x-text="item.certification_name || 'N/A'"></td>
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100" x-text="item.reference_code"></td>
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100" x-text="item.reference_name"></td>
-                                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100" x-text="item.evaluation_detail || 'N/A'"></td>
                                             <td class="px-6 py-4 text-right">
                                                 <button 
                                                     type="button"
@@ -375,6 +390,7 @@
                                                 </button>
                                             </td>
                                             <!-- Hidden inputs para enviar al servidor -->
+                                            <input type="hidden" :name="'items['+index+'][certification_id]'" :value="item.certification_id">
                                             <input type="hidden" :name="'items['+index+'][reference_code_id]'" :value="item.reference_code_id">
                                             <input type="hidden" :name="'items['+index+'][reference_code]'" :value="item.reference_code">
                                             <input type="hidden" :name="'items['+index+'][reference_name]'" :value="item.reference_name">
@@ -385,8 +401,22 @@
                             </table>
                         </div>
 
+                        <!-- Resultado -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                RESULTADO
+                            </label>
+                            <textarea 
+                                name="resultado"
+                                x-model="formData.resultado"
+                                rows="3"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                placeholder="Resultado de la evaluación..."
+                            ></textarea>
+                        </div>
+
                         <!-- Botones de Acción -->
-                        <div class="flex justify-end space-x-4">
+                        <div class="flex justify-end space-x-4 mt-4">
                             <a href="{{ route('work-integrities.index') }}" 
                             class="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                 Cancelar
@@ -414,6 +444,7 @@
                 personDni: '',
                 formData: {
                     fecha: '',
+                    resultado: '',
                     company_id: '',
                     company_code: '',
                     company_name: '',
@@ -434,12 +465,15 @@
                     municipality: '',
                 },
                 currentItem: {
+                    certification_id: '',
+                    certification_name: '',
                     reference_code_id: '',
                     reference_code: '',
                     reference_name: '',
                     evaluation_detail: '',
                 },
                 items: [],
+                certifications: @json($certifications),
                 
                 async searchCompany() {
                     if (!this.companyRnc) {
@@ -507,6 +541,8 @@
                     const selectedOption = select.options[select.selectedIndex];
                     this.currentItem.reference_code = selectedOption.getAttribute('data-code');
                     this.currentItem.reference_name = selectedOption.getAttribute('data-name');
+                    // Llenar automáticamente el campo detalle con el resultado
+                    this.currentItem.evaluation_detail = selectedOption.getAttribute('data-name');
                 },
                 
                 addItem() {
@@ -515,10 +551,18 @@
                         return;
                     }
                     
+                    // Obtener el nombre del tipo de depuración si está seleccionado
+                    if (this.currentItem.certification_id) {
+                        const certification = this.certifications.find(c => c.id == this.currentItem.certification_id);
+                        this.currentItem.certification_name = certification ? certification.name : '';
+                    }
+                    
                     this.items.push({...this.currentItem});
                     
                     // Limpiar formulario
                     this.currentItem = {
+                        certification_id: '',
+                        certification_name: '',
                         reference_code_id: '',
                         reference_code: '',
                         reference_name: '',

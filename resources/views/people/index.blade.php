@@ -10,28 +10,30 @@
         </div>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <x-data-table 
                         :columns="[
-                            ['key' => 'code_unique', 'label' => 'CODIGO', 'filterable' => false],
                             ['key' => 'nombre_completo', 'label' => 'NOMBRE', 'filterable' => false],
                             ['key' => 'dni', 'label' => 'CEDULA', 'filterable' => false],
                             ['key' => 'age', 'label' => 'EDAD', 'filterable' => false],
                             ['key' => 'verification_status', 'label' => 'VERIFICADO', 'filterable' => true],
-                            ['key' => 'employment_status', 'label' => 'ESTATUS', 'filterable' => true]
+                            ['key' => 'employment_status', 'label' => 'ESTATUS LABORAL', 'filterable' => true],
+                            ['key' => 'contract_type_preference', 'label' => 'TIPO DE CONTRATO', 'filterable' => true],
+                            ['key' => 'work_scope', 'label' => 'ALCANCE LABORAL', 'filterable' => true]
                         ]"
                         :data="$people->map(function($person) {
                             return [
                                 'id' => $person->id,
-                                'code_unique' => $person->code_unique ?? 'N/A',
                                 'nombre_completo' => $person->name . ' ' . $person->last_name,
                                 'dni' => $person->dni ?? 'N/A',
                                 'age' => $person->age ?? 'N/A',
                                 'verification_status' => $person->verification_status ?? (rand(0, 1) ? 'verified' : 'pending'),
                                 'employment_status' => $person->aspiration?->employment_status ?? 'N/A',
+                                'contract_type_preference' => $person->aspiration?->contract_type_preference ?? 'N/A',
+                                'work_scope' => $person->aspiration?->work_scope ?? 'N/A',
                                 'created_at' => $person->created_at->format('d/m/Y')
                             ];
                         })->toArray()"
@@ -64,6 +66,22 @@
                                     'despido' => ['label' => 'Despido', 'color' => 'red'],
                                     'desaucio' => ['label' => 'Desaucio', 'color' => 'red'],
                                     'renuncia' => ['label' => 'Renuncia', 'color' => 'red']
+                                ]
+                            ],
+                            [
+                                'column' => 'contract_type_preference',
+                                'statuses' => [
+                                    'tiempo_completo' => ['label' => 'Tiempo Completo', 'color' => 'blue'],
+                                    'medio_tiempo' => ['label' => 'Medio Tiempo', 'color' => 'purple'],
+                                    'remoto' => ['label' => 'Remoto', 'color' => 'green'],
+                                    'hibrido' => ['label' => 'Híbrido', 'color' => 'indigo']
+                                ]
+                            ],
+                            [
+                                'column' => 'work_scope',
+                                'statuses' => [
+                                    'provincial' => ['label' => 'Provincial', 'color' => 'blue'],
+                                    'nacional' => ['label' => 'Nacional', 'color' => 'green']
                                 ]
                             ]
                         ]"

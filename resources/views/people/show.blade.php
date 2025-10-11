@@ -1195,7 +1195,7 @@
                                             @enderror
                                         </div>
 
-                                        <!-- Tipo de Contrato Preferido (Checkboxes múltiples) -->
+                                        <!-- Tipo de Contrato Preferido (Radio button - selección única) -->
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                                 Tipo de Contrato Preferido
@@ -1208,18 +1208,18 @@
                                                         'remoto' => 'Remoto',
                                                         'hibrido' => 'Híbrido'
                                                     ];
-                                                    $selectedTypes = old('contract_type_preference', $person->aspiration->contract_type_preference ?? []);
+                                                    $selectedType = old('contract_type_preference', $person->aspiration->contract_type_preference ?? null);
                                                 @endphp
                                                 
                                                 @foreach($contractTypes as $value => $label)
                                                     <div class="flex items-center">
                                                         <input 
-                                                            type="checkbox" 
-                                                            name="contract_type_preference[]" 
+                                                            type="radio" 
+                                                            name="contract_type_preference" 
                                                             id="contract_{{ $value }}"
                                                             value="{{ $value }}"
-                                                            {{ in_array($value, (array)$selectedTypes) ? 'checked' : '' }}
-                                                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                                            {{ $selectedType === $value ? 'checked' : '' }}
+                                                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                                         >
                                                         <label for="contract_{{ $value }}" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                                                             {{ $label }}

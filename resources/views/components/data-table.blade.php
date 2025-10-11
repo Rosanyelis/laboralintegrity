@@ -130,7 +130,7 @@
                     
                     <!-- Encabezados de columnas -->
                     <template x-for="column in columns" :key="column.key">
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             <div class="flex items-center space-x-1">
                                 <span x-text="column.label"></span>
                                 <button @click="sortBy(column.key)" class="text-gray-400 hover:text-gray-600">
@@ -164,7 +164,7 @@
                         
                         <!-- Celdas de datos -->
                         <template x-for="column in columns" :key="column.key">
-                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
+                            <td class="px-2 py-2 text-sm text-gray-900 dark:text-gray-100">
                                 <template x-if="isBadgeColumn(column.key)">
                                     <span x-html="renderBadge(getColumnValue(item, column.key), column.key)"></span>
                                 </template>
