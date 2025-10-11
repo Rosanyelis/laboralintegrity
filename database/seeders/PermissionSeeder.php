@@ -44,12 +44,12 @@ class PermissionSeeder extends Seeder
             'companies.delete' => 'Eliminar Empresa',
             'companies.check-rnc' => 'Verificar RNC de Empresa',
             
-            // Módulo de Certificaciones
-            'certifications.index' => 'Ver Tipos de Certificación',
-            'certifications.create' => 'Crear Tipo de Certificación',
-            'certifications.show' => 'Ver Detalle de Certificación',
-            'certifications.edit' => 'Editar Tipo de Certificación',
-            'certifications.delete' => 'Eliminar Tipo de Certificación',
+            // Módulo de Tipos de Depuración
+            'certifications.index' => 'Ver Tipos de Depuración',
+            'certifications.create' => 'Crear Tipo de Depuración',
+            'certifications.show' => 'Ver Detalle de Tipo de Depuración',
+            'certifications.edit' => 'Editar Tipo de Depuración',
+            'certifications.delete' => 'Eliminar Tipo de Depuración',
             
             // Módulo de Códigos de Referencias
             'reference-codes.index' => 'Ver Códigos de Referencias',

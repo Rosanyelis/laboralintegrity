@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\ReferenceCode;
-use App\Models\Certification;
 use Illuminate\Http\Request;
 
 class ReferenceCodeController extends Controller
@@ -13,7 +12,7 @@ class ReferenceCodeController extends Controller
      */
     public function index()
     {
-        $referenceCodes = ReferenceCode::with('certification')->orderBy('created_at', 'desc')->get();
+        $referenceCodes = ReferenceCode::orderBy('code')->get();
         
         return view('reference-codes.index', compact('referenceCodes'));
     }
@@ -23,9 +22,7 @@ class ReferenceCodeController extends Controller
      */
     public function create()
     {
-        $certifications = Certification::orderBy('name')->get();
-        
-        return view('reference-codes.create', compact('certifications'));
+        return view('reference-codes.create');
     }
 
     /**
@@ -34,22 +31,14 @@ class ReferenceCodeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'certification_id' => 'required|exists:certifications,id',
-            'code' => 'required|string|max:255',
-            'name' => 'required|string|max:255|unique:reference_codes,name',
+            'code' => 'required|string|max:255|unique:reference_codes,code',
             'result' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'is_active' => 'boolean',
+            'actual_result' => 'nullable|string|max:255',
         ], [
-            'certification_id.required' => 'El tipo de certificación es obligatorio.',
-            'certification_id.exists' => 'El tipo de certificación seleccionado no es válido.',
             'code.required' => 'El código es obligatorio.',
-            'name.required' => 'El nombre es obligatorio.',
-            'name.unique' => 'Este nombre ya existe en el sistema.',
+            'code.unique' => 'Este código ya existe en el sistema.',
             'result.required' => 'El resultado es obligatorio.',
         ]);
-
-        $validated['is_active'] = $request->has('is_active');
 
         ReferenceCode::create($validated);
 
@@ -62,8 +51,6 @@ class ReferenceCodeController extends Controller
      */
     public function show(ReferenceCode $referenceCode)
     {
-        $referenceCode->load('certification');
-        
         return view('reference-codes.show', compact('referenceCode'));
     }
 
@@ -72,9 +59,7 @@ class ReferenceCodeController extends Controller
      */
     public function edit(ReferenceCode $referenceCode)
     {
-        $certifications = Certification::orderBy('name')->get();
-        
-        return view('reference-codes.edit', compact('referenceCode', 'certifications'));
+        return view('reference-codes.edit', compact('referenceCode'));
     }
 
     /**
@@ -83,22 +68,14 @@ class ReferenceCodeController extends Controller
     public function update(Request $request, ReferenceCode $referenceCode)
     {
         $validated = $request->validate([
-            'certification_id' => 'required|exists:certifications,id',
-            'code' => 'required|string|max:255',
-            'name' => 'required|string|max:255|unique:reference_codes,name,' . $referenceCode->id,
+            'code' => 'required|string|max:255|unique:reference_codes,code,' . $referenceCode->id,
             'result' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'is_active' => 'boolean',
+            'actual_result' => 'nullable|string|max:255',
         ], [
-            'certification_id.required' => 'El tipo de certificación es obligatorio.',
-            'certification_id.exists' => 'El tipo de certificación seleccionado no es válido.',
             'code.required' => 'El código es obligatorio.',
-            'name.required' => 'El nombre es obligatorio.',
-            'name.unique' => 'Este nombre ya existe en el sistema.',
+            'code.unique' => 'Este código ya existe en el sistema.',
             'result.required' => 'El resultado es obligatorio.',
         ]);
-
-        $validated['is_active'] = $request->has('is_active');
 
         $referenceCode->update($validated);
 

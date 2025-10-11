@@ -4,14 +4,9 @@
             <h2 class="font-semibold text-md text-gray-800 dark:text-gray-200 leading-tight">
                 Configuraciones - Códigos de Referencias
             </h2>
-            <div class="flex space-x-2">
-                <a href="{{ route('config.certifications.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-1 px-3 rounded-md transition-colors duration-200 text-sm">
-                    Tipos de Certificación
-                </a>
-                <a href="{{ route('config.reference-codes.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-3 rounded-md transition-colors duration-200 text-sm">
-                    Agregar Código
-                </a>
-            </div>
+            <a href="{{ route('config.reference-codes.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-3 rounded-md transition-colors duration-200 text-sm">
+                Agregar Código
+            </a>
         </div>
     </x-slot>
 
@@ -21,35 +16,22 @@
                 <div class="p-6">
                     <x-data-table 
                         :columns="[
-                            ['key' => 'certification_name', 'label' => 'TIPO DE CERTIFICACIÓN', 'filterable' => true],
                             ['key' => 'code', 'label' => 'CÓDIGO', 'filterable' => true],
-                            ['key' => 'name', 'label' => 'NOMBRE', 'filterable' => true],
-                            ['key' => 'result', 'label' => 'RESULTADO', 'filterable' => false],
-                            ['key' => 'is_active', 'label' => 'ESTADO', 'filterable' => true]
+                            ['key' => 'result', 'label' => 'RESULTADO', 'filterable' => true],
+                            ['key' => 'actual_result', 'label' => 'RESULTADO REAL', 'filterable' => true]
                         ]"
                         :data="$referenceCodes->map(function($referenceCode) {
                             return [
                                 'id' => $referenceCode->id,
-                                'certification_name' => $referenceCode->certification->name ?? 'N/A',
                                 'code' => $referenceCode->code,
-                                'name' => $referenceCode->name,
                                 'result' => $referenceCode->result,
-                                'is_active' => $referenceCode->is_active ? 'activo' : 'inactivo',
+                                'actual_result' => $referenceCode->actual_result ?? 'N/A',
                                 'created_at' => $referenceCode->created_at->format('d/m/Y')
                             ];
                         })->toArray()"
                         :row-actions="[
                             ['name' => 'edit', 'label' => 'Editar', 'icon' => 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z', 'callback' => 'editCode'],
                             ['name' => 'delete', 'label' => 'Eliminar', 'icon' => 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16', 'callback' => 'deleteCode']
-                        ]"
-                        :badge-columns="[
-                            [
-                                'column' => 'is_active',
-                                'statuses' => [
-                                    'activo' => ['label' => 'Activo', 'color' => 'green'],
-                                    'inactivo' => ['label' => 'Inactivo', 'color' => 'red']
-                                ]
-                            ]
                         ]"
                         empty-message="No hay códigos de referencia registrados."
                     />

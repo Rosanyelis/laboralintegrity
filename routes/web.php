@@ -59,7 +59,7 @@ Route::middleware('auth')->group(function () {
     
     // Rutas para el módulo de Configuraciones
     Route::prefix('configuraciones')->name('config.')->group(function () {
-        // Certificaciones (Tipos de Referencia)
+        // Tipos de Depuración
         Route::resource('certifications', CertificationController::class)->names('certifications');
         
         // Códigos de Referencias

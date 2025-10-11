@@ -17,30 +17,7 @@
                     <form action="{{ route('config.reference-codes.store') }}" method="POST">
                         @csrf
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Tipo de Certificación -->
-                            <div class="md:col-span-2">
-                                <label for="certification_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Tipo de Certificación <span class="text-red-500">*</span>
-                                </label>
-                                <select 
-                                    name="certification_id" 
-                                    id="certification_id"
-                                    required
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
-                                >
-                                    <option value="">Seleccione un tipo de certificación...</option>
-                                    @foreach($certifications as $certification)
-                                        <option value="{{ $certification->id }}" {{ old('certification_id') == $certification->id ? 'selected' : '' }}>
-                                            {{ $certification->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('certification_id')
-                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
-
+                        <div class="grid grid-cols-3 gap-4">
                             <!-- Código -->
                             <div>
                                 <label for="code" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -60,27 +37,8 @@
                                 @enderror
                             </div>
 
-                            <!-- Nombre -->
-                            <div>
-                                <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Nombre <span class="text-red-500">*</span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    name="name" 
-                                    id="name"
-                                    value="{{ old('name') }}"
-                                    required
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
-                                    placeholder="Ej: Procedimientos Judiciales"
-                                >
-                                @error('name')
-                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
-
                             <!-- Resultado -->
-                            <div class="md:col-span-2">
+                            <div>
                                 <label for="result" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Resultado <span class="text-red-500">*</span>
                                 </label>
@@ -98,36 +56,22 @@
                                 @enderror
                             </div>
 
-                            <!-- Descripción -->
-                            <div class="md:col-span-2">
-                                <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Descripción
+                            <!-- Resultado Real -->
+                            <div>
+                                <label for="actual_result" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Resultado Real
                                 </label>
-                                <textarea 
-                                    name="description" 
-                                    id="description"
-                                    rows="4"
+                                <input 
+                                    type="text" 
+                                    name="actual_result" 
+                                    id="actual_result"
+                                    value="{{ old('actual_result') }}"
                                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
-                                    placeholder="Descripción adicional (opcional)"
-                                >{{ old('description') }}</textarea>
-                                @error('description')
+                                    placeholder="Resultado real (opcional)"
+                                >
+                                @error('actual_result')
                                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                 @enderror
-                            </div>
-
-                            <!-- Estado Activo -->
-                            <div class="md:col-span-2">
-                                <label class="flex items-center">
-                                    <input 
-                                        type="checkbox" 
-                                        name="is_active" 
-                                        id="is_active"
-                                        value="1"
-                                        {{ old('is_active', true) ? 'checked' : '' }}
-                                        class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    >
-                                    <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Activo</span>
-                                </label>
                             </div>
                         </div>
 

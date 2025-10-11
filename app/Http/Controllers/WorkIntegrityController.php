@@ -30,9 +30,9 @@ class WorkIntegrityController extends Controller
      */
     public function create()
     {
-        $certifications = Certification::orderBy('name')->get();
+        $referenceCodes = ReferenceCode::orderBy('code')->get();
         
-        return view('work-integrities.create', compact('certifications'));
+        return view('work-integrities.create', compact('referenceCodes'));
     }
 
     /**
@@ -60,8 +60,6 @@ class WorkIntegrityController extends Controller
             'province' => 'nullable|string',
             'municipality' => 'nullable|string',
             'items' => 'required|array|min:1',
-            'items.*.certification_id' => 'required|exists:certifications,id',
-            'items.*.certification_name' => 'required|string',
             'items.*.reference_code_id' => 'required|exists:reference_codes,id',
             'items.*.reference_code' => 'required|string',
             'items.*.reference_name' => 'required|string',
@@ -70,8 +68,8 @@ class WorkIntegrityController extends Controller
             'fecha.required' => 'La fecha es obligatoria.',
             'person_id.required' => 'Debe seleccionar una persona.',
             'person_id.exists' => 'La persona seleccionada no existe.',
-            'items.required' => 'Debe agregar al menos un item de certificación.',
-            'items.min' => 'Debe agregar al menos un item de certificación.',
+            'items.required' => 'Debe agregar al menos un item de depuración.',
+            'items.min' => 'Debe agregar al menos un item de depuración.',
         ]);
 
         DB::beginTransaction();
@@ -138,13 +136,11 @@ class WorkIntegrityController extends Controller
     public function edit(WorkIntegrity $workIntegrity)
     {
         $workIntegrity->load('items');
-        $certifications = Certification::orderBy('name')->get();
+        $referenceCodes = ReferenceCode::orderBy('code')->get();
         
         // Transformar items para JavaScript
         $items = $workIntegrity->items->map(function($item) {
             return [
-                'certification_id' => $item->certification_id,
-                'certification_name' => $item->certification_name,
                 'reference_code_id' => $item->reference_code_id,
                 'reference_code' => $item->reference_code,
                 'reference_name' => $item->reference_name,
@@ -152,7 +148,7 @@ class WorkIntegrityController extends Controller
             ];
         });
         
-        return view('work-integrities.edit', compact('workIntegrity', 'certifications', 'items'));
+        return view('work-integrities.edit', compact('workIntegrity', 'referenceCodes', 'items'));
     }
 
     /**
@@ -314,14 +310,11 @@ class WorkIntegrityController extends Controller
     }
 
     /**
-     * Obtener códigos de referencia por certificación
+     * Obtener códigos de referencia
      */
     public function getReferenceCodesByCertification(Request $request)
     {
-        $certificationId = $request->get('certification_id');
-        $referenceCodes = ReferenceCode::where('certification_id', $certificationId)
-            ->orderBy('code')
-            ->get();
+        $referenceCodes = ReferenceCode::orderBy('code')->get();
         
         return response()->json([
             'success' => true,
@@ -329,9 +322,9 @@ class WorkIntegrityController extends Controller
                 return [
                     'id' => $code->id,
                     'code' => $code->code,
-                    'name' => $code->name,
+                    'result' => $code->result,
                     'value' => $code->id,
-                    'text' => $code->code . ' - ' . $code->name,
+                    'text' => $code->code . ' - ' . $code->result,
                 ];
             })
         ]);

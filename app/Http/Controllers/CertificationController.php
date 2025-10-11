@@ -12,7 +12,7 @@ class CertificationController extends Controller
      */
     public function index()
     {
-        $certifications = Certification::withCount('referenceCodes')->orderBy('created_at', 'desc')->get();
+        $certifications = Certification::orderBy('created_at', 'desc')->get();
         
         return view('certifications.index', compact('certifications'));
     }
@@ -34,13 +34,13 @@ class CertificationController extends Controller
             'name' => 'required|string|max:255|unique:certifications,name',
         ], [
             'name.required' => 'El nombre es obligatorio.',
-            'name.unique' => 'Este nombre de certificación ya existe.',
+            'name.unique' => 'Este nombre de depuración ya existe.',
         ]);
 
         Certification::create($validated);
 
         return redirect()->route('config.certifications.index')
-            ->with('success', 'Tipo de certificación creado correctamente.');
+            ->with('success', 'Tipo de depuración creado correctamente.');
     }
 
     /**
@@ -48,8 +48,6 @@ class CertificationController extends Controller
      */
     public function show(Certification $certification)
     {
-        $certification->loadCount('referenceCodes');
-        
         return view('certifications.show', compact('certification'));
     }
 
@@ -70,13 +68,13 @@ class CertificationController extends Controller
             'name' => 'required|string|max:255|unique:certifications,name,' . $certification->id,
         ], [
             'name.required' => 'El nombre es obligatorio.',
-            'name.unique' => 'Este nombre de certificación ya existe.',
+            'name.unique' => 'Este nombre de depuración ya existe.',
         ]);
 
         $certification->update($validated);
 
         return redirect()->route('config.certifications.index')
-            ->with('success', 'Tipo de certificación actualizado correctamente.');
+            ->with('success', 'Tipo de depuración actualizado correctamente.');
     }
 
     /**
@@ -84,22 +82,10 @@ class CertificationController extends Controller
      */
     public function destroy(Certification $certification)
     {
-        // Verificar si tiene códigos de referencia asociados
-        $codesCount = $certification->referenceCodes()->count();
-        
-        if ($codesCount > 0) {
-            $mensaje = $codesCount === 1 
-                ? "No se puede eliminar \"{$certification->name}\" porque tiene 1 código de referencia asociado."
-                : "No se puede eliminar \"{$certification->name}\" porque tiene {$codesCount} códigos de referencia asociados.";
-            
-            return redirect()->route('config.certifications.index')
-                ->with('error', $mensaje);
-        }
-
         $certificationName = $certification->name;
         $certification->delete();
 
         return redirect()->route('config.certifications.index')
-            ->with('success', "Tipo de certificación \"{$certificationName}\" eliminado correctamente.");
+            ->with('success', "Tipo de depuración \"{$certificationName}\" eliminado correctamente.");
     }
 }

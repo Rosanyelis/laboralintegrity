@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Modelo Certification
@@ -34,16 +33,6 @@ class Certification extends Model
         'updated_at' => 'datetime',
     ];
 
-    /**
-     * Relación con los códigos de referencia.
-     * Una certificación puede tener múltiples códigos de referencia.
-     *
-     * @return HasMany
-     */
-    public function referenceCodes(): HasMany
-    {
-        return $this->hasMany(ReferenceCode::class);
-    }
 
     /**
      * Scope para filtrar por nombre.

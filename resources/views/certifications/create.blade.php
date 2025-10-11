@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-md text-gray-800 dark:text-gray-200 leading-tight">
-                Configuraciones - Crear Tipo de Certificación
+                Configuraciones - Crear Tipo de Depuración
             </h2>
             <a href="{{ route('config.certifications.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-1 px-3 rounded-md transition-colors duration-200 text-sm">
                 Volver a Listado
@@ -46,7 +46,7 @@
                             </a>
                             <button type="submit" 
                                     class="px-6 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                Crear Tipo de Certificación
+                                Crear Tipo de Depuración
                             </button>
                         </div>
                     </form>
