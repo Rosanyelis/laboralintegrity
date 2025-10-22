@@ -66,6 +66,8 @@ Route::middleware('auth')->group(function () {
     // Rutas para el módulo de Integridad Laboral
     Route::get('/work-integrities/search-companies', [WorkIntegrityController::class, 'searchCompanies'])->name('work-integrities.search-companies');
     Route::get('/work-integrities/search-company', [WorkIntegrityController::class, 'searchCompanyByRnc'])->name('work-integrities.search-company');
+    Route::post('/work-integrities/create-company', [WorkIntegrityController::class, 'createCompany'])->name('work-integrities.create-company');
+    Route::get('/work-integrities/municipalities/{provinceId}', [WorkIntegrityController::class, 'getMunicipalities'])->name('work-integrities.municipalities');
     Route::get('/work-integrities/search-people', [WorkIntegrityController::class, 'searchPeople'])->name('work-integrities.search-people');
     Route::get('/work-integrities/search-person', [WorkIntegrityController::class, 'searchPersonByDni'])->name('work-integrities.search-person');
     Route::get('/work-integrities/reference-codes', [WorkIntegrityController::class, 'getReferenceCodesByCertification'])->name('work-integrities.reference-codes');

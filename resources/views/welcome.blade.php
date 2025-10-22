@@ -69,7 +69,7 @@
             </header>
             <main>
                 <div class="relative h-screen flex items-center justify-center">
-                    <div class="absolute inset-0 bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC3a3CPIQ7TROOSjiTIuDjFMbo8mOXeNqpwfTW00-MYrf80MNwjxAmeqn-Xsyj0v3ru5hv21XfEjzMJdxyhBgaE2M189GCmIapQHnboPkCPRCiU2HwTpba2roFcEW_w3QE9w8F6fVp6uhzPkqp7Y0xU-cLEFE5EmqV2xaNXKo5CWujfvdizyOLWTWDoNXDSn7EDVlQ9-zPkrMb6QXgCBZpNyI-gB3CPPFLlSMyzd4XbRBuAwvGeG-Xe5KxY06MbGvQL4Rlrg0AdcqnJ");'>
+                    <div class="absolute inset-0 bg-cover bg-center" style='background-image: url("{{ asset('fondo-laboral-integrity.png') }}");'>
                         <div class="absolute inset-0 bg-black/50 dark:bg-black/70"></div>
                     </div>
                     <div class="relative z-10 text-center text-white px-4">

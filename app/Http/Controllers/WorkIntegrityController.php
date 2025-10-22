@@ -9,6 +9,8 @@ use App\Models\Company;
 use App\Models\Person;
 use App\Models\Certification;
 use App\Models\ReferenceCode;
+use App\Models\Province;
+use App\Models\Municipality;
 use Illuminate\Support\Facades\DB;
 
 class WorkIntegrityController extends Controller
@@ -30,8 +32,9 @@ class WorkIntegrityController extends Controller
      */
     public function create(Request $request)
     {
-        $certifications = Certification::orderBy('name')->get();
+        $certifications = Certification::orderBy('id', 'asc')->get();
         $referenceCodes = ReferenceCode::orderBy('code')->get();
+        $provinces = Province::with('regional')->orderBy('name')->get();
         
         // Si se pasa un person_id, cargar la persona
         $selectedPerson = null;
@@ -39,7 +42,7 @@ class WorkIntegrityController extends Controller
             $selectedPerson = Person::find($request->person_id);
         }
         
-        return view('work-integrities.create', compact('certifications', 'referenceCodes', 'selectedPerson'));
+        return view('work-integrities.create', compact('certifications', 'referenceCodes', 'provinces', 'selectedPerson'));
     }
 
     /**
@@ -317,8 +320,9 @@ class WorkIntegrityController extends Controller
             ]);
         }
         
-        // Buscar por RNC o nombre de empresa (máximo 10 resultados)
+        // Buscar por RNC, code_unique o nombre de empresa (máximo 10 resultados)
         $companies = Company::where('rnc', 'like', '%' . $search . '%')
+            ->orWhere('code_unique', 'like', '%' . $search . '%')
             ->orWhere('business_name', 'like', '%' . $search . '%')
             ->limit(10)
             ->get()
@@ -328,7 +332,7 @@ class WorkIntegrityController extends Controller
                     'rnc' => $company->rnc,
                     'code' => $company->code_unique ?? $company->rnc,
                     'name' => $company->business_name,
-                    'display' => $company->rnc . ' - ' . $company->business_name,
+                    'display' => ($company->code_unique ? $company->code_unique . ' - ' : '') . $company->rnc . ' - ' . $company->business_name,
                     'branch' => $company->branch ?? 'Sede Central',
                     'phone' => $company->landline_phone ?? '',
                     'email' => $company->email ?? '',
@@ -358,8 +362,9 @@ class WorkIntegrityController extends Controller
             ], 400);
         }
         
-        // Buscar por RNC (exacto o parcial) o nombre de empresa (parcial)
+        // Buscar por RNC, code_unique o nombre de empresa (parcial)
         $company = Company::where('rnc', 'like', '%' . $search . '%')
+            ->orWhere('code_unique', 'like', '%' . $search . '%')
             ->orWhere('business_name', 'like', '%' . $search . '%')
             ->first();
         
@@ -384,6 +389,97 @@ class WorkIntegrityController extends Controller
             'success' => false,
             'message' => 'No se encontró ninguna empresa con este RNC o nombre.'
         ], 404);
+    }
+
+    /**
+     * Crear nueva empresa desde el formulario de integridad laboral
+     */
+    public function createCompany(Request $request)
+    {
+        $validated = $request->validate([
+            'business_name' => 'required|string|max:255',
+            'rnc' => 'nullable|string|max:255',
+            'branch' => 'nullable|string|max:255',
+            'industry' => 'nullable|string|max:255',
+            'province_id' => 'required|exists:provinces,id',
+            'municipality_id' => 'required|exists:municipalities,id',
+            'sector' => 'nullable|string|max:255',
+            'landline_phone' => 'nullable|string|max:255',
+            'extension' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'representative_name' => 'nullable|string|max:255',
+            'representative_dni' => 'nullable|string|max:255',
+            'representative_mobile' => 'nullable|string|max:255',
+            'representative_email' => 'nullable|email|max:255',
+        ], [
+            'business_name.required' => 'El nombre de la empresa es obligatorio.',
+            'business_name.unique' => 'Ya existe una empresa con este nombre.',
+            'rnc.unique' => 'Ya existe una empresa con este RNC.',
+            'province_id.required' => 'La provincia es obligatoria.',
+            'province_id.exists' => 'La provincia seleccionada no es válida.',
+            'municipality_id.required' => 'El municipio es obligatorio.',
+            'municipality_id.exists' => 'El municipio seleccionado no es válido.',
+            'email.email' => 'El correo electrónico debe ser una dirección válida.',
+            'representative_email.email' => 'El correo electrónico del representante debe ser una dirección válida.',
+        ]);
+
+        // Validar que no exista una empresa con el mismo nombre o RNC
+        $existingCompany = Company::where('business_name', $validated['business_name'])
+            ->orWhere(function($query) use ($validated) {
+                if (!empty($validated['rnc'])) {
+                    $query->where('rnc', $validated['rnc']);
+                }
+            })
+            ->first();
+
+        if ($existingCompany) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ya existe una empresa con este nombre o RNC.',
+                'existing_company' => [
+                    'id' => $existingCompany->id,
+                    'business_name' => $existingCompany->business_name,
+                    'rnc' => $existingCompany->rnc,
+                ]
+            ], 422);
+        }
+
+        // Obtener el regional_id desde la provincia seleccionada
+        $province = Province::find($validated['province_id']);
+        $validated['regional_id'] = $province->regional_id;
+        $validated['registration_date'] = now()->toDateString();
+
+        $company = Company::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Empresa creada correctamente.',
+            'company' => [
+                'id' => $company->id,
+                'rnc' => $company->rnc,
+                'code' => $company->code_unique ?? $company->rnc,
+                'name' => $company->business_name,
+                'display' => ($company->code_unique ? $company->code_unique . ' - ' : '') . $company->rnc . ' - ' . $company->business_name,
+                'branch' => $company->branch ?? 'Sede Central',
+                'phone' => $company->landline_phone ?? '',
+                'email' => $company->email ?? '',
+                'representative_name' => $company->representative_name ?? '',
+                'representative_phone' => $company->representative_mobile ?? '',
+                'representative_email' => $company->representative_email ?? '',
+            ]
+        ]);
+    }
+
+    /**
+     * Obtener los municipios de una provincia (para AJAX).
+     */
+    public function getMunicipalities($provinceId)
+    {
+        $municipalities = Municipality::where('province_id', $provinceId)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return response()->json($municipalities);
     }
 
     /**

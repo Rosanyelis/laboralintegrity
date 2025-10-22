@@ -1,7 +1,7 @@
 @props([
     'searchRoute' => route('work-integrities.search-companies'),
     'label' => 'Buscar Empresa',
-    'placeholder' => 'Buscar por RNC o nombre de empresa...',
+    'placeholder' => 'Buscar por código único, RNC o nombre de empresa...',
     'emptyMessage' => 'No se encontraron empresas',
     'required' => false,
     'xModel' => 'formData'
