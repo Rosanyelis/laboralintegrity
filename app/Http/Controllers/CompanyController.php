@@ -7,6 +7,7 @@ use App\Models\Province;
 use App\Models\Municipality;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Gate;
 
 class CompanyController extends Controller
 {
@@ -37,6 +38,9 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('create', Company::class);
+
         $validated = $request->validate([
             'registration_date' => 'required|date',
             'business_name' => 'required|string|max:255',
@@ -100,6 +104,9 @@ class CompanyController extends Controller
      */
     public function update(Request $request, Company $company)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('update', $company);
+
         $validated = $request->validate([
             'registration_date' => 'required|date',
             'business_name' => 'required|string|max:255',
@@ -142,6 +149,9 @@ class CompanyController extends Controller
      */
     public function destroy(Company $company)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('delete', $company);
+
         $companyName = $company->business_name;
         $company->delete();
 

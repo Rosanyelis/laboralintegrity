@@ -71,6 +71,7 @@ class PermissionSeeder extends Seeder
             'work-integrities.show' => 'Ver Detalle de Depuración',
             'work-integrities.edit' => 'Editar Depuración',
             'work-integrities.delete' => 'Eliminar Depuración',
+            'work-integrities.view-actual-results' => 'Ver Resultados Reales en Depuraciones',
             
             // Módulo de Roles
             'roles.index' => 'Ver Listado de Roles',
@@ -131,6 +132,7 @@ class PermissionSeeder extends Seeder
             'work-integrities.create',
             'work-integrities.show',
             'work-integrities.edit',
+            'work-integrities.view-actual-results',
             'certifications.index',
             'certifications.show',
             'reference-codes.index',

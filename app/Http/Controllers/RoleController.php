@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Helpers\PermissionHelper;
+use Illuminate\Support\Facades\Gate;
 
 class RoleController extends Controller
 {
@@ -44,6 +45,9 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('create', Role::class);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:roles,name',
             'permissions' => 'nullable|array',
@@ -112,6 +116,9 @@ class RoleController extends Controller
      */
     public function update(Request $request, Role $role)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('update', $role);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
             'permissions' => 'nullable|array',
@@ -137,6 +144,9 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('delete', $role);
+
         // Verificar si hay usuarios asignados a este rol
         $usersCount = $role->users()->count();
         

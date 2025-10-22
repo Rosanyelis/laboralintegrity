@@ -389,7 +389,7 @@
                                             <input type="text" 
                                                    id="regional_residence" 
                                                    name="regional" 
-                                                   value="{{ old('regional', $person->residenceInformation->province->regional->name ?? '') }}"
+                                                   value="{{ old('regional', $person->residenceInformation?->province?->regional?->name ?? '') }}"
                                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:text-gray-400 sm:text-sm bg-gray-100 dark:bg-gray-600" 
                                                    readonly />
                                         </div>
@@ -402,7 +402,7 @@
                                             <input type="text" 
                                                    id="provincia_residence" 
                                                    name="provincia"
-                                                   value="{{ old('provincia', $person->residenceInformation->province->name ?? '') }}"
+                                                   value="{{ old('provincia', $person->residenceInformation?->province?->name ?? '') }}"
                                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:text-gray-400 sm:text-sm bg-gray-100 dark:bg-gray-600" 
                                                    readonly />
                                         </div>
@@ -415,7 +415,7 @@
                                             <input type="text" 
                                                    id="municipio_residence" 
                                                    name="municipio"
-                                                   value="{{ old('municipio', $person->residenceInformation->municipality->name ?? '') }}"
+                                                   value="{{ old('municipio', $person->residenceInformation?->municipality?->name ?? '') }}"
                                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:text-gray-400 sm:text-sm bg-gray-100 dark:bg-gray-600" 
                                                    readonly />
                                             
@@ -437,7 +437,7 @@
                                                     <option value="{{ $municipality->id }}" 
                                                             data-regional="{{ $regional }}"
                                                             data-provincia="{{ $provincia }}"
-                                                            {{ old('municipality_id', $person->residenceInformation->municipality_id ?? '') == $municipality->id ? 'selected' : '' }}>
+                                                            {{ old('municipality_id', $person->residenceInformation?->municipality_id ?? '') == $municipality->id ? 'selected' : '' }}>
                                                         {{ $municipality->name }}
                                                     </option>
                                                 @endforeach
@@ -453,7 +453,7 @@
                                                     name="district_id"
                                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:text-white sm:text-sm">
                                                 <option value="">Seleccione...</option>
-                                                <option value="no_aplica" {{ old('district_id', $person->residenceInformation->district_id ?? '') == 'no_aplica' || (!$person->residenceInformation->district_id && $person->residenceInformation) ? 'selected' : '' }}>No aplica</option>
+                                                <option value="no_aplica" {{ old('district_id', $person->residenceInformation?->district_id ?? '') == 'no_aplica' || (!$person->residenceInformation?->district_id && $person->residenceInformation) ? 'selected' : '' }}>No aplica</option>
                                                 @foreach($districts as $district)
                                                     @php
                                                         $regional = $district->municipality && $district->municipality->province && $district->municipality->province->regional 
@@ -470,7 +470,7 @@
                                                             data-regional="{{ $regional }}"
                                                             data-provincia="{{ $provincia }}"
                                                             data-municipio="{{ $municipio }}"
-                                                            {{ old('district_id', $person->residenceInformation->district_id ?? '') == $district->id ? 'selected' : '' }}>
+                                                            {{ old('district_id', $person->residenceInformation?->district_id ?? '') == $district->id ? 'selected' : '' }}>
                                                         {{ $district->name }}
                                                     </option>
                                                 @endforeach
@@ -488,7 +488,7 @@
                                             <input type="text" 
                                                    name="sector" 
                                                    id="sector"
-                                                   value="{{ old('sector', $person->residenceInformation->sector ?? '') }}"
+                                                   value="{{ old('sector', $person->residenceInformation?->sector ?? '') }}"
                                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:text-white sm:text-sm">
                                             @error('sector')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -503,7 +503,7 @@
                                             <input type="text" 
                                                    name="neighborhood" 
                                                    id="neighborhood"
-                                                   value="{{ old('neighborhood', $person->residenceInformation->neighborhood ?? '') }}"
+                                                   value="{{ old('neighborhood', $person->residenceInformation?->neighborhood ?? '') }}"
                                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:text-white sm:text-sm">
                                             @error('neighborhood')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -517,7 +517,7 @@
                                             <input type="text" 
                                                    name="street_and_number" 
                                                    id="street_and_number"
-                                                   value="{{ old('street_and_number', $person->residenceInformation->street_and_number ?? '') }}"
+                                                   value="{{ old('street_and_number', $person->residenceInformation?->street_and_number ?? '') }}"
                                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:text-white sm:text-sm">
                                             @error('street_and_number')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -532,7 +532,7 @@
                                             <input type="text" 
                                                    name="arrival_reference" 
                                                    id="arrival_reference"
-                                                   value="{{ old('arrival_reference', $person->residenceInformation->arrival_reference ?? '') }}"
+                                                   value="{{ old('arrival_reference', $person->residenceInformation?->arrival_reference ?? '') }}"
                                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:text-white sm:text-sm">
                                             @error('arrival_reference')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -1365,53 +1365,153 @@
                             </div>
 
                             @php
-                                $rowActionsDepuraciones = [
-                                    ['name' => 'view', 'label' => 'Ver', 'icon' => 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z', 'callback' => 'viewDepuracion'],
-                                    ['name' => 'edit', 'label' => 'Editar', 'icon' => 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z', 'callback' => 'editDepuracion'],
-                                    ['name' => 'delete', 'label' => 'Eliminar', 'icon' => 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16', 'callback' => 'deleteDepuracion']
-                                ];
-
-                                $depuracionesData = $person->workIntegrities->map(function($item) {
-                                    $itemsCount = $item->items->count();
-                                    $isCompleted = $itemsCount > 0;
-                                    return [
-                                        'id' => $item->id,
-                                        'person_id' => $item->person_id,
-                                        'fecha' => $item->fecha->format('d/m/Y'),
-                                        'empresa' => $item->company_name ?? 'Sin empresa',
-                                        'items' => $itemsCount . ' item(s)',
-                                        'items_count' => $itemsCount,
-                                        'estado' => $isCompleted ? 'Completado' : 'Pendiente',
-                                        'estado_raw' => $isCompleted,
-                                    ];
-                                })->toArray();
-
-                                $badgeColumns = [
-                                    [
-                                        'column' => 'estado',
-                                        'statuses' => [
-                                            'Completado' => ['label' => 'Completado', 'color' => 'green'],
-                                            'Pendiente' => ['label' => 'Pendiente', 'color' => 'yellow']
-                                        ]
-                                    ]
-                                ];
+                                // Variables ya no necesarias - se eliminaron para usar cards directamente
                             @endphp
 
                             @if($person->workIntegrities->count() > 0)
-                                <x-data-table 
-                                    :columns="[
-                                        ['key' => 'fecha', 'label' => 'FECHA'],
-                                        ['key' => 'empresa', 'label' => 'EMPRESA'],
-                                        ['key' => 'items', 'label' => 'ITEMS'],
-                                        ['key' => 'estado', 'label' => 'ESTADO'],
-                                    ]"
-                                    :data="$depuracionesData"
-                                    :row-actions="$rowActionsDepuraciones"
-                                    :badge-columns="$badgeColumns"
-                                    :selectable="false"
-                                    :filterable="false"
-                                    :default-per-page="10"
-                                />
+                                <!-- Cards de Integraciones Laborales -->
+                                <div class="space-y-4" x-data="{ 
+                                    expandedCards: {},
+                                    toggleCard(cardId) {
+                                        this.expandedCards[cardId] = !this.expandedCards[cardId];
+                                    }
+                                }">
+                                    @foreach($person->workIntegrities->sortByDesc('fecha') as $workIntegrity)
+                                        @php
+                                            $cardId = 'card-' . $workIntegrity->id;
+                                            $itemsCount = $workIntegrity->items->count();
+                                            $isCompleted = $itemsCount > 0;
+                                        @endphp
+                                        
+                                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                                            <!-- Card Header (Siempre visible) -->
+                                            <div class="p-6 cursor-pointer" @click="toggleCard('{{ $cardId }}')">
+                                                <div class="flex items-center justify-between">
+                                                    <div class="flex-1">
+                                                        <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                                            Integración Laboral - {{ $workIntegrity->fecha->format('d/m/Y') }}
+                                                        </h4>
+                                                        <div class="mt-2 flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
+                                                            <span class="flex items-center">
+                                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                                                </svg>
+                                                                {{ $workIntegrity->company_name ?? 'Sin empresa' }}
+                                                            </span>
+                                                            <span class="flex items-center">
+                                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                                </svg>
+                                                                {{ $itemsCount }} item(s)
+                                                            </span>
+                                                            <span class="flex items-center">
+                                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $isCompleted ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' }}">
+                                                                    {{ $isCompleted ? 'Completado' : 'Pendiente' }}
+                                                                </span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex items-center space-x-2">
+                                                        <!-- Botones de acción -->
+                                                        <div class="flex space-x-1">
+                                                            @can('work-integrities.show')
+                                                            <a href="{{ route('work-integrities.show', ['work_integrity' => $workIntegrity, 'return_to_person' => $person->id]) }}" 
+                                                               class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">
+                                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                                </svg>
+                                                                Ver
+                                                            </a>
+                                                            @endcan
+                                                            @can('work-integrities.edit')
+                                                            <a href="{{ route('work-integrities.edit', ['work_integrity' => $workIntegrity, 'return_to_person' => $person->id]) }}" 
+                                                               class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-yellow-600 hover:text-yellow-800 dark:text-yellow-400 dark:hover:text-yellow-300 transition-colors duration-200">
+                                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                                </svg>
+                                                                Editar
+                                                            </a>
+                                                            @endcan
+                                                        </div>
+                                                        <!-- Icono de colapso -->
+                                                        <svg class="w-5 h-5 text-gray-400 transition-transform duration-200" 
+                                                             :class="{ 'rotate-180': expandedCards['{{ $cardId }}'] }" 
+                                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Card Content (Colapsable) -->
+                                            <div x-show="expandedCards['{{ $cardId }}']" 
+                                                 x-transition:enter="transition ease-out duration-200"
+                                                 x-transition:enter-start="opacity-0 transform -translate-y-2"
+                                                 x-transition:enter-end="opacity-100 transform translate-y-0"
+                                                 x-transition:leave="transition ease-in duration-150"
+                                                 x-transition:leave-start="opacity-100 transform translate-y-0"
+                                                 x-transition:leave-end="opacity-0 transform -translate-y-2"
+                                                 class="border-t border-gray-200 dark:border-gray-700">
+                                                <div class="p-6">
+                                                    <!-- Información detallada -->
+                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Empresa</label>
+                                                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $workIntegrity->company_name ?? 'Sin empresa' }}</p>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Registrado por</label>
+                                                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $workIntegrity->creator?->name ?? 'N/A' }}</p>
+                                                        </div>
+                                                        @if($workIntegrity->resultado)
+                                                        <div class="md:col-span-2">
+                                                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Resultado</label>
+                                                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $workIntegrity->resultado }}</p>
+                                                        </div>
+                                                        @endif
+                                                    </div>
+                                                    
+                                                    <!-- Items de la integración -->
+                                                    @if($workIntegrity->items->count() > 0)
+                                                        <div>
+                                                            <h5 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Items de Depuración</h5>
+                                                            <div class="overflow-x-auto">
+                                                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                                                    <thead class="bg-gray-50 dark:bg-gray-700">
+                                                                        <tr>
+                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Tipo</th>
+                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Código</th>
+                                                                            @can('work-integrities.view-actual-results')
+                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Resultado Real</th>
+                                                                            @endcan
+                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Descripción</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                                                        @foreach($workIntegrity->items as $item)
+                                                                            <tr>
+                                                                                <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">{{ $item->certification?->name ?? 'N/A' }}</td>
+                                                                                <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">{{ $item->reference_code }}</td>
+                                                                                @can('work-integrities.view-actual-results')
+                                                                                <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">{{ $item->actual_result ?? 'N/A' }}</td>
+                                                                                @endcan
+                                                                                <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">{{ $item->reference_name }}</td>
+                                                                            </tr>
+                                                                        @endforeach
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    @else
+                                                        <div class="text-center py-4 text-gray-500 dark:text-gray-400">
+                                                            <p class="text-sm">No hay items de depuración registrados.</p>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
                             @else
                                 <div class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg">
                                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

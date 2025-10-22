@@ -8,6 +8,7 @@ use App\Models\Person;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Gate;
 
 class RecruiterController extends Controller
 {
@@ -36,6 +37,9 @@ class RecruiterController extends Controller
      */
     public function store(Request $request)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('create', Recruiter::class);
+
         $rules = [
             'registration_date' => 'required|date',
             'person_id' => 'required|exists:people,id',
@@ -87,6 +91,9 @@ class RecruiterController extends Controller
      */
     public function update(Request $request, Recruiter $recruiter)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('update', $recruiter);
+
         $rules = [
             'registration_date' => 'required|date',
             'person_id' => 'required|exists:people,id',
@@ -118,6 +125,9 @@ class RecruiterController extends Controller
      */
     public function destroy(Recruiter $recruiter)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('delete', $recruiter);
+
         try {
             $recruiter->delete();
 

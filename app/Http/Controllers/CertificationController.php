@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Certification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class CertificationController extends Controller
 {
@@ -30,6 +31,9 @@ class CertificationController extends Controller
      */
     public function store(Request $request)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('create', Certification::class);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:certifications,name',
         ], [
@@ -64,6 +68,9 @@ class CertificationController extends Controller
      */
     public function update(Request $request, Certification $certification)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('update', $certification);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:certifications,name,' . $certification->id,
         ], [
@@ -82,6 +89,9 @@ class CertificationController extends Controller
      */
     public function destroy(Certification $certification)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('delete', $certification);
+
         $certificationName = $certification->name;
         $certification->delete();
 

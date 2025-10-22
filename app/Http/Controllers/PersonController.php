@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Gate;
 
 class PersonController extends Controller
 {
@@ -56,6 +57,9 @@ class PersonController extends Controller
      */
     public function store(StorePersonRequest $request)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('create', Person::class);
+
         $validated = $request->validated();
 
         // Crear la persona
@@ -275,6 +279,9 @@ class PersonController extends Controller
      */
     public function update(UpdatePersonRequest $request, Person $person)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('update', $person);
+
         $validated = $request->validated();
 
         // Actualizar la persona
@@ -322,6 +329,9 @@ class PersonController extends Controller
      */
     public function destroy(Person $person)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('delete', $person);
+
         $person->delete();
 
         return redirect()->route('people.index')

@@ -373,7 +373,9 @@
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Tipo</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Código</th>
+                                        @can('work-integrities.view-actual-results')
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Resultado Real</th>
+                                        @endcan
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Descripción</th>
                                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Acciones</th>
                                     </tr>
@@ -381,7 +383,7 @@
                                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                     <template x-if="items.length === 0">
                                         <tr>
-                                            <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                                            <td colspan="{{ auth()->user()->can('work-integrities.view-actual-results') ? '5' : '4' }}" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                                                 No hay items agregados
                                             </td>
                                         </tr>
@@ -390,7 +392,9 @@
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100" x-text="item.certification_name || 'N/A'"></td>
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100" x-text="item.reference_code"></td>
+                                            @can('work-integrities.view-actual-results')
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100" x-text="item.actual_result"></td>
+                                            @endcan
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100" x-text="item.reference_name"></td>
                                             <td class="px-6 py-4 text-right">
                                                 <button 

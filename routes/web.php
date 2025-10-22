@@ -23,7 +23,7 @@ Route::get('/dashboard', function () {
     ];
     
     return view('dashboard', $stats);
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', 'permission:dashboard.view'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -31,50 +31,79 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
     // Rutas para el módulo de Personas Individuales
+    Route::middleware(['module.access:people'])->group(function () {
         // Rutas específicas ANTES del resource (para evitar conflictos con {person})
         Route::get('/people/districts-by-municipality', [PersonController::class, 'getDistrictsByMunicipality'])->name('people.districts-by-municipality');
         Route::get('/people-api', [PersonController::class, 'api'])->name('people.api');
         Route::get('/people-statistics', [PersonController::class, 'statistics'])->name('people.statistics');
         Route::post('/people/export-pdf', [PersonController::class, 'exportToPdf'])->name('people.export-pdf');
         
-        // Ruta resource
+        // Ruta resource con validaciones específicas
         Route::resource('people', PersonController::class);
         
-        // Rutas adicionales con parámetros
-        Route::patch('/people/{person}/personal-info', [PersonController::class, 'updatePersonalInfo'])->name('people.update-personal-info');
-        Route::patch('/people/{person}/residence-info', [PersonController::class, 'updateResidenceInfo'])->name('people.update-residence-info');
-        Route::patch('/people/{person}/aspiration', [PersonController::class, 'updateAspiration'])->name('people.update-aspiration');
-        Route::post('/people/{person}/educational-skills', [PersonController::class, 'storeEducationalSkill'])->name('people.educational-skills.store');
-        Route::delete('/people/{person}/educational-skills/{educationalSkill}', [PersonController::class, 'destroyEducationalSkill'])->name('people.educational-skills.destroy');
-        Route::post('/people/{person}/work-experiences', [PersonController::class, 'storeWorkExperience'])->name('people.work-experiences.store');
-        Route::delete('/people/{person}/work-experiences/{workExperience}', [PersonController::class, 'destroyWorkExperience'])->name('people.work-experiences.destroy');
-        Route::post('/people/{person}/personal-references', [PersonController::class, 'storePersonalReference'])->name('people.personal-references.store');
-        Route::delete('/people/{person}/personal-references/{personalReference}', [PersonController::class, 'destroyPersonalReference'])->name('people.personal-references.destroy');
+        // Rutas adicionales con parámetros y validaciones específicas
+        Route::patch('/people/{person}/personal-info', [PersonController::class, 'updatePersonalInfo'])
+            ->name('people.update-personal-info')
+            ->middleware('permission:people.update-personal-info,Person');
+        Route::patch('/people/{person}/residence-info', [PersonController::class, 'updateResidenceInfo'])
+            ->name('people.update-residence-info')
+            ->middleware('permission:people.update-residence-info,Person');
+        Route::patch('/people/{person}/aspiration', [PersonController::class, 'updateAspiration'])
+            ->name('people.update-aspiration')
+            ->middleware('permission:people.update-aspiration,Person');
+        Route::post('/people/{person}/educational-skills', [PersonController::class, 'storeEducationalSkill'])
+            ->name('people.educational-skills.store')
+            ->middleware('permission:people.manage-educational-skills,Person');
+        Route::delete('/people/{person}/educational-skills/{educationalSkill}', [PersonController::class, 'destroyEducationalSkill'])
+            ->name('people.educational-skills.destroy')
+            ->middleware('permission:people.manage-educational-skills,Person');
+        Route::post('/people/{person}/work-experiences', [PersonController::class, 'storeWorkExperience'])
+            ->name('people.work-experiences.store')
+            ->middleware('permission:people.manage-work-experiences,Person');
+        Route::delete('/people/{person}/work-experiences/{workExperience}', [PersonController::class, 'destroyWorkExperience'])
+            ->name('people.work-experiences.destroy')
+            ->middleware('permission:people.manage-work-experiences,Person');
+        Route::post('/people/{person}/personal-references', [PersonController::class, 'storePersonalReference'])
+            ->name('people.personal-references.store')
+            ->middleware('permission:people.manage-personal-references,Person');
+        Route::delete('/people/{person}/personal-references/{personalReference}', [PersonController::class, 'destroyPersonalReference'])
+            ->name('people.personal-references.destroy')
+            ->middleware('permission:people.manage-personal-references,Person');
+    });
     
     // Rutas para el módulo de Empresas
-    Route::get('/companies/check-rnc/{rnc}', [CompanyController::class, 'checkRnc'])->name('companies.check-rnc');
-    Route::resource('companies', CompanyController::class);
-    Route::get('/companies/municipalities/{province}', [CompanyController::class, 'getMunicipalities'])->name('companies.municipalities');
-    Route::post('/companies/export-pdf', [CompanyController::class, 'exportToPdf'])->name('companies.export-pdf');
+    Route::middleware(['module.access:companies'])->group(function () {
+        Route::get('/companies/check-rnc/{rnc}', [CompanyController::class, 'checkRnc'])->name('companies.check-rnc');
+        Route::resource('companies', CompanyController::class);
+        Route::get('/companies/municipalities/{province}', [CompanyController::class, 'getMunicipalities'])->name('companies.municipalities');
+        Route::post('/companies/export-pdf', [CompanyController::class, 'exportToPdf'])->name('companies.export-pdf');
+    });
     
     // Rutas para el módulo de Reclutadores
-    Route::get('/recruiters/search-by-rnc', [RecruiterController::class, 'searchByRnc'])->name('recruiters.search-by-rnc');
-    Route::get('/recruiters/search-by-dni', [RecruiterController::class, 'searchByDni'])->name('recruiters.search-by-dni');
-    Route::resource('recruiters', RecruiterController::class);
-    Route::post('/recruiters/export-pdf', [RecruiterController::class, 'exportToPdf'])->name('recruiters.export-pdf');
+    Route::middleware(['module.access:recruiters'])->group(function () {
+        Route::get('/recruiters/search-by-rnc', [RecruiterController::class, 'searchByRnc'])->name('recruiters.search-by-rnc');
+        Route::get('/recruiters/search-by-dni', [RecruiterController::class, 'searchByDni'])->name('recruiters.search-by-dni');
+        Route::resource('recruiters', RecruiterController::class);
+        Route::post('/recruiters/export-pdf', [RecruiterController::class, 'exportToPdf'])->name('recruiters.export-pdf');
+    });
     
     // Rutas para el módulo de Integridad Laboral
-    Route::get('/work-integrities/search-companies', [WorkIntegrityController::class, 'searchCompanies'])->name('work-integrities.search-companies');
-    Route::get('/work-integrities/search-company', [WorkIntegrityController::class, 'searchCompanyByRnc'])->name('work-integrities.search-company');
-    Route::post('/work-integrities/create-company', [WorkIntegrityController::class, 'createCompany'])->name('work-integrities.create-company');
-    Route::get('/work-integrities/municipalities/{provinceId}', [WorkIntegrityController::class, 'getMunicipalities'])->name('work-integrities.municipalities');
-    Route::get('/work-integrities/search-people', [WorkIntegrityController::class, 'searchPeople'])->name('work-integrities.search-people');
-    Route::get('/work-integrities/search-person', [WorkIntegrityController::class, 'searchPersonByDni'])->name('work-integrities.search-person');
-    Route::get('/work-integrities/reference-codes', [WorkIntegrityController::class, 'getReferenceCodesByCertification'])->name('work-integrities.reference-codes');
-    Route::resource('work-integrities', WorkIntegrityController::class);
+    Route::middleware(['module.access:work-integrities'])->group(function () {
+        Route::get('/work-integrities/search-companies', [WorkIntegrityController::class, 'searchCompanies'])->name('work-integrities.search-companies');
+        Route::get('/work-integrities/search-company', [WorkIntegrityController::class, 'searchCompanyByRnc'])->name('work-integrities.search-company');
+        Route::post('/work-integrities/create-company', [WorkIntegrityController::class, 'createCompany'])->name('work-integrities.create-company');
+        Route::post('/work-integrities/create-person', [WorkIntegrityController::class, 'createPerson'])->name('work-integrities.create-person');
+        Route::get('/work-integrities/municipalities/{provinceId}', [WorkIntegrityController::class, 'getMunicipalities'])->name('work-integrities.municipalities');
+        Route::get('/work-integrities/search-people', [WorkIntegrityController::class, 'searchPeople'])->name('work-integrities.search-people');
+        Route::get('/work-integrities/search-person', [WorkIntegrityController::class, 'searchPersonByDni'])->name('work-integrities.search-person');
+        Route::get('/work-integrities/reference-codes', [WorkIntegrityController::class, 'getReferenceCodesByCertification'])->name('work-integrities.reference-codes');
+        // Nueva ruta para ver todas las integraciones de una persona
+        Route::get('/work-integrities/person/{person}', [WorkIntegrityController::class, 'showPersonIntegrations'])->name('work-integrities.person.show');
+        Route::resource('work-integrities', WorkIntegrityController::class);
+    });
     
     // Rutas para el módulo de Configuraciones
-    Route::prefix('configuraciones')->name('config.')->group(function () {
+    Route::prefix('configuraciones')->name('config.')->middleware(['admin-access'])->group(function () {
         // Tipos de Depuración
         Route::resource('certifications', CertificationController::class)->names('certifications');
         

@@ -8,6 +8,7 @@ use App\Models\Person;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
@@ -42,6 +43,9 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('create', User::class);
+
         $validated = $request->validate([
             'person_id' => 'required|exists:people,id|unique:users,person_id',
             'email' => 'required|string|email|max:255|unique:users,email',
@@ -115,6 +119,9 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('update', $user);
+
         $validated = $request->validate([
             'person_id' => 'required|exists:people,id|unique:users,person_id,' . $user->id,
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
@@ -165,6 +172,9 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('delete', $user);
+
         $userName = $user->name;
         $user->delete();
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ReferenceCode;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class ReferenceCodeController extends Controller
 {
@@ -30,6 +31,9 @@ class ReferenceCodeController extends Controller
      */
     public function store(Request $request)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('create', ReferenceCode::class);
+
         $validated = $request->validate([
             'code' => 'required|string|max:255|unique:reference_codes,code',
             'result' => 'required|string|max:255',
@@ -67,6 +71,9 @@ class ReferenceCodeController extends Controller
      */
     public function update(Request $request, ReferenceCode $referenceCode)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('update', $referenceCode);
+
         $validated = $request->validate([
             'code' => 'required|string|max:255|unique:reference_codes,code,' . $referenceCode->id,
             'result' => 'required|string|max:255',
@@ -88,6 +95,9 @@ class ReferenceCodeController extends Controller
      */
     public function destroy(ReferenceCode $referenceCode)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('delete', $referenceCode);
+
         $referenceCode->delete();
 
         return redirect()->route('config.reference-codes.index')

@@ -12,6 +12,7 @@ use App\Models\ReferenceCode;
 use App\Models\Province;
 use App\Models\Municipality;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class WorkIntegrityController extends Controller
 {
@@ -20,8 +21,13 @@ class WorkIntegrityController extends Controller
      */
     public function index()
     {
-        $workIntegrities = WorkIntegrity::with(['person.residenceInformation.province', 'person.residenceInformation.municipality', 'company'])
-            ->orderBy('fecha', 'desc')
+        // Obtener datos agrupados por persona con conteo de integraciones
+        $workIntegrities = WorkIntegrity::with(['person.residenceInformation.province', 'person.residenceInformation.municipality'])
+            ->select('person_id', 'person_dni', 'person_name')
+            ->selectRaw('COUNT(*) as total_integraciones')
+            ->selectRaw('MAX(fecha) as ultima_fecha')
+            ->groupBy('person_id', 'person_dni', 'person_name')
+            ->orderBy('ultima_fecha', 'desc')
             ->get();
         
         return view('work-integrities.index', compact('workIntegrities'));
@@ -50,6 +56,9 @@ class WorkIntegrityController extends Controller
      */
     public function store(Request $request)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('create', WorkIntegrity::class);
+
         $validated = $request->validate([
             'fecha' => 'required|date',
             'resultado' => 'nullable|string',
@@ -187,6 +196,9 @@ class WorkIntegrityController extends Controller
      */
     public function update(Request $request, WorkIntegrity $workIntegrity)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('update', $workIntegrity);
+
         $validated = $request->validate([
             'fecha' => 'required|date',
             'resultado' => 'nullable|string',
@@ -282,6 +294,9 @@ class WorkIntegrityController extends Controller
      */
     public function destroy(Request $request, WorkIntegrity $workIntegrity)
     {
+        // Verificar permisos usando Gate
+        Gate::authorize('delete', $workIntegrity);
+
         try {
             $personId = $workIntegrity->person_id;
             
@@ -471,6 +486,103 @@ class WorkIntegrityController extends Controller
     }
 
     /**
+     * Crear nueva persona desde el formulario de integridad laboral
+     */
+    public function createPerson(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'dni' => 'required|string|max:20|unique:people,dni',
+                'previous_dni' => 'nullable|string|max:20',
+                'birth_date' => 'required|date|before:today',
+                'birth_place' => 'required|string|max:255',
+            ], [
+                'name.required' => 'El nombre es obligatorio.',
+                'last_name.required' => 'Los apellidos son obligatorios.',
+                'dni.required' => 'La cédula es obligatoria.',
+                'dni.unique' => 'Ya existe una persona con esta cédula.',
+                'birth_date.required' => 'La fecha de nacimiento es obligatoria.',
+                'birth_date.before' => 'La fecha de nacimiento debe ser anterior a hoy.',
+                'birth_place.required' => 'El lugar de nacimiento es obligatorio.',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de validación: ' . implode(', ', $e->validator->errors()->all()),
+                'errors' => $e->validator->errors()
+            ], 422);
+        }
+
+        // Validar que no exista una persona con la misma cédula
+        $existingPerson = Person::where('dni', $validated['dni'])->first();
+
+        if ($existingPerson) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ya existe una persona con esta cédula.',
+                'existing_person' => [
+                    'id' => $existingPerson->id,
+                    'name' => $existingPerson->name,
+                    'last_name' => $existingPerson->last_name,
+                    'dni' => $existingPerson->dni,
+                ]
+            ], 422);
+        }
+
+        try {
+            // Generar código único y calcular edad
+            $validated['code_unique'] = $this->generatePersonCode();
+            $validated['age'] = \Carbon\Carbon::parse($validated['birth_date'])->age;
+            
+            // Agregar valores por defecto para campos requeridos que no están en el modal
+            $validated['country'] = 'República Dominicana'; // Valor por defecto
+            $validated['email'] = 'temp-' . time() . '-' . rand(1000, 9999) . '@temporal.com'; // Email temporal único
+            $validated['user_id'] = auth()->id(); // Usuario actual
+
+            $person = Person::create($validated);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Persona creada correctamente.',
+                'person' => [
+                    'id' => $person->id,
+                    'name' => $person->name,
+                    'last_name' => $person->last_name,
+                    'dni' => $person->dni,
+                    'previous_dni' => $person->previous_dni,
+                    'birth_date' => $person->birth_date->format('Y-m-d'),
+                    'birth_place' => $person->birth_place,
+                    'province' => '',
+                    'municipality' => '',
+                ]
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error al crear persona: ' . $e->getMessage(), [
+                'data' => $validated,
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error interno del servidor: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Generar código único para persona
+     */
+    private function generatePersonCode()
+    {
+        $date = now()->format('dmY');
+        $lastPerson = Person::orderBy('id', 'desc')->first();
+        $sequence = $lastPerson ? $lastPerson->id + 1 : 1;
+        return str_pad($sequence, 2, '0', STR_PAD_LEFT) . '-' . $date;
+    }
+
+    /**
      * Obtener los municipios de una provincia (para AJAX).
      */
     public function getMunicipalities($provinceId)
@@ -574,5 +686,21 @@ class WorkIntegrityController extends Controller
                 ];
             })
         ]);
+    }
+
+    /**
+     * Display a listing of work integrities for a specific person.
+     */
+    public function showPersonIntegrations(Person $person)
+    {
+        // Verificar permisos usando Gate
+        Gate::authorize('viewAny', WorkIntegrity::class);
+
+        $workIntegrities = WorkIntegrity::where('person_id', $person->id)
+            ->with(['company', 'items.referenceCode', 'items.certification'])
+            ->orderBy('fecha', 'desc')
+            ->get();
+
+        return view('work-integrities.person_integrations', compact('person', 'workIntegrities'));
     }
 }

@@ -13,7 +13,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Registrar middlewares personalizados
+        $middleware->alias([
+            'permission' => \App\Http\Middleware\EnsureUserHasPermission::class,
+            'module.access' => \App\Http\Middleware\EnsureModuleAccess::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Manejar excepciones de modelos no encontrados
