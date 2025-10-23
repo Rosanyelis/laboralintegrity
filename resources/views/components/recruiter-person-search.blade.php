@@ -1,8 +1,8 @@
 @props([
-    'searchRoute' => route('work-integrities.search-companies'),
-    'label' => 'Buscar Empresa',
-    'placeholder' => 'Buscar por código único, RNC o nombre de empresa...',
-    'emptyMessage' => 'No se encontraron empresas',
+    'searchRoute' => route('recruiters.search-people'),
+    'label' => 'Buscar Persona',
+    'placeholder' => 'Buscar por cédula o nombre...',
+    'emptyMessage' => 'No se encontraron personas',
     'required' => false,
     'xModel' => 'formData'
 ])
@@ -10,15 +10,15 @@
 <div 
     x-data="{
         search: '',
-        companies: [],
+        people: [],
         loading: false,
         showDropdown: false,
-        selectedCompany: null,
+        selectedPerson: null,
         searchTimeout: null,
         
-        async searchCompanies() {
-            if (this.search.length < 2) {
-                this.companies = [];
+        async searchPeople() {
+            if (this.search.length < 1) {
+                this.people = [];
                 this.showDropdown = false;
                 return;
             }
@@ -30,15 +30,15 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    this.companies = data.data;
-                    this.showDropdown = this.companies.length > 0;
+                    this.people = data.data;
+                    this.showDropdown = this.people.length > 0;
                 } else {
-                    this.companies = [];
+                    this.people = [];
                     this.showDropdown = false;
                 }
             } catch (error) {
-                console.error('Error al buscar empresas:', error);
-                this.companies = [];
+                console.error('Error al buscar personas:', error);
+                this.people = [];
                 this.showDropdown = false;
             } finally {
                 this.loading = false;
@@ -48,53 +48,37 @@
         onSearchInput() {
             clearTimeout(this.searchTimeout);
             this.searchTimeout = setTimeout(() => {
-                this.searchCompanies();
-            }, 300);
+                this.searchPeople();
+            }, 200);
         },
         
-        selectCompany(company) {
-            this.selectedCompany = company;
-            this.search = company.display;
+        selectPerson(person) {
+            this.selectedPerson = person;
+            this.search = person.display;
             this.showDropdown = false;
             
             // Llenar los campos del formulario
-            {{ $xModel }}.company_id = company.id;
-            {{ $xModel }}.company_code = company.code;
-            {{ $xModel }}.company_name = company.name;
-            {{ $xModel }}.company_branch = company.branch;
-            {{ $xModel }}.company_industry = company.industry;
-            {{ $xModel }}.company_phone = company.phone;
-            {{ $xModel }}.company_email = company.email;
-            {{ $xModel }}.company_province = company.province;
-            {{ $xModel }}.company_municipality = company.municipality;
-            {{ $xModel }}.company_sector = company.sector;
-            {{ $xModel }}.company_extension = company.extension;
-            {{ $xModel }}.representative_name = company.representative_name;
-            {{ $xModel }}.representative_phone = company.representative_phone;
-            {{ $xModel }}.representative_email = company.representative_email;
+            {{ $xModel }}.person_id = person.id;
+            {{ $xModel }}.person_dni = person.dni;
+            {{ $xModel }}.person_name = person.name;
+            {{ $xModel }}.person_last_name = person.name.split(' ').slice(1).join(' ') || '';
+            {{ $xModel }}.person_phone = person.phone || '';
+            {{ $xModel }}.person_email = person.email || '';
         },
         
         clearSearch() {
             this.search = '';
-            this.companies = [];
+            this.people = [];
             this.showDropdown = false;
-            this.selectedCompany = null;
+            this.selectedPerson = null;
             
             // Limpiar los campos del formulario
-            {{ $xModel }}.company_id = '';
-            {{ $xModel }}.company_code = '';
-            {{ $xModel }}.company_name = '';
-            {{ $xModel }}.company_branch = '';
-            {{ $xModel }}.company_industry = '';
-            {{ $xModel }}.company_phone = '';
-            {{ $xModel }}.company_email = '';
-            {{ $xModel }}.company_province = '';
-            {{ $xModel }}.company_municipality = '';
-            {{ $xModel }}.company_sector = '';
-            {{ $xModel }}.company_extension = '';
-            {{ $xModel }}.representative_name = '';
-            {{ $xModel }}.representative_phone = '';
-            {{ $xModel }}.representative_email = '';
+            {{ $xModel }}.person_id = '';
+            {{ $xModel }}.person_dni = '';
+            {{ $xModel }}.person_name = '';
+            {{ $xModel }}.person_last_name = '';
+            {{ $xModel }}.person_phone = '';
+            {{ $xModel }}.person_email = '';
         }
     }"
     @click.away="showDropdown = false"
@@ -121,7 +105,7 @@
                 type="text" 
                 x-model="search"
                 @input="onSearchInput()"
-                @focus="if(search.length >= 2) { searchCompanies(); }"
+                @focus="if(search.length >= 1) { searchPeople(); }"
                 :placeholder="placeholder"
                 class="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 autocomplete="off"
@@ -162,23 +146,22 @@
         class="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-80 overflow-y-auto"
         style="display: none;"
     >
-        <template x-if="companies.length === 0 && !loading">
+        <template x-if="people.length === 0 && !loading">
             <div class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 text-center">
                 {{ $emptyMessage }}
             </div>
         </template>
 
-        <template x-for="company in companies" :key="company.id">
+        <template x-for="person in people" :key="person.id">
             <div
-                @click="selectCompany(company)"
+                @click="selectPerson(person)"
                 class="px-4 py-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border-b border-gray-200 dark:border-gray-700 last:border-b-0"
             >
                 <div class="flex flex-col">
-                    <span class="text-sm font-medium text-gray-900 dark:text-gray-100" x-text="company.name"></span>
-                    <span class="text-xs text-gray-500 dark:text-gray-400" x-text="'RNC: ' + company.rnc"></span>
+                    <span class="text-sm font-medium text-gray-900 dark:text-gray-100" x-text="person.name"></span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400" x-text="'Cédula: ' + person.dni"></span>
                 </div>
             </div>
         </template>
     </div>
 </div>
-

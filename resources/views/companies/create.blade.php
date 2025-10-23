@@ -208,8 +208,11 @@
                                     name="landline_phone" 
                                     id="landline_phone"
                                     value="{{ old('landline_phone') }}"
+                                    maxlength="13"
+                                    pattern="\d{4}-\d{3}-\d{4}"
                                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
-                                    placeholder="Ej: 809-555-1234"
+                                    placeholder="Ej: 8095-555-1234"
+                                    title="Formato: 0000-000-0000"
                                 >
                                 @error('landline_phone')
                                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -549,6 +552,31 @@
                         formattedValue += '-' + value.substring(3, 10);
                         if (value.length >= 11) {
                             formattedValue += '-' + value.substring(10, 11);
+                        }
+                    }
+                }
+                
+                e.target.value = formattedValue;
+            });
+        }
+
+        // Formato automático para teléfono fijo de la empresa (0000-000-0000)
+        const landlinePhoneInput = document.getElementById('landline_phone');
+        if (landlinePhoneInput) {
+            landlinePhoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, ''); // Solo números
+                
+                if (value.length > 11) {
+                    value = value.substring(0, 11);
+                }
+                
+                let formattedValue = '';
+                if (value.length > 0) {
+                    formattedValue = value.substring(0, 4);
+                    if (value.length >= 5) {
+                        formattedValue += '-' + value.substring(4, 7);
+                        if (value.length >= 8) {
+                            formattedValue += '-' + value.substring(7, 11);
                         }
                     }
                 }

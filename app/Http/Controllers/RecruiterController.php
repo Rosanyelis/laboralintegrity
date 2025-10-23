@@ -204,6 +204,100 @@ class RecruiterController extends Controller
     }
 
     /**
+     * Buscar empresas para reclutadores (AJAX)
+     */
+    public function searchCompanies(Request $request)
+    {
+        $search = $request->input('search');
+        
+        if (empty($search) || strlen($search) < 2) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Debe ingresar al menos 2 caracteres para buscar'
+            ], 400);
+        }
+
+        $companies = Company::with(['province', 'municipality'])
+            ->where(function($query) use ($search) {
+                $query->where('code_unique', 'like', "%{$search}%")
+                      ->orWhere('business_name', 'like', "%{$search}%")
+                      ->orWhere('rnc', 'like', "%{$search}%");
+            })
+            ->limit(10)
+            ->get();
+
+        $formattedCompanies = $companies->map(function($company) {
+            return [
+                'id' => $company->id,
+                'name' => $company->business_name,
+                'code' => $company->code_unique,
+                'rnc' => $company->rnc,
+                'branch' => $company->branch,
+                'industry' => $company->industry,
+                'phone' => $company->landline_phone,
+                'email' => $company->email,
+                'province' => $company->province?->name,
+                'municipality' => $company->municipality?->name,
+                'sector' => $company->sector,
+                'extension' => $company->extension,
+                'representative_name' => $company->representative_name,
+                'representative_phone' => $company->representative_mobile,
+                'representative_email' => $company->representative_email,
+                'display' => $company->business_name . ' - RNC: ' . $company->rnc
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $formattedCompanies
+        ]);
+    }
+
+    /**
+     * Buscar personas para reclutadores (AJAX)
+     */
+    public function searchPeople(Request $request)
+    {
+        $search = $request->input('search');
+        
+        if (empty($search) || strlen($search) < 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Debe ingresar al menos 1 carácter para buscar'
+            ], 400);
+        }
+
+        $people = Person::with(['residenceInformation.municipality.province'])
+            ->where(function($query) use ($search) {
+                $query->where('dni', 'like', "%{$search}%")
+                      ->orWhere('name', 'like', "%{$search}%")
+                      ->orWhere('last_name', 'like', "%{$search}%")
+                      ->orWhereRaw("CONCAT(name, ' ', last_name) LIKE ?", ["%{$search}%"]);
+            })
+            ->limit(10)
+            ->get();
+
+        $formattedPeople = $people->map(function($person) {
+            return [
+                'id' => $person->id,
+                'name' => $person->name . ' ' . $person->last_name,
+                'dni' => $person->dni,
+                'previous_dni' => $person->previous_dni,
+                'birth_date' => $person->birth_date,
+                'birth_place' => $person->birth_place,
+                'province' => $person->residenceInformation?->municipality?->province?->name,
+                'municipality' => $person->residenceInformation?->municipality?->name,
+                'display' => $person->name . ' ' . $person->last_name . ' - Cédula: ' . $person->dni
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $formattedPeople
+        ]);
+    }
+
+    /**
      * Exportar reclutadores seleccionados a PDF
      */
     public function exportToPdf(Request $request)

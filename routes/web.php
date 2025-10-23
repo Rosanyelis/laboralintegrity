@@ -32,7 +32,7 @@ Route::middleware('auth')->group(function () {
     
     // Rutas para el módulo de Personas Individuales
     Route::middleware(['module.access:people'])->group(function () {
-        // Rutas específicas ANTES del resource (para evitar conflictos con {person})
+        // Rutas específicas primero (para evitar conflictos)
         Route::get('/people/districts-by-municipality', [PersonController::class, 'getDistrictsByMunicipality'])->name('people.districts-by-municipality');
         Route::get('/people-api', [PersonController::class, 'api'])->name('people.api');
         Route::get('/people-statistics', [PersonController::class, 'statistics'])->name('people.statistics');
@@ -41,13 +41,15 @@ Route::middleware('auth')->group(function () {
         
         // Rutas de solo lectura (sin middleware adicional)
         Route::get('/people', [PersonController::class, 'index'])->name('people.index');
-        Route::get('/people/{person}', [PersonController::class, 'show'])->name('people.show');
         
         // Rutas que requieren permisos específicos
         Route::get('/people/create', [PersonController::class, 'create'])->name('people.create')
             ->middleware('permission:people.create');
         Route::post('/people', [PersonController::class, 'store'])->name('people.store')
             ->middleware('permission:people.create');
+        
+        // Rutas con parámetros (al final para evitar conflictos)
+        Route::get('/people/{person}', [PersonController::class, 'show'])->name('people.show');
         Route::get('/people/{person}/edit', [PersonController::class, 'edit'])->name('people.edit')
             ->middleware('permission:people.edit');
         Route::put('/people/{person}', [PersonController::class, 'update'])->name('people.update')
@@ -88,17 +90,24 @@ Route::middleware('auth')->group(function () {
     
     // Rutas para el módulo de Empresas
     Route::middleware(['module.access:companies'])->group(function () {
+        // Rutas específicas primero (para evitar conflictos)
         Route::get('/companies/check-rnc/{rnc}', [CompanyController::class, 'checkRnc'])->name('companies.check-rnc')
             ->middleware('permission:companies.check-rnc');
+        Route::get('/companies/municipalities/{province}', [CompanyController::class, 'getMunicipalities'])->name('companies.municipalities');
+        Route::post('/companies/export-pdf', [CompanyController::class, 'exportToPdf'])->name('companies.export-pdf')
+            ->middleware('permission:companies.export');
+        
         // Rutas de solo lectura (sin middleware adicional)
         Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
-        Route::get('/companies/{company}', [CompanyController::class, 'show'])->name('companies.show');
         
         // Rutas que requieren permisos específicos
         Route::get('/companies/create', [CompanyController::class, 'create'])->name('companies.create')
             ->middleware('permission:companies.create');
         Route::post('/companies', [CompanyController::class, 'store'])->name('companies.store')
             ->middleware('permission:companies.create');
+        
+        // Rutas con parámetros (al final para evitar conflictos)
+        Route::get('/companies/{company}', [CompanyController::class, 'show'])->name('companies.show');
         Route::get('/companies/{company}/edit', [CompanyController::class, 'edit'])->name('companies.edit')
             ->middleware('permission:companies.edit');
         Route::put('/companies/{company}', [CompanyController::class, 'update'])->name('companies.update')
@@ -106,25 +115,29 @@ Route::middleware('auth')->group(function () {
         Route::patch('/companies/{company}', [CompanyController::class, 'update'])->name('companies.update');
         Route::delete('/companies/{company}', [CompanyController::class, 'destroy'])->name('companies.destroy')
             ->middleware('permission:companies.delete');
-        Route::get('/companies/municipalities/{province}', [CompanyController::class, 'getMunicipalities'])->name('companies.municipalities');
-        Route::post('/companies/export-pdf', [CompanyController::class, 'exportToPdf'])->name('companies.export-pdf')
-            ->middleware('permission:companies.export');
     });
     
     // Rutas para el módulo de Reclutadores
     Route::middleware(['module.access:recruiters'])->group(function () {
+        // Rutas específicas primero (para evitar conflictos)
         Route::get('/recruiters/search-by-rnc', [RecruiterController::class, 'searchByRnc'])->name('recruiters.search-by-rnc');
         Route::get('/recruiters/search-by-dni', [RecruiterController::class, 'searchByDni'])->name('recruiters.search-by-dni');
+        Route::get('/recruiters/search-companies', [RecruiterController::class, 'searchCompanies'])->name('recruiters.search-companies');
+        Route::get('/recruiters/search-people', [RecruiterController::class, 'searchPeople'])->name('recruiters.search-people');
+        Route::post('/recruiters/export-pdf', [RecruiterController::class, 'exportToPdf'])->name('recruiters.export-pdf')
+            ->middleware('permission:recruiters.export');
         
         // Rutas de solo lectura (sin middleware adicional)
         Route::get('/recruiters', [RecruiterController::class, 'index'])->name('recruiters.index');
-        Route::get('/recruiters/{recruiter}', [RecruiterController::class, 'show'])->name('recruiters.show');
         
         // Rutas que requieren permisos específicos
         Route::get('/recruiters/create', [RecruiterController::class, 'create'])->name('recruiters.create')
             ->middleware('permission:recruiters.create');
         Route::post('/recruiters', [RecruiterController::class, 'store'])->name('recruiters.store')
             ->middleware('permission:recruiters.create');
+        
+        // Rutas con parámetros (al final para evitar conflictos)
+        Route::get('/recruiters/{recruiter}', [RecruiterController::class, 'show'])->name('recruiters.show');
         Route::get('/recruiters/{recruiter}/edit', [RecruiterController::class, 'edit'])->name('recruiters.edit')
             ->middleware('permission:recruiters.edit');
         Route::put('/recruiters/{recruiter}', [RecruiterController::class, 'update'])->name('recruiters.update')
@@ -132,13 +145,11 @@ Route::middleware('auth')->group(function () {
         Route::patch('/recruiters/{recruiter}', [RecruiterController::class, 'update'])->name('recruiters.update');
         Route::delete('/recruiters/{recruiter}', [RecruiterController::class, 'destroy'])->name('recruiters.destroy')
             ->middleware('permission:recruiters.delete');
-        
-        Route::post('/recruiters/export-pdf', [RecruiterController::class, 'exportToPdf'])->name('recruiters.export-pdf')
-            ->middleware('permission:recruiters.export');
     });
     
     // Rutas para el módulo de Integridad Laboral
     Route::middleware(['module.access:work-integrities'])->group(function () {
+        // Rutas específicas primero (para evitar conflictos)
         Route::get('/work-integrities/search-companies', [WorkIntegrityController::class, 'searchCompanies'])->name('work-integrities.search-companies');
         Route::get('/work-integrities/search-company', [WorkIntegrityController::class, 'searchCompanyByRnc'])->name('work-integrities.search-company');
         Route::post('/work-integrities/create-company', [WorkIntegrityController::class, 'createCompany'])->name('work-integrities.create-company')
@@ -149,17 +160,19 @@ Route::middleware('auth')->group(function () {
         Route::get('/work-integrities/search-people', [WorkIntegrityController::class, 'searchPeople'])->name('work-integrities.search-people');
         Route::get('/work-integrities/search-person', [WorkIntegrityController::class, 'searchPersonByDni'])->name('work-integrities.search-person');
         Route::get('/work-integrities/reference-codes', [WorkIntegrityController::class, 'getReferenceCodesByCertification'])->name('work-integrities.reference-codes');
-        // Nueva ruta para ver todas las integraciones de una persona
         Route::get('/work-integrities/person/{person}', [WorkIntegrityController::class, 'showPersonIntegrations'])->name('work-integrities.person.show');
+        
         // Rutas de solo lectura (sin middleware adicional)
         Route::get('/work-integrities', [WorkIntegrityController::class, 'index'])->name('work-integrities.index');
-        Route::get('/work-integrities/{workIntegrity}', [WorkIntegrityController::class, 'show'])->name('work-integrities.show');
         
         // Rutas que requieren permisos específicos
         Route::get('/work-integrities/create', [WorkIntegrityController::class, 'create'])->name('work-integrities.create')
             ->middleware('permission:work-integrities.create');
         Route::post('/work-integrities', [WorkIntegrityController::class, 'store'])->name('work-integrities.store')
             ->middleware('permission:work-integrities.create');
+        
+        // Rutas con parámetros (al final para evitar conflictos)
+        Route::get('/work-integrities/{workIntegrity}', [WorkIntegrityController::class, 'show'])->name('work-integrities.show');
         Route::get('/work-integrities/{workIntegrity}/edit', [WorkIntegrityController::class, 'edit'])->name('work-integrities.edit')
             ->middleware('permission:work-integrities.edit');
         Route::put('/work-integrities/{workIntegrity}', [WorkIntegrityController::class, 'update'])->name('work-integrities.update')
