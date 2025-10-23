@@ -140,8 +140,18 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 uppercase" for="cell_phone">TELÉFONO MÓVIL</label>
                             <input class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:text-white sm:text-sm" 
-                                   id="cell_phone" name="cell_phone" type="tel" value="{{ old('cell_phone') }}" placeholder="0000-000-0000" maxlength="12" />
+                                   id="cell_phone" name="cell_phone" type="tel" value="{{ old('cell_phone') }}" placeholder="0000-000-0000" maxlength="13" />
                             @error('cell_phone')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Teléfono Fijo -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 uppercase" for="home_phone">TELÉFONO FIJO</label>
+                            <input class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:text-white sm:text-sm" 
+                                   id="home_phone" name="home_phone" type="tel" value="{{ old('home_phone') }}" placeholder="0000-000-0000" maxlength="13" />
+                            @error('home_phone')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
@@ -210,7 +220,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 uppercase" for="emergency_contact_phone">TELÉFONO CONTACTO EMERGENCIA</label>
                             <input class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:text-white sm:text-sm" 
-                                id="emergency_contact_phone" name="emergency_contact_phone" type="tel" value="{{ old('emergency_contact_phone') }}" placeholder="0000-000-0000" maxlength="12" required />
+                                id="emergency_contact_phone" name="emergency_contact_phone" type="tel" value="{{ old('emergency_contact_phone') }}" placeholder="0000-000-0000" maxlength="13" required />
                             @error('emergency_contact_phone')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -372,11 +382,11 @@
                 input.value = value;
             } else if (value.length <= 7) {
                 input.value = value.substring(0, 4) + '-' + value.substring(4);
-            } else if (value.length <= 10) {
+            } else if (value.length <= 11) {
                 input.value = value.substring(0, 4) + '-' + value.substring(4, 7) + '-' + value.substring(7);
             } else {
-                // Limitar a 10 dígitos máximo
-                input.value = value.substring(0, 4) + '-' + value.substring(4, 7) + '-' + value.substring(7, 10);
+                // Limitar a 11 dígitos máximo
+                input.value = value.substring(0, 4) + '-' + value.substring(4, 7) + '-' + value.substring(7, 11);
             }
         }
 
@@ -396,9 +406,9 @@
                 return;
             }
             
-            // Si ya tiene 10 dígitos, no permitir más
+            // Si ya tiene 11 dígitos, no permitir más
             const currentValue = input.value.replace(/\D/g, '');
-            if (currentValue.length >= 10) {
+            if (currentValue.length >= 11) {
                 event.preventDefault();
                 return;
             }
@@ -477,6 +487,13 @@
         });
 
         document.getElementById('cell_phone').addEventListener('keydown', manejarTeclasTelefono);
+
+        // Event listeners para campo de teléfono fijo
+        document.getElementById('home_phone').addEventListener('input', function() {
+            aplicarMascaraTelefono(this);
+        });
+
+        document.getElementById('home_phone').addEventListener('keydown', manejarTeclasTelefono);
 
         // Event listeners para teléfono de contacto de emergencia
         document.getElementById('emergency_contact_phone').addEventListener('input', function() {
@@ -580,11 +597,18 @@
                 aplicarMascaraCedula(previousDniField);
             }
             
-            // Aplicar máscara inicial a campo de teléfono si tiene valor
+            // Aplicar máscara inicial a campo de teléfono móvil si tiene valor
             const cellPhoneField = document.getElementById('cell_phone');
             
             if (cellPhoneField.value) {
                 aplicarMascaraTelefono(cellPhoneField);
+            }
+            
+            // Aplicar máscara inicial a campo de teléfono fijo si tiene valor
+            const homePhoneField = document.getElementById('home_phone');
+            
+            if (homePhoneField.value) {
+                aplicarMascaraTelefono(homePhoneField);
             }
             
             // Aplicar máscara inicial a campo de teléfono de contacto de emergencia si tiene valor

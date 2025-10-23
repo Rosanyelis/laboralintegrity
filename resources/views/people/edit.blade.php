@@ -43,6 +43,31 @@
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
+
+                            <div>
+                                <label for="dni" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Cédula *
+                                </label>
+                                <input type="text" name="dni" id="dni" value="{{ old('dni', $person->dni) }}" 
+                                       placeholder="000-0000000-0" maxlength="13"
+                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                                       required>
+                                @error('dni')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="previous_dni" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Cédula Anterior
+                                </label>
+                                <input type="text" name="previous_dni" id="previous_dni" value="{{ old('previous_dni', $person->previous_dni) }}" 
+                                       placeholder="000-0000000-0" maxlength="13"
+                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">
+                                @error('previous_dni')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
 
                         <!-- Información de Contacto -->
@@ -63,7 +88,8 @@
                                 <label for="cell_phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Teléfono Celular
                                 </label>
-                                <input type="text" name="cell_phone" id="cell_phone" value="{{ old('cell_phone', $person->cell_phone) }}" 
+                                <input type="tel" name="cell_phone" id="cell_phone" value="{{ old('cell_phone', $person->cell_phone) }}" 
+                                       placeholder="0000-000-0000" maxlength="13"
                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">
                                 @error('cell_phone')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -74,9 +100,38 @@
                                 <label for="home_phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Teléfono Casa
                                 </label>
-                                <input type="text" name="home_phone" id="home_phone" value="{{ old('home_phone', $person->home_phone) }}" 
+                                <input type="tel" name="home_phone" id="home_phone" value="{{ old('home_phone', $person->home_phone) }}" 
+                                       placeholder="0000-000-0000" maxlength="13"
                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">
                                 @error('home_phone')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Información de Contacto de Emergencia -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="emergency_contact_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Nombre Contacto Emergencia *
+                                </label>
+                                <input type="text" name="emergency_contact_name" id="emergency_contact_name" value="{{ old('emergency_contact_name', $person->emergency_contact_name) }}" 
+                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                                       required>
+                                @error('emergency_contact_name')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="emergency_contact_phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Teléfono Contacto Emergencia *
+                                </label>
+                                <input type="tel" name="emergency_contact_phone" id="emergency_contact_phone" value="{{ old('emergency_contact_phone', $person->emergency_contact_phone) }}" 
+                                       placeholder="0000-000-0000" maxlength="13"
+                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                                       required>
+                                @error('emergency_contact_phone')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -304,6 +359,86 @@
     </div>
 
     <script>
+        // Función para aplicar máscara de cédula dominicana (000-0000000-0)
+        function aplicarMascaraCedula(input) {
+            let value = input.value.replace(/\D/g, ''); // Solo números
+            
+            if (value.length <= 3) {
+                input.value = value;
+            } else if (value.length <= 10) {
+                input.value = value.substring(0, 3) + '-' + value.substring(3);
+            } else if (value.length <= 11) {
+                input.value = value.substring(0, 3) + '-' + value.substring(3, 10) + '-' + value.substring(10);
+            } else {
+                // Limitar a 11 dígitos máximo
+                input.value = value.substring(0, 3) + '-' + value.substring(3, 10) + '-' + value.substring(10, 11);
+            }
+        }
+
+        // Función para aplicar máscara de teléfono (0000-000-0000)
+        function aplicarMascaraTelefono(input) {
+            let value = input.value.replace(/\D/g, ''); // Solo números
+            
+            if (value.length <= 4) {
+                input.value = value;
+            } else if (value.length <= 7) {
+                input.value = value.substring(0, 4) + '-' + value.substring(4);
+            } else if (value.length <= 11) {
+                input.value = value.substring(0, 4) + '-' + value.substring(4, 7) + '-' + value.substring(7);
+            } else {
+                // Limitar a 11 dígitos máximo
+                input.value = value.substring(0, 4) + '-' + value.substring(4, 7) + '-' + value.substring(7, 11);
+            }
+        }
+
+        // Función para manejar teclas especiales en campos de teléfono
+        function manejarTeclasTelefono(event) {
+            const input = event.target;
+            const key = event.key;
+            
+            // Permitir teclas de control (backspace, delete, tab, etc.)
+            if (['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(key)) {
+                return;
+            }
+            
+            // Solo permitir números
+            if (!/^\d$/.test(key)) {
+                event.preventDefault();
+                return;
+            }
+            
+            // Si ya tiene 11 dígitos, no permitir más
+            const currentValue = input.value.replace(/\D/g, '');
+            if (currentValue.length >= 11) {
+                event.preventDefault();
+                return;
+            }
+        }
+
+        // Función para manejar teclas especiales en campos de cédula
+        function manejarTeclasCedula(event) {
+            const input = event.target;
+            const key = event.key;
+            
+            // Permitir teclas de control (backspace, delete, tab, etc.)
+            if (['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(key)) {
+                return;
+            }
+            
+            // Solo permitir números
+            if (!/^\d$/.test(key)) {
+                event.preventDefault();
+                return;
+            }
+            
+            // Si ya tiene 11 dígitos, no permitir más
+            const currentValue = input.value.replace(/\D/g, '');
+            if (currentValue.length >= 11) {
+                event.preventDefault();
+                return;
+            }
+        }
+
         // Función para cargar distritos según el municipio seleccionado
         async function cargarDistritos(municipalityId, selectedDistrictId = null) {
             const districtSelect = document.getElementById('district_id');
@@ -379,6 +514,60 @@
                 
                 // Cargar distritos
                 cargarDistritos(municipalitySelect.value, oldDistrictId);
+            }
+
+            // Event listeners para campos de cédula
+            document.getElementById('dni').addEventListener('input', function() {
+                aplicarMascaraCedula(this);
+            });
+            document.getElementById('dni').addEventListener('keydown', manejarTeclasCedula);
+
+            document.getElementById('previous_dni').addEventListener('input', function() {
+                aplicarMascaraCedula(this);
+            });
+            document.getElementById('previous_dni').addEventListener('keydown', manejarTeclasCedula);
+
+            // Event listeners para campos de teléfono
+            document.getElementById('cell_phone').addEventListener('input', function() {
+                aplicarMascaraTelefono(this);
+            });
+            document.getElementById('cell_phone').addEventListener('keydown', manejarTeclasTelefono);
+
+            document.getElementById('home_phone').addEventListener('input', function() {
+                aplicarMascaraTelefono(this);
+            });
+            document.getElementById('home_phone').addEventListener('keydown', manejarTeclasTelefono);
+
+            document.getElementById('emergency_contact_phone').addEventListener('input', function() {
+                aplicarMascaraTelefono(this);
+            });
+            document.getElementById('emergency_contact_phone').addEventListener('keydown', manejarTeclasTelefono);
+
+            // Aplicar máscara inicial a campos si tienen valores
+            const dniField = document.getElementById('dni');
+            const previousDniField = document.getElementById('previous_dni');
+            const cellPhoneField = document.getElementById('cell_phone');
+            const homePhoneField = document.getElementById('home_phone');
+            const emergencyContactPhoneField = document.getElementById('emergency_contact_phone');
+            
+            if (dniField.value) {
+                aplicarMascaraCedula(dniField);
+            }
+            
+            if (previousDniField.value) {
+                aplicarMascaraCedula(previousDniField);
+            }
+            
+            if (cellPhoneField.value) {
+                aplicarMascaraTelefono(cellPhoneField);
+            }
+            
+            if (homePhoneField.value) {
+                aplicarMascaraTelefono(homePhoneField);
+            }
+            
+            if (emergencyContactPhoneField.value) {
+                aplicarMascaraTelefono(emergencyContactPhoneField);
             }
         });
     </script>

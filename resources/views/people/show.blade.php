@@ -247,7 +247,7 @@
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 uppercase" for="cell_phone">TELÉFONO MÓVIL</label>
                                             <input class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:text-white sm:text-sm" 
-                                                id="cell_phone" name="cell_phone" type="tel" value="{{ old('cell_phone', $person->cell_phone) }}" placeholder="0000-000-0000" maxlength="12" required />
+                                                id="cell_phone" name="cell_phone" type="tel" value="{{ old('cell_phone', $person->cell_phone) }}" placeholder="0000-000-0000" maxlength="13" required />
                                             @error('cell_phone')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -257,7 +257,7 @@
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 uppercase" for="home_phone">TELÉFONO FIJO</label>
                                             <input class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:text-white sm:text-sm" 
-                                                id="home_phone" name="home_phone" type="tel" value="{{ old('home_phone', $person->home_phone) }}" placeholder="0000-000-0000" maxlength="12" />
+                                                id="home_phone" name="home_phone" type="tel" value="{{ old('home_phone', $person->home_phone) }}" placeholder="0000-000-0000" maxlength="13" />
                                             @error('home_phone')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -337,7 +337,7 @@
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 uppercase" for="emergency_contact_phone">TELÉFONO CONTACTO EMERGENCIA</label>
                                             <input class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:text-white sm:text-sm" 
-                                                id="emergency_contact_phone" name="emergency_contact_phone" type="tel" value="{{ old('emergency_contact_phone', $person->emergency_contact_phone) }}" placeholder="0000-000-0000" maxlength="12" required />
+                                                id="emergency_contact_phone" name="emergency_contact_phone" type="tel" value="{{ old('emergency_contact_phone', $person->emergency_contact_phone) }}" placeholder="0000-000-0000" maxlength="13" required />
                                             @error('emergency_contact_phone')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -1414,15 +1414,7 @@
                                                     <div class="flex items-center space-x-2">
                                                         <!-- Botones de acción -->
                                                         <div class="flex space-x-1">
-                                                            @can('work-integrities.show')
-                                                            <a href="{{ route('work-integrities.show', ['workIntegrity' => $workIntegrity, 'return_to_person' => $person->id]) }}" 
-                                                               class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">
-                                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                                                </svg>
-                                                                Ver
-                                                            </a>
-                                                            @endcan
+                                                            
                                                             @can('work-integrities.edit')
                                                             <a href="{{ route('work-integrities.edit', ['workIntegrity' => $workIntegrity, 'return_to_person' => $person->id]) }}" 
                                                                class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-yellow-600 hover:text-yellow-800 dark:text-yellow-400 dark:hover:text-yellow-300 transition-colors duration-200">
@@ -1452,61 +1444,96 @@
                                                  x-transition:leave-start="opacity-100 transform translate-y-0"
                                                  x-transition:leave-end="opacity-0 transform -translate-y-2"
                                                  class="border-t border-gray-200 dark:border-gray-700">
-                                                <div class="p-6">
-                                                    <!-- Información detallada -->
-                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Empresa</label>
-                                                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $workIntegrity->company_name ?? 'Sin empresa' }}</p>
+                                                <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                                    <!-- Información de la Empresa -->
+                                                    <div class="mb-6">
+                                                        <h5 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Información de la Empresa:</h5>
+                                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                            <div class="space-y-3">
+                                                                <div>
+                                                                    <span class="text-sm text-gray-600 dark:text-gray-400">Nombre de la Empresa:</span>
+                                                                    <span class="text-sm font-semibold text-gray-900 dark:text-gray-100 ml-2">{{ $workIntegrity->company_name ?? 'N/A' }}</span>
+                                                                </div>
+                                                                <div>
+                                                                    <span class="text-sm text-gray-600 dark:text-gray-400">Sucursal:</span>
+                                                                    <span class="text-sm font-semibold text-gray-900 dark:text-gray-100 ml-2">{{ $workIntegrity->company_branch ?? 'N/A' }}</span>
+                                                                </div>
+                                                                <div>
+                                                                    <span class="text-sm text-gray-600 dark:text-gray-400">Email:</span>
+                                                                    <span class="text-sm font-semibold text-gray-900 dark:text-gray-100 ml-2">{{ $workIntegrity->company_email ?? 'N/A' }}</span>
+                                                                </div>
+                                                                <div>
+                                                                    <span class="text-sm text-gray-600 dark:text-gray-400">Teléfono del Representante:</span>
+                                                                    <span class="text-sm font-semibold text-gray-900 dark:text-gray-100 ml-2">{{ $workIntegrity->representative_phone ?? 'N/A' }}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="space-y-3">
+                                                                <div>
+                                                                    <span class="text-sm text-gray-600 dark:text-gray-400">Código/RNC:</span>
+                                                                    <span class="text-sm font-semibold text-gray-900 dark:text-gray-100 ml-2">{{ $workIntegrity->company_code ?? 'N/A' }}</span>
+                                                                </div>
+                                                                <div>
+                                                                    <span class="text-sm text-gray-600 dark:text-gray-400">Teléfono:</span>
+                                                                    <span class="text-sm font-semibold text-gray-900 dark:text-gray-100 ml-2">{{ $workIntegrity->company_phone ?? 'N/A' }}</span>
+                                                                </div>
+                                                                <div>
+                                                                    <span class="text-sm text-gray-600 dark:text-gray-400">Representante:</span>
+                                                                    <span class="text-sm font-semibold text-gray-900 dark:text-gray-100 ml-2">{{ $workIntegrity->representative_name ?? 'N/A' }}</span>
+                                                                </div>
+                                                                <div>
+                                                                    <span class="text-sm text-gray-600 dark:text-gray-400">Email del Representante:</span>
+                                                                    <span class="text-sm font-semibold text-gray-900 dark:text-gray-100 ml-2">{{ $workIntegrity->representative_email ?? 'N/A' }}</span>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Registrado por</label>
-                                                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $workIntegrity->creator?->name ?? 'N/A' }}</p>
-                                                        </div>
-                                                        @if($workIntegrity->resultado)
-                                                        <div class="md:col-span-2">
-                                                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Resultado</label>
-                                                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $workIntegrity->resultado }}</p>
-                                                        </div>
-                                                        @endif
                                                     </div>
-                                                    
-                                                    <!-- Items de la integración -->
-                                                    @if($workIntegrity->items->count() > 0)
-                                                        <div>
-                                                            <h5 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Items de Depuración</h5>
+
+                                                    <!-- Hoja Integral de Vida -->
+                                                    <div class="mb-6">
+                                                        <h5 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Hoja Integral de Vida</h5>
+                                                        @if($workIntegrity->items->count() > 0)
                                                             <div class="overflow-x-auto">
-                                                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                                                    <thead class="bg-gray-50 dark:bg-gray-700">
+                                                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                                                                    <thead class="bg-gray-100 dark:bg-gray-700">
                                                                         <tr>
-                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Tipo</th>
-                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Código</th>
-                                                                            @can('work-integrities.view-actual-results')
-                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Resultado Real</th>
-                                                                            @endcan
-                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Descripción</th>
+                                                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TIPO DE DEPURACIÓN</th>
+                                                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">CÓDIGO</th>
+                                                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">RESULTADO REAL</th>
+                                                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">DESCRIPCIÓN</th>
                                                                         </tr>
                                                                     </thead>
-                                                                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                                                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
                                                                         @foreach($workIntegrity->items as $item)
                                                                             <tr>
-                                                                                <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">{{ $item->certification?->name ?? 'N/A' }}</td>
-                                                                                <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">{{ $item->reference_code }}</td>
-                                                                                @can('work-integrities.view-actual-results')
-                                                                                <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">{{ $item->actual_result ?? 'N/A' }}</td>
-                                                                                @endcan
-                                                                                <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">{{ $item->reference_name }}</td>
+                                                                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                                                    {{ $item->certification?->name ?? 'N/A' }}
+                                                                                </td>
+                                                                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                                                    {{ $item->reference_code ?? 'N/A' }}
+                                                                                </td>
+                                                                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                                                    {{ $item->actual_result ?? 'N/A' }}
+                                                                                </td>
+                                                                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                                                    {{ $item->reference_name ?? 'N/A' }}
+                                                                                </td>
                                                                             </tr>
                                                                         @endforeach
                                                                     </tbody>
                                                                 </table>
                                                             </div>
+                                                        @else
+                                                            <p class="text-sm text-gray-600 dark:text-gray-400">No hay ítems para esta integración.</p>
+                                                        @endif
+                                                    </div>
+
+                                                    <!-- Resultado -->
+                                                    <div class="mt-4">
+                                                        <div>
+                                                            <span class="text-sm text-gray-600 dark:text-gray-400">Resultado:</span>
+                                                            <span class="text-sm font-semibold text-gray-900 dark:text-gray-100 ml-2">{{ $workIntegrity->resultado ?? 'N/A' }}</span>
                                                         </div>
-                                                    @else
-                                                        <div class="text-center py-4 text-gray-500 dark:text-gray-400">
-                                                            <p class="text-sm">No hay items de depuración registrados.</p>
-                                                        </div>
-                                                    @endif
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -1539,6 +1566,22 @@
     </div>
 
     <script>
+        // Función para aplicar máscara de cédula dominicana (000-0000000-0)
+        function aplicarMascaraCedula(input) {
+            let value = input.value.replace(/\D/g, ''); // Solo números
+            
+            if (value.length <= 3) {
+                input.value = value;
+            } else if (value.length <= 10) {
+                input.value = value.substring(0, 3) + '-' + value.substring(3);
+            } else if (value.length <= 11) {
+                input.value = value.substring(0, 3) + '-' + value.substring(3, 10) + '-' + value.substring(10);
+            } else {
+                // Limitar a 11 dígitos máximo
+                input.value = value.substring(0, 3) + '-' + value.substring(3, 10) + '-' + value.substring(10, 11);
+            }
+        }
+
         // Función para aplicar máscara de teléfono (0000-000-0000)
         function aplicarMascaraTelefono(input) {
             let value = input.value.replace(/\D/g, ''); // Solo números
@@ -1547,11 +1590,35 @@
                 input.value = value;
             } else if (value.length <= 7) {
                 input.value = value.substring(0, 4) + '-' + value.substring(4);
-            } else if (value.length <= 10) {
+            } else if (value.length <= 11) {
                 input.value = value.substring(0, 4) + '-' + value.substring(4, 7) + '-' + value.substring(7);
             } else {
-                // Limitar a 10 dígitos máximo
-                input.value = value.substring(0, 4) + '-' + value.substring(4, 7) + '-' + value.substring(7, 10);
+                // Limitar a 11 dígitos máximo
+                input.value = value.substring(0, 4) + '-' + value.substring(4, 7) + '-' + value.substring(7, 11);
+            }
+        }
+
+        // Función para manejar teclas especiales en campos de cédula
+        function manejarTeclasCedula(event) {
+            const input = event.target;
+            const key = event.key;
+            
+            // Permitir teclas de control (backspace, delete, tab, etc.)
+            if (['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(key)) {
+                return;
+            }
+            
+            // Solo permitir números
+            if (!/^\d$/.test(key)) {
+                event.preventDefault();
+                return;
+            }
+            
+            // Si ya tiene 11 dígitos, no permitir más
+            const currentValue = input.value.replace(/\D/g, '');
+            if (currentValue.length >= 11) {
+                event.preventDefault();
+                return;
             }
         }
 
@@ -1571,9 +1638,9 @@
                 return;
             }
             
-            // Si ya tiene 10 dígitos, no permitir más
+            // Si ya tiene 11 dígitos, no permitir más
             const currentValue = input.value.replace(/\D/g, '');
-            if (currentValue.length >= 10) {
+            if (currentValue.length >= 11) {
                 event.preventDefault();
                 return;
             }
@@ -1783,6 +1850,60 @@
                 }
             };
             
+            // Event listeners para campos de cédula
+            const dniField = document.getElementById('dni');
+            if (dniField) {
+                dniField.addEventListener('input', function() {
+                    aplicarMascaraCedula(this);
+                });
+                dniField.addEventListener('keydown', manejarTeclasCedula);
+                
+                // Aplicar máscara inicial si tiene valor
+                if (dniField.value) {
+                    aplicarMascaraCedula(dniField);
+                }
+            }
+
+            const previousDniField = document.getElementById('previous_dni');
+            if (previousDniField) {
+                previousDniField.addEventListener('input', function() {
+                    aplicarMascaraCedula(this);
+                });
+                previousDniField.addEventListener('keydown', manejarTeclasCedula);
+                
+                // Aplicar máscara inicial si tiene valor
+                if (previousDniField.value) {
+                    aplicarMascaraCedula(previousDniField);
+                }
+            }
+
+            // Event listeners para campos de teléfono
+            const cellPhoneField = document.getElementById('cell_phone');
+            if (cellPhoneField) {
+                cellPhoneField.addEventListener('input', function() {
+                    aplicarMascaraTelefono(this);
+                });
+                cellPhoneField.addEventListener('keydown', manejarTeclasTelefono);
+                
+                // Aplicar máscara inicial si tiene valor
+                if (cellPhoneField.value) {
+                    aplicarMascaraTelefono(cellPhoneField);
+                }
+            }
+
+            const homePhoneField = document.getElementById('home_phone');
+            if (homePhoneField) {
+                homePhoneField.addEventListener('input', function() {
+                    aplicarMascaraTelefono(this);
+                });
+                homePhoneField.addEventListener('keydown', manejarTeclasTelefono);
+                
+                // Aplicar máscara inicial si tiene valor
+                if (homePhoneField.value) {
+                    aplicarMascaraTelefono(homePhoneField);
+                }
+            }
+
             // Event listeners para teléfono de contacto de emergencia
             const emergencyContactPhoneField = document.getElementById('emergency_contact_phone');
             if (emergencyContactPhoneField) {
