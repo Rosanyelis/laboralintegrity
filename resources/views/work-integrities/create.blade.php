@@ -206,6 +206,7 @@
                                         />
                                     </div>
                                     <div class="flex items-end">
+                                        @if(!$selectedPerson)
                                         <button 
                                             type="button"
                                             @click="showNewPersonModal = true"
@@ -216,6 +217,7 @@
                                             </svg>
                                             Nueva Persona
                                         </button>
+                                        @endif
                                     </div>
                                 </div>
                                 <input type="hidden" name="person_id" x-model="formData.person_id" required>
