@@ -35,6 +35,7 @@ class PermissionSeeder extends Seeder
             'people.manage-personal-references' => 'Gestionar Referencias Personales',
             'people.api' => 'Acceso API de Personas',
             'people.statistics' => 'Ver Estadísticas de Personas',
+            'people.export' => 'Exportar Personas a PDF',
             
             // Módulo de Empresas
             'companies.index' => 'Ver Listado de Empresas',
@@ -43,6 +44,7 @@ class PermissionSeeder extends Seeder
             'companies.edit' => 'Editar Empresa',
             'companies.delete' => 'Eliminar Empresa',
             'companies.check-rnc' => 'Verificar RNC de Empresa',
+            'companies.export' => 'Exportar Empresas a PDF',
             
             // Módulo de Tipos de Depuración
             'certifications.index' => 'Ver Tipos de Depuración',
@@ -64,6 +66,7 @@ class PermissionSeeder extends Seeder
             'recruiters.show' => 'Ver Detalle de Reclutador',
             'recruiters.edit' => 'Editar Reclutador',
             'recruiters.delete' => 'Eliminar Reclutador',
+            'recruiters.export' => 'Exportar Reclutadores a PDF',
             
             // Módulo de Integridad Laboral
             'work-integrities.index' => 'Ver Listado de Depuraciones',
@@ -119,15 +122,18 @@ class PermissionSeeder extends Seeder
             'people.manage-educational-skills',
             'people.manage-work-experiences',
             'people.manage-personal-references',
+            'people.export',
             'companies.index',
             'companies.create',
             'companies.show',
             'companies.edit',
             'companies.check-rnc',
+            'companies.export',
             'recruiters.index',
             'recruiters.create',
             'recruiters.show',
             'recruiters.edit',
+            'recruiters.export',
             'work-integrities.index',
             'work-integrities.create',
             'work-integrities.show',
