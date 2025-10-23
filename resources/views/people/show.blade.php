@@ -1539,6 +1539,46 @@
     </div>
 
     <script>
+        // Función para aplicar máscara de teléfono (0000-000-0000)
+        function aplicarMascaraTelefono(input) {
+            let value = input.value.replace(/\D/g, ''); // Solo números
+            
+            if (value.length <= 4) {
+                input.value = value;
+            } else if (value.length <= 7) {
+                input.value = value.substring(0, 4) + '-' + value.substring(4);
+            } else if (value.length <= 10) {
+                input.value = value.substring(0, 4) + '-' + value.substring(4, 7) + '-' + value.substring(7);
+            } else {
+                // Limitar a 10 dígitos máximo
+                input.value = value.substring(0, 4) + '-' + value.substring(4, 7) + '-' + value.substring(7, 10);
+            }
+        }
+
+        // Función para manejar teclas especiales en campos de teléfono
+        function manejarTeclasTelefono(event) {
+            const input = event.target;
+            const key = event.key;
+            
+            // Permitir teclas de control (backspace, delete, tab, etc.)
+            if (['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(key)) {
+                return;
+            }
+            
+            // Solo permitir números
+            if (!/^\d$/.test(key)) {
+                event.preventDefault();
+                return;
+            }
+            
+            // Si ya tiene 10 dígitos, no permitir más
+            const currentValue = input.value.replace(/\D/g, '');
+            if (currentValue.length >= 10) {
+                event.preventDefault();
+                return;
+            }
+        }
+
         // Interceptar todos los formularios de eliminación de habilidades educativas
         document.addEventListener('DOMContentLoaded', function() {
             const deleteForms = document.querySelectorAll('.delete-skill-form');
@@ -1742,6 +1782,20 @@
                     console.log('Eliminación cancelada');
                 }
             };
+            
+            // Event listeners para teléfono de contacto de emergencia
+            const emergencyContactPhoneField = document.getElementById('emergency_contact_phone');
+            if (emergencyContactPhoneField) {
+                emergencyContactPhoneField.addEventListener('input', function() {
+                    aplicarMascaraTelefono(this);
+                });
+                emergencyContactPhoneField.addEventListener('keydown', manejarTeclasTelefono);
+                
+                // Aplicar máscara inicial si tiene valor
+                if (emergencyContactPhoneField.value) {
+                    aplicarMascaraTelefono(emergencyContactPhoneField);
+                }
+            }
         });
     </script>
 </x-app-layout>

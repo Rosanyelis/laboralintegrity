@@ -159,8 +159,18 @@
                         <!-- Tipo de Sangre -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 uppercase" for="blood_type">TIPO DE SANGRE</label>
-                            <input class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:text-white sm:text-sm" 
-                                   id="blood_type" name="blood_type" type="text" value="{{ old('blood_type') }}" />
+                            <select class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:text-white sm:text-sm" 
+                                id="blood_type" name="blood_type">
+                                <option value="">Seleccionar...</option>
+                                <option value="A+" {{ old('blood_type') == 'A+' ? 'selected' : '' }}>A+</option>
+                                <option value="A-" {{ old('blood_type') == 'A-' ? 'selected' : '' }}>A-</option>
+                                <option value="B+" {{ old('blood_type') == 'B+' ? 'selected' : '' }}>B+</option>
+                                <option value="B-" {{ old('blood_type') == 'B-' ? 'selected' : '' }}>B-</option>
+                                <option value="AB+" {{ old('blood_type') == 'AB+' ? 'selected' : '' }}>AB+</option>
+                                <option value="AB-" {{ old('blood_type') == 'AB-' ? 'selected' : '' }}>AB-</option>
+                                <option value="O+" {{ old('blood_type') == 'O+' ? 'selected' : '' }}>O+</option>
+                                <option value="O-" {{ old('blood_type') == 'O-' ? 'selected' : '' }}>O-</option>
+                            </select>
                             @error('blood_type')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -186,7 +196,35 @@
                             @enderror
                         </div>
 
-                        
+                        <!-- Nombre Contacto Emergencia -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 uppercase" for="emergency_contact_name">NOMBRE CONTACTO EMERGENCIA</label>
+                            <input class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:text-white sm:text-sm" 
+                                id="emergency_contact_name" name="emergency_contact_name" type="text" value="{{ old('emergency_contact_name') }}" required />
+                            @error('emergency_contact_name')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Teléfono Contacto Emergencia -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 uppercase" for="emergency_contact_phone">TELÉFONO CONTACTO EMERGENCIA</label>
+                            <input class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:text-white sm:text-sm" 
+                                id="emergency_contact_phone" name="emergency_contact_phone" type="tel" value="{{ old('emergency_contact_phone') }}" placeholder="0000-000-0000" maxlength="12" required />
+                            @error('emergency_contact_phone')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Otros Contactos de Emergencia -->
+                        <div class="md:col-span-3">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 uppercase" for="other_emergency_contacts">OTROS CONTACTOS DE EMERGENCIA</label>
+                            <input class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:text-white sm:text-sm" 
+                                id="other_emergency_contacts" name="other_emergency_contacts" placeholder="Información adicional de contactos de emergencia..." value="{{ old('other_emergency_contacts') }}" />
+                            @error('other_emergency_contacts')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
 
                     <!-- Datos de Residencia -->
@@ -440,6 +478,12 @@
 
         document.getElementById('cell_phone').addEventListener('keydown', manejarTeclasTelefono);
 
+        // Event listeners para teléfono de contacto de emergencia
+        document.getElementById('emergency_contact_phone').addEventListener('input', function() {
+            aplicarMascaraTelefono(this);
+        });
+        document.getElementById('emergency_contact_phone').addEventListener('keydown', manejarTeclasTelefono);
+
         // Event listener para el campo de fecha de nacimiento
         document.getElementById('birth_date').addEventListener('change', calcularEdad);
         document.getElementById('birth_date').addEventListener('input', calcularEdad);
@@ -541,6 +585,13 @@
             
             if (cellPhoneField.value) {
                 aplicarMascaraTelefono(cellPhoneField);
+            }
+            
+            // Aplicar máscara inicial a campo de teléfono de contacto de emergencia si tiene valor
+            const emergencyContactPhoneField = document.getElementById('emergency_contact_phone');
+            
+            if (emergencyContactPhoneField.value) {
+                aplicarMascaraTelefono(emergencyContactPhoneField);
             }
         });
     </script>
