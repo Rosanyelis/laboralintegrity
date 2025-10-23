@@ -14,15 +14,26 @@ class CertificationSeeder extends Seeder
     public function run(): void
     {
         $certifications = [
-            ['name' => 'Procuraduria'],
-            ['name' => 'Investigaciones (Hoja de vida)'],
-            ['name' => 'Analiticas y Psicometría'],
-            ['name' => 'Visita Domiciliaria'],
-            ['name' => 'Levantamiento de Caracteristicas'],
+            ['name' => 'Procuraduría'],
+            ['name' => 'Policía Nacional'],
+            ['name' => 'Otras Actividades personales'],
+            ['name' => 'Actividades no procesadas'],
+            ['name' => 'Prueba Poligráfica'],
+            ['name' => 'Prueba Psicométrica'],
+            ['name' => 'Prueba de Contagio'],
+            ['name' => 'Sustancia Prohibida'],
+            ['name' => 'No Abusa Alcohol'],
+            ['name' => 'Investigación de entorno'],
+            ['name' => 'Integridad Familiar'],
+            ['name' => 'Levantamiento Dactilares'],
+            ['name' => 'Características Fotográfica'],
         ];
 
         foreach ($certifications as $certification) {
-            Certification::create($certification);
+            Certification::firstOrCreate(
+                ['name' => $certification['name']],
+                $certification
+            );
         }
     }
 }

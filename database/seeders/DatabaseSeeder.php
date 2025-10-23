@@ -37,6 +37,11 @@ class DatabaseSeeder extends Seeder
             CertificationSeeder::class,
         ]);
 
+        // Ejecutar seeder de códigos de referencia
+        $this->call([
+            ReferenceCodeSeeder::class,
+        ]);
+
         // Ejecutar seeder de permisos y roles
         $this->call([
             PermissionSeeder::class,
