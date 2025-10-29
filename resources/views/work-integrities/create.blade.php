@@ -235,7 +235,7 @@
                                     x-model="formData.person_name"
                                     readonly
                                     required
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-600 text-gray-900 dark:text-gray-100"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-600 text-gray-900 dark:text-gray-100 uppercase"
                                 >
                             </div>
                             
@@ -806,11 +806,10 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Toast Notification Component -->
-    <div 
-        x-show="showToast"
+        <!-- Toast Notification Component -->
+        <div 
+            x-show="showToast"
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0 transform translate-y-full"
         x-transition:enter-end="opacity-100 transform translate-y-0"
@@ -855,6 +854,7 @@
             </button>
         </div>
     </div>
+    </div>
 
     <script>
         function workIntegrityForm() {
@@ -895,6 +895,10 @@
                 showNewCompanyModal: false,
                 showNewPersonModal: false,
                 municipalities: [],
+                // Toast notification properties
+                showToast: false,
+                toastMessage: '',
+                toastType: '',
                 newCompany: {
                     business_name: '',
                     rnc: '',
@@ -1134,8 +1138,17 @@
                         
                         const data = await response.json();
                         
-                        if (data.success) {
-                            // Llenar automáticamente los campos del formulario principal
+                        // Verificar primero si la cédula ya existe (status 422)
+                        if (!response.ok && response.status === 422 && data.existing_person) {
+                            // La persona ya existe - mostrar error y limpiar formulario
+                            const dni = data.existing_person.dni;
+                            this.showToastNotification(`La persona con cédula ${dni} ya se encuentra registrada en el sistema.`, 'error');
+                            this.resetNewPersonForm();
+                            return;
+                        }
+                        
+                        if (data.success && response.ok) {
+                            // Persona creada exitosamente
                             this.formData.person_id = data.person.id;
                             this.formData.person_dni = data.person.dni;
                             this.formData.person_name = data.person.name + ' ' + data.person.last_name;
@@ -1150,6 +1163,7 @@
                             
                             this.showToastNotification('Persona creada correctamente y seleccionada automáticamente.', 'success');
                         } else {
+                            // Otro tipo de error
                             console.error('Error del servidor:', data);
                             this.showToastNotification('Error: ' + (data.message || 'Error desconocido del servidor'), 'error');
                         }
@@ -1171,11 +1185,6 @@
                         
                     };
                 },
-                
-                // Toast notification properties
-                showToast: false,
-                toastMessage: '',
-                toastType: '', // 'success' or 'error'
                 
                 showToastNotification(message, type = 'success') {
                     this.toastMessage = message;

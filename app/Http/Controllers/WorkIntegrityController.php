@@ -494,7 +494,7 @@ class WorkIntegrityController extends Controller
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
-                'dni' => 'required|string|max:20|unique:people,dni',
+                'dni' => 'required|string|max:20',
                 'previous_dni' => 'nullable|string|max:20',
                 'birth_date' => 'required|date|before:today',
                 'birth_place' => 'required|string|max:255',
@@ -502,7 +502,6 @@ class WorkIntegrityController extends Controller
                 'name.required' => 'El nombre es obligatorio.',
                 'last_name.required' => 'Los apellidos son obligatorios.',
                 'dni.required' => 'La cédula es obligatoria.',
-                'dni.unique' => 'Ya existe una persona con esta cédula.',
                 'birth_date.required' => 'La fecha de nacimiento es obligatoria.',
                 'birth_date.before' => 'La fecha de nacimiento debe ser anterior a hoy.',
                 'birth_place.required' => 'El lugar de nacimiento es obligatorio.',
@@ -527,6 +526,9 @@ class WorkIntegrityController extends Controller
                     'name' => $existingPerson->name,
                     'last_name' => $existingPerson->last_name,
                     'dni' => $existingPerson->dni,
+                    'previous_dni' => $existingPerson->previous_dni,
+                    'birth_date' => $existingPerson->birth_date ? $existingPerson->birth_date->format('Y-m-d') : null,
+                    'birth_place' => $existingPerson->birth_place,
                 ]
             ], 422);
         }
