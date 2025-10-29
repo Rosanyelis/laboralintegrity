@@ -20,6 +20,7 @@ Route::get('/dashboard', function () {
         'people_count' => \App\Models\Person::count(),
         'companies_count' => \App\Models\Company::count(),
         'recruiters_count' => \App\Models\Recruiter::count(),
+        'work_integrities_count' => \App\Models\WorkIntegrity::count(),
     ];
     
     return view('dashboard', $stats);

@@ -12,7 +12,7 @@
                 </div>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-center">
                         <div class="flex justify-center mb-4">
@@ -46,6 +46,18 @@
                         </div>
                         <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">{{ number_format($recruiters_count) }}</h3>
                         <p class="text-lg font-medium text-gray-500 dark:text-gray-400">Cantidad de Integradores</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-center">
+                        <div class="flex justify-center mb-4">
+                            <svg class="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">{{ number_format($work_integrities_count) }}</h3>
+                        <p class="text-lg font-medium text-gray-500 dark:text-gray-400">Total de Investigaciones</p>
                     </div>
                 </div>
             </div>
