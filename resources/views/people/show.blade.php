@@ -407,23 +407,14 @@
                                                    readonly />
                                         </div>
                                         
-                                        <!-- Municipio (readonly) -->
+                                        <!-- Municipio (selector activo) -->
                                         <div>
-                                            <label for="municipio_residence" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            <label for="municipio_select_residence" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                                 MUNICIPIO
                                             </label>
-                                            <input type="text" 
-                                                   id="municipio_residence" 
-                                                   name="municipio"
-                                                   value="{{ old('municipio', $person->residenceInformation?->municipality?->name ?? '') }}"
-                                                   class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:text-gray-400 sm:text-sm bg-gray-100 dark:bg-gray-600" 
-                                                   readonly />
-                                            
-                                            <!-- Selector de municipio (solo visible cuando distrito = "no_aplica") -->
                                             <select id="municipio_select_residence" 
                                                     name="municipality_id"
-                                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:text-white sm:text-sm" 
-                                                    style="display: none;">
+                                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:text-white sm:text-sm">
                                                 <option value="">Seleccione un municipio...</option>
                                                 @foreach($municipalities as $municipality)
                                                     @php
@@ -442,6 +433,9 @@
                                                     </option>
                                                 @endforeach
                                             </select>
+                                            @error('municipality_id')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
                                         </div>
                                         
                                         <!-- Distrito (select) -->
@@ -451,29 +445,9 @@
                                             </label>
                                             <select id="district_id_residence" 
                                                     name="district_id"
-                                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:text-white sm:text-sm">
-                                                <option value="">Seleccione...</option>
-                                                <option value="no_aplica" {{ old('district_id', $person->residenceInformation?->district_id ?? '') == 'no_aplica' || (!$person->residenceInformation?->district_id && $person->residenceInformation) ? 'selected' : '' }}>No aplica</option>
-                                                @foreach($districts as $district)
-                                                    @php
-                                                        $regional = $district->municipality && $district->municipality->province && $district->municipality->province->regional 
-                                                            ? $district->municipality->province->regional->name 
-                                                            : '';
-                                                        $provincia = $district->municipality && $district->municipality->province 
-                                                            ? $district->municipality->province->name 
-                                                            : '';
-                                                        $municipio = $district->municipality 
-                                                            ? $district->municipality->name 
-                                                            : '';
-                                                    @endphp
-                                                    <option value="{{ $district->id }}" 
-                                                            data-regional="{{ $regional }}"
-                                                            data-provincia="{{ $provincia }}"
-                                                            data-municipio="{{ $municipio }}"
-                                                            {{ old('district_id', $person->residenceInformation?->district_id ?? '') == $district->id ? 'selected' : '' }}>
-                                                        {{ $district->name }}
-                                                    </option>
-                                                @endforeach
+                                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:text-white sm:text-sm disabled:bg-gray-100 disabled:dark:bg-gray-600 disabled:cursor-not-allowed"
+                                                    disabled>
+                                                <option value="">{{ $person->residenceInformation?->municipality_id ? 'Cargando distritos...' : 'Seleccione primero un municipio...' }}</option>
                                             </select>
                                             @error('district_id')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -555,66 +529,102 @@
                         </form>
                         
                         <script>
-                            // Función para auto-completar campos cuando se selecciona un distrito
-                            document.getElementById('district_id_residence').addEventListener('change', function() {
-                                const distritoSeleccionado = this.options[this.selectedIndex];
-                                const regionalInput = document.getElementById('regional_residence');
-                                const provinciaInput = document.getElementById('provincia_residence');
-                                const municipioInput = document.getElementById('municipio_residence');
-                                const municipioSelect = document.getElementById('municipio_select_residence');
-
-                                if (distritoSeleccionado.value === 'no_aplica') {
-                                    // Mostrar selector de municipios y ocultar input readonly
-                                    municipioSelect.style.display = 'block';
-                                    municipioInput.style.display = 'none';
-                                    // Limpiar campos readonly
-                                    regionalInput.value = '';
-                                    provinciaInput.value = '';
-                                    municipioInput.value = '';
-                                } else if (distritoSeleccionado.value) {
-                                    // Ocultar selector de municipios y mostrar input readonly
-                                    municipioSelect.style.display = 'none';
-                                    municipioInput.style.display = 'block';
-                                    // Auto-completar con datos del distrito
-                                    regionalInput.value = distritoSeleccionado.getAttribute('data-regional') || '';
-                                    provinciaInput.value = distritoSeleccionado.getAttribute('data-provincia') || '';
-                                    municipioInput.value = distritoSeleccionado.getAttribute('data-municipio') || '';
-                                } else {
-                                    // Limpiar todo
-                                    municipioSelect.style.display = 'none';
-                                    municipioInput.style.display = 'block';
-                                    regionalInput.value = '';
-                                    provinciaInput.value = '';
-                                    municipioInput.value = '';
+                            // Función para cargar distritos según el municipio seleccionado
+                            async function cargarDistritos(municipalityId, selectedDistrictId = null) {
+                                const districtSelect = document.getElementById('district_id_residence');
+                                
+                                if (!municipalityId) {
+                                    districtSelect.innerHTML = '<option value="">Seleccione primero un municipio...</option>';
+                                    districtSelect.disabled = true;
+                                    return;
                                 }
-                            });
+                                
+                                // Deshabilitar mientras carga
+                                districtSelect.disabled = true;
+                                districtSelect.innerHTML = '<option value="">Cargando distritos...</option>';
+                                
+                                try {
+                                    const response = await fetch(`{{ route('people.districts-by-municipality') }}?municipality_id=${municipalityId}`);
+                                    const districts = await response.json();
+                                    
+                                    // Si hay distritos, mostrar opciones normales
+                                    if (districts.length > 0) {
+                                        districtSelect.innerHTML = '<option value="">Seleccione...</option><option value="no_aplica">No aplica</option>';
+                                        
+                                        districts.forEach(district => {
+                                            const option = document.createElement('option');
+                                            option.value = district.id;
+                                            option.textContent = district.name;
+                                            if (selectedDistrictId && district.id == selectedDistrictId) {
+                                                option.selected = true;
+                                            }
+                                            districtSelect.appendChild(option);
+                                        });
+                                    } else {
+                                        // Si no hay distritos, solo mostrar "No aplica" y seleccionarlo automáticamente
+                                        districtSelect.innerHTML = '<option value="no_aplica" selected>No aplica</option>';
+                                    }
+                                    
+                                    // Habilitar el select después de cargar los distritos
+                                    districtSelect.disabled = false;
+                                } catch (error) {
+                                    console.error('Error al cargar distritos:', error);
+                                    // En caso de error, mostrar solo "No aplica"
+                                    districtSelect.innerHTML = '<option value="no_aplica" selected>No aplica</option>';
+                                    districtSelect.disabled = false;
+                                }
+                            }
 
-                            // Función para auto-completar campos cuando se selecciona un municipio (caso "no_aplica")
+                            // Función para auto-completar campos cuando se selecciona un municipio
                             document.getElementById('municipio_select_residence').addEventListener('change', function() {
                                 const municipioSeleccionado = this.options[this.selectedIndex];
                                 const regionalInput = document.getElementById('regional_residence');
                                 const provinciaInput = document.getElementById('provincia_residence');
-                                const municipioInput = document.getElementById('municipio_residence');
+                                const districtSelect = document.getElementById('district_id_residence');
 
                                 if (municipioSeleccionado.value) {
+                                    // Auto-completar campos readonly de regional y provincia
                                     regionalInput.value = municipioSeleccionado.getAttribute('data-regional') || '';
                                     provinciaInput.value = municipioSeleccionado.getAttribute('data-provincia') || '';
-                                    municipioInput.value = municipioSeleccionado.options[municipioSeleccionado.selectedIndex].text;
+                                    
+                                    // Cargar distritos del municipio seleccionado
+                                    const currentDistrictId = districtSelect.value && districtSelect.value !== 'no_aplica' && districtSelect.value !== '' 
+                                        ? districtSelect.value 
+                                        : null;
+                                    cargarDistritos(municipioSeleccionado.value, currentDistrictId);
                                 } else {
+                                    // Limpiar campos
                                     regionalInput.value = '';
                                     provinciaInput.value = '';
-                                    municipioInput.value = '';
+                                    
+                                    // Limpiar y deshabilitar distritos
+                                    districtSelect.innerHTML = '<option value="">Seleccione primero un municipio...</option>';
+                                    districtSelect.disabled = true;
                                 }
                             });
-                            
+
                             // Inicializar el estado correcto al cargar la página
                             window.addEventListener('DOMContentLoaded', function() {
+                                const municipalitySelect = document.getElementById('municipio_select_residence');
+                                const selectedMunicipalityId = municipalitySelect.value;
                                 const districtSelect = document.getElementById('district_id_residence');
-                                const selectedOption = districtSelect.options[districtSelect.selectedIndex];
                                 
-                                if (selectedOption.value === 'no_aplica') {
-                                    document.getElementById('municipio_select_residence').style.display = 'block';
-                                    document.getElementById('municipio_residence').style.display = 'none';
+                                // Si hay un municipio seleccionado, cargar sus distritos y actualizar campos
+                                if (selectedMunicipalityId) {
+                                    const selectedOption = municipalitySelect.options[municipalitySelect.selectedIndex];
+                                    const regionalInput = document.getElementById('regional_residence');
+                                    const provinciaInput = document.getElementById('provincia_residence');
+                                    
+                                    regionalInput.value = selectedOption.getAttribute('data-regional') || '';
+                                    provinciaInput.value = selectedOption.getAttribute('data-provincia') || '';
+                                    
+                                    // Cargar distritos del municipio seleccionado
+                                    const currentDistrictId = @json(old('district_id', $person->residenceInformation?->district_id ?? null));
+                                    cargarDistritos(selectedMunicipalityId, currentDistrictId);
+                                } else {
+                                    // Si no hay municipio seleccionado, deshabilitar el selector de distritos
+                                    districtSelect.disabled = true;
+                                    districtSelect.innerHTML = '<option value="">Seleccione primero un municipio...</option>';
                                 }
                             });
                         </script>
