@@ -76,9 +76,9 @@
                                     Iniciar Sesión
                                 </a>
                                 @if (Route::has('register'))
-                                    <a href="{{ route('register') }}" class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors">
+                                    <button onclick="alert('Próximamente...')" class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors cursor-pointer">
                                         Registrarse
-                                    </a>
+                                    </button>
                                 @endif
                             @endauth
                         @endif
@@ -106,9 +106,9 @@
                                         Iniciar Sesión
                                     </a>
                                     @if (Route::has('register'))
-                                        <a href="{{ route('register') }}" class="px-6 py-3 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors font-medium">
+                                        <button onclick="alert('Próximamente...')" class="px-6 py-3 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors font-medium cursor-pointer">
                                             Registrarse
-                                        </a>
+                                        </button>
                                     @endif
                                 @endauth
                             @endif
