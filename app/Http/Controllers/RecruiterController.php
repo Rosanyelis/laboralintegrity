@@ -281,7 +281,10 @@ class RecruiterController extends Controller
             return [
                 'id' => $person->id,
                 'name' => $person->name . ' ' . $person->last_name,
+                'last_name' => $person->last_name,
                 'dni' => $person->dni,
+                'phone' => $person->cell_phone,
+                'email' => $person->email,
                 'previous_dni' => $person->previous_dni,
                 'birth_date' => $person->birth_date,
                 'birth_place' => $person->birth_place,

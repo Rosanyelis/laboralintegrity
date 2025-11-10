@@ -61,7 +61,7 @@
             {{ $xModel }}.person_id = person.id;
             {{ $xModel }}.person_dni = person.dni;
             {{ $xModel }}.person_name = person.name;
-            {{ $xModel }}.person_last_name = person.name.split(' ').slice(1).join(' ') || '';
+            {{ $xModel }}.person_last_name = (person.last_name ?? person.name.split(' ').slice(1).join(' ')) || '';
             {{ $xModel }}.person_phone = person.phone || '';
             {{ $xModel }}.person_email = person.email || '';
         },

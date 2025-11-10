@@ -241,4 +241,48 @@ class CompanyPersonController extends Controller
         return redirect()->route('company.people.index')
             ->with('success', 'Persona eliminada exitosamente.');
     }
+
+    /**
+     * Actualiza o crea las aspiraciones de una persona.
+     */
+    public function updateAspiration(Request $request, Person $person)
+    {
+        $validated = $request->validate([
+            'desired_position' => 'nullable|string|max:255',
+            'sector_of_interest' => 'nullable|string|max:255',
+            'expected_salary' => 'nullable|numeric|min:0',
+            'contract_type_preference' => 'nullable|string|in:tiempo_completo,medio_tiempo,remoto,hibrido',
+            'short_term_goals' => 'nullable|string|max:1000',
+            'employment_status' => 'required|in:contratado,disponible,en_proceso,discapacitado,fallecido',
+            'work_scope' => 'required|in:provincial,nacional',
+            'turno' => 'nullable|in:mañana,tarde,noche',
+        ], [
+            'employment_status.required' => 'El estatus laboral es obligatorio.',
+            'employment_status.in' => 'El estatus laboral seleccionado no es válido.',
+            'work_scope.required' => 'El alcance laboral es obligatorio.',
+            'work_scope.in' => 'El alcance laboral seleccionado no es válido.',
+            'expected_salary.numeric' => 'El salario esperado debe ser un número válido.',
+            'expected_salary.min' => 'El salario esperado debe ser mayor o igual a 0.',
+            'contract_type_preference.in' => 'El tipo de contrato seleccionado no es válido.',
+            'turno.in' => 'El turno seleccionado no es válido.',
+        ]);
+
+        try {
+            $person->aspiration()->updateOrCreate(
+                ['person_id' => $person->id],
+                $validated
+            );
+
+            return redirect()->route('company.people.show', $person)
+                ->with('success', 'Aspiraciones actualizadas correctamente.')
+                ->with('activeTab', 'aspirations');
+                
+        } catch (\Exception $e) {
+            \Log::error('Error al actualizar aspiraciones: ' . $e->getMessage());
+            
+            return redirect()->route('company.people.show', $person)
+                ->with('error', 'Error al actualizar las aspiraciones. Por favor, intente nuevamente.')
+                ->with('activeTab', 'aspirations');
+        }
+    }
 }

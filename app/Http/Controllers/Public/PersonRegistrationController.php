@@ -163,6 +163,7 @@ class PersonRegistrationController extends Controller
                 'short_term_goals' => $request->short_term_goals,
                 'employment_status' => $request->employment_status,
                 'work_scope' => $request->work_scope,
+                'turno' => $request->turno,
             ]);
 
             // Crear usuario

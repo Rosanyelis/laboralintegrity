@@ -112,24 +112,6 @@
                                 @enderror
                             </div>
 
-                            <!-- Regional (Auto-llenado) -->
-                            <div>
-                                <label for="regional_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">
-                                    Regional
-                                </label>
-                                <input 
-                                    type="text" 
-                                    id="regional_name" 
-                                    readonly
-                                    value="{{ $company->regional?->name ?? 'Seleccione una provincia' }}"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400 cursor-not-allowed"
-                                >
-                                <input type="hidden" name="regional_id" id="regional_id" value="{{ old('regional_id', $company->regional_id) }}">
-                                @error('regional_id')
-                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        
                             <!-- Provincia -->
                             <div>
                                 <label for="province_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">
@@ -246,11 +228,10 @@
                                 @enderror
                             </div>
 
-                            <!-- Separador para datos del representante -->
-                            <div class="col-span-full">
-                                <hr class="border-gray-200 dark:border-gray-700 my-2">
-                            </div>
+                            
                         </div>
+                        <hr class="my-6 border-gray-200 dark:border-gray-700">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 ">Datos del Representante Autorizado</h3>
 
                         <!-- Grid 2 columnas para datos del representante -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">

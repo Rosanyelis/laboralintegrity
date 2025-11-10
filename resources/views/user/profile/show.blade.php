@@ -1335,6 +1335,42 @@
                                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                                 @enderror
                                             </div>
+
+                                            <!-- Turno -->
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">
+                                                    Turno
+                                                </label>
+                                                <div class="space-y-2">
+                                                    @php
+                                                        $turnos = [
+                                                            'mañana' => 'Mañana',
+                                                            'tarde' => 'Tarde',
+                                                            'noche' => 'Noche'
+                                                        ];
+                                                        $selectedTurno = old('turno', $person->aspiration->turno ?? null);
+                                                    @endphp
+                                                    
+                                                    @foreach($turnos as $value => $label)
+                                                        <div class="flex items-center">
+                                                            <input 
+                                                                type="radio" 
+                                                                name="turno" 
+                                                                id="turno_{{ $value }}"
+                                                                value="{{ $value }}"
+                                                                {{ $selectedTurno == $value ? 'checked' : '' }}
+                                                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                                            >
+                                                            <label for="turno_{{ $value }}" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                                                                {{ $label }}
+                                                            </label>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                                @error('turno')
+                                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                                @enderror
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

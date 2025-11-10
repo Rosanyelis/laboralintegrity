@@ -74,6 +74,8 @@ Route::middleware(['auth', 'company.owns'])->prefix('empresa')->name('company.')
     
     // Rutas para personas de la empresa
     Route::resource('people', CompanyPersonController::class)->names('people');
+    Route::patch('/people/{person}/aspiration', [CompanyPersonController::class, 'updateAspiration'])
+        ->name('people.update-aspiration');
     
     // Rutas para depuraciones de la empresa (requiere pago activo)
     Route::middleware('work-integrity.payment')->group(function () {

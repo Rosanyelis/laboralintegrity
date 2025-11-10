@@ -393,6 +393,7 @@ class PersonalProfileController extends Controller
             'short_term_goals' => 'nullable|string|max:1000',
             'employment_status' => 'required|in:contratado,disponible,en_proceso,discapacitado,fallecido',
             'work_scope' => 'required|in:provincial,nacional',
+            'turno' => 'nullable|in:mañana,tarde,noche',
         ]);
 
         $person->aspiration()->updateOrCreate(

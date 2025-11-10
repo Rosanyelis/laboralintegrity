@@ -30,6 +30,7 @@ class Aspiration extends Model
         'short_term_goals',
         'employment_status',
         'work_scope',
+        'turno',
     ];
 
     /**
