@@ -75,7 +75,7 @@ class CompanyWorkIntegrityController extends Controller
         $user = auth()->user();
         
         $validated = $request->validate([
-            'fecha' => 'required|date',
+            'fecha' => 'required|date|before_or_equal:today',
             'resultado' => 'nullable|string',
             'company_id' => 'nullable|exists:companies,id',
             'company_code' => 'nullable|string',
@@ -210,7 +210,7 @@ class CompanyWorkIntegrityController extends Controller
         $user = auth()->user();
         
         $validated = $request->validate([
-            'fecha' => 'required|date',
+            'fecha' => 'required|date|before_or_equal:today',
             'resultado' => 'nullable|string',
             'company_code' => 'nullable|string',
             'company_name' => 'nullable|string',

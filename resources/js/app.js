@@ -11,6 +11,9 @@ import './toast-system';
 // Iniciar Alpine después de registrar todos los componentes
 Alpine.start();
 
+// Capitalización global de inputs tipo título
+import './capitalize';
+
 // Theme toggle functionality
 document.addEventListener('DOMContentLoaded', function() {
     const themeToggle = document.getElementById('theme-toggle');

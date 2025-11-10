@@ -20,9 +20,19 @@
                         {{ __('Personas') }}
                     </x-nav-link>
                     
-                    <x-nav-link :href="route('company.work-integrities.index')" :active="request()->routeIs('company.work-integrities.*')">
-                        {{ __('Depuraciones') }}
-                    </x-nav-link>
+                    @php
+                        $user = auth()->user();
+                        $canSeeDepuraciones = $user && (
+                            $user->hasRole('Super Administrador') || 
+                            $user->hasRole('Administrador') || 
+                            ($user->company_id && $user->has_work_integrity_payment)
+                        );
+                    @endphp
+                    @if($canSeeDepuraciones)
+                        <x-nav-link :href="route('company.work-integrities.index')" :active="request()->routeIs('company.work-integrities.*')">
+                            {{ __('Depuraciones') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -107,9 +117,19 @@
                 {{ __('Personas') }}
             </x-responsive-nav-link>
             
-            <x-responsive-nav-link :href="route('company.work-integrities.index')" :active="request()->routeIs('company.work-integrities.*')">
-                {{ __('Depuraciones') }}
-            </x-responsive-nav-link>
+            @php
+                $user = auth()->user();
+                $canSeeDepuraciones = $user && (
+                    $user->hasRole('Super Administrador') || 
+                    $user->hasRole('Administrador') || 
+                    ($user->company_id && $user->has_work_integrity_payment)
+                );
+            @endphp
+            @if($canSeeDepuraciones)
+                <x-responsive-nav-link :href="route('company.work-integrities.index')" :active="request()->routeIs('company.work-integrities.*')">
+                    {{ __('Depuraciones') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->
