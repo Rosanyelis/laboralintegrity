@@ -26,6 +26,7 @@ class Person extends Model
      */
     protected $fillable = [
         'user_id',
+        'company_id',
         'code_unique',
         'profile_photo',
         'name',
@@ -186,6 +187,17 @@ class Person extends Model
     public function aspiration(): HasOne
     {
         return $this->hasOne(Aspiration::class);
+    }
+
+    /**
+     * Relación con la empresa.
+     * Una persona pertenece a una empresa.
+     *
+     * @return BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 
     /**

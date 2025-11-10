@@ -151,7 +151,7 @@ class PersonController extends Controller
             'age' => 'nullable|integer|min:0|max:120',
             'birth_place' => 'nullable|string|max:255',
             'country' => 'nullable|string|max:255',
-            'cell_phone' => 'required|string|max:12',
+            'cell_phone' => 'required|string|max:13',
             'home_phone' => 'nullable|string|max:255',
             'email' => 'required|email|max:255',
             'social_media_1' => 'nullable|string|max:255',

@@ -116,6 +116,100 @@
                                 />
                             </div>
 
+                            <!-- Permisos Directos (solo si tiene permiso para asignar permisos) -->
+                            @can('users.assign-permissions')
+                                @if($groupedPermissions)
+                                    <!-- Separador -->
+                                    <hr class="border-gray-200 dark:border-gray-700 my-6">
+
+                                    <div class="mb-6">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <div>
+                                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Permisos Directos (Opcional)</h3>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                                    Los permisos directos se suman a los permisos del rol. Úselos para otorgar permisos adicionales específicos a este usuario.
+                                                </p>
+                                            </div>
+                                            <div class="flex gap-2">
+                                                <button 
+                                                    type="button" 
+                                                    onclick="selectAllPermissions()"
+                                                    class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
+                                                >
+                                                    Seleccionar Todos
+                                                </button>
+                                                <span class="text-gray-400">|</span>
+                                                <button 
+                                                    type="button" 
+                                                    onclick="deselectAllPermissions()"
+                                                    class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
+                                                >
+                                                    Deseleccionar Todos
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            @foreach($groupedPermissions as $module => $permissions)
+                                                @php
+                                                    $colors = \App\Helpers\PermissionHelper::getModuleColor($module);
+                                                    $icon = \App\Helpers\PermissionHelper::getModuleIcon($module);
+                                                    $moduleName = \App\Helpers\PermissionHelper::getModuleName($module);
+                                                @endphp
+                                                <div class="{{ $colors['bg'] }} rounded-lg p-4 border {{ $colors['border'] }} hover:shadow-md transition-shadow duration-200">
+                                                    <div class="flex items-center justify-between mb-3">
+                                                        <div class="flex items-center space-x-2">
+                                                            <div class="{{ $colors['icon'] }}">
+                                                                {!! $icon !!}
+                                                            </div>
+                                                            <h4 class="font-semibold {{ $colors['text'] }} text-sm">
+                                                                {{ $moduleName }}
+                                                            </h4>
+                                                        </div>
+                                                        <button 
+                                                            type="button" 
+                                                            onclick="toggleModulePermissions('{{ $module }}')" 
+                                                            class="text-xs {{ $colors['text'] }} hover:underline font-medium"
+                                                            title="Seleccionar/Deseleccionar todos los permisos de este módulo"
+                                                        >
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                    <div class="space-y-1">
+                                                        @foreach($permissions as $permission)
+                                                            <label class="flex items-start space-x-2 text-sm {{ $colors['text'] }} hover:bg-white dark:hover:bg-gray-800/50 p-2 rounded cursor-pointer transition-all duration-150 group">
+                                                                <input 
+                                                                    type="checkbox" 
+                                                                    name="permissions[]" 
+                                                                    value="{{ $permission->name }}"
+                                                                    data-module="{{ $module }}"
+                                                                    class="mt-0.5 rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-700"
+                                                                    {{ in_array($permission->name, old('permissions', [])) ? 'checked' : '' }}
+                                                                >
+                                                                <span class="flex-1 group-hover:font-medium transition-all">
+                                                                    {{ \App\Helpers\PermissionHelper::getPermissionLabel($permission->name) }}
+                                                                </span>
+                                                            </label>
+                                                        @endforeach
+                                                    </div>
+                                                    <div class="mt-3 pt-3 border-t {{ $colors['border'] }}">
+                                                        <span class="text-xs {{ $colors['text'] }} opacity-75">
+                                                            {{ count($permissions) }} {{ count($permissions) == 1 ? 'permiso' : 'permisos' }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                        
+                                        @error('permissions')
+                                            <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                @endif
+                            @endcan
+
                             <!-- Separador -->
                             <hr class="border-gray-200 dark:border-gray-700 my-6">
 
@@ -475,6 +569,27 @@
                     }, 4000);
                 }
             }
+        }
+
+        function selectAllPermissions() {
+            document.querySelectorAll('input[type="checkbox"][name="permissions[]"]').forEach(checkbox => {
+                checkbox.checked = true;
+            });
+        }
+
+        function deselectAllPermissions() {
+            document.querySelectorAll('input[type="checkbox"][name="permissions[]"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+
+        function toggleModulePermissions(module) {
+            const moduleCheckboxes = document.querySelectorAll(`input[type="checkbox"][data-module="${module}"]`);
+            const allChecked = Array.from(moduleCheckboxes).every(cb => cb.checked);
+            
+            moduleCheckboxes.forEach(checkbox => {
+                checkbox.checked = !allChecked;
+            });
         }
     </script>
 </x-app-layout>

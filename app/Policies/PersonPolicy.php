@@ -21,6 +21,11 @@ class PersonPolicy
      */
     public function view(?User $user, Person $person): bool
     {
+        // Si el usuario es dueño de la persona (a través de person_id), permitir acceso
+        if ($user && $user->person_id === $person->id) {
+            return true;
+        }
+        
         return $user?->can('people.show') ?? false;
     }
 
@@ -37,6 +42,11 @@ class PersonPolicy
      */
     public function update(?User $user, Person $person): bool
     {
+        // Si el usuario es dueño de la persona (a través de person_id), permitir acceso
+        if ($user && $user->person_id === $person->id) {
+            return true;
+        }
+        
         // Solo el usuario que creó la persona o administradores pueden editarla
         if ($user?->hasRole(['Super Administrador', 'Administrador'])) {
             return true;

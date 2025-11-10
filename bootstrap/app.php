@@ -18,6 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \App\Http\Middleware\EnsureUserHasPermission::class,
             'module.access' => \App\Http\Middleware\EnsureModuleAccess::class,
             'admin-access' => \App\Http\Middleware\EnsureAdminAccess::class,
+            'user.owns.person' => \App\Http\Middleware\EnsureUserOwnsPerson::class,
+            'company.owns' => \App\Http\Middleware\EnsureUserOwnsCompany::class,
+            'work-integrity.payment' => \App\Http\Middleware\EnsureWorkIntegrityPayment::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

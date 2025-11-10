@@ -90,11 +90,45 @@ class PermissionSeeder extends Seeder
             'users.edit' => 'Editar Usuario',
             'users.delete' => 'Eliminar Usuario',
             'users.assign-roles' => 'Asignar Roles a Usuarios',
+            'users.assign-permissions' => 'Asignar Permisos Directos a Usuarios',
             
             // Perfil
             'profile.edit' => 'Editar Mi Perfil',
             'profile.update' => 'Actualizar Mi Perfil',
             'profile.delete' => 'Eliminar Mi Cuenta',
+            
+            // Módulo de Perfil de Usuario Personal
+            'user.dashboard' => 'Ver Dashboard Personal',
+            'user.profile.show' => 'Ver Mi Perfil',
+            'user.profile.edit' => 'Editar Mi Perfil',
+            'user.cv' => 'Generar Mi CV',
+            'user.profile.update-personal-info' => 'Actualizar Mi Información Personal',
+            'user.profile.update-residence-info' => 'Actualizar Mi Información de Residencia',
+            'user.profile.update-aspiration' => 'Actualizar Mis Aspiraciones',
+            'user.profile.educational-skills.store' => 'Agregar Habilidad Educativa',
+            'user.profile.educational-skills.destroy' => 'Eliminar Habilidad Educativa',
+            'user.profile.work-experiences.store' => 'Agregar Experiencia Laboral',
+            'user.profile.work-experiences.destroy' => 'Eliminar Experiencia Laboral',
+            'user.profile.personal-references.store' => 'Agregar Referencia Personal',
+            'user.profile.personal-references.destroy' => 'Eliminar Referencia Personal',
+            
+            // Módulo de Empresa (Dashboard y Gestión)
+            'company.dashboard' => 'Ver Dashboard de Empresa',
+            'company.people.index' => 'Ver Personas de la Empresa',
+            'company.people.create' => 'Crear Persona en la Empresa',
+            'company.people.show' => 'Ver Detalle de Persona de la Empresa',
+            'company.people.edit' => 'Editar Persona de la Empresa',
+            'company.people.update' => 'Actualizar Persona de la Empresa',
+            'company.people.destroy' => 'Eliminar Persona de la Empresa',
+            'company.work-integrities.index' => 'Ver Depuraciones de la Empresa',
+            'company.work-integrities.create' => 'Crear Depuración de la Empresa',
+            'company.work-integrities.show' => 'Ver Detalle de Depuración de la Empresa',
+            'company.work-integrities.edit' => 'Editar Depuración de la Empresa',
+            'company.work-integrities.update' => 'Actualizar Depuración de la Empresa',
+            'company.work-integrities.destroy' => 'Eliminar Depuración de la Empresa',
+            
+            // Registro Público
+            'person-registration.generate-cv' => 'Generar CV desde Registro Público',
         ];
 
         // Crear todos los permisos (si no existen)
@@ -159,8 +193,40 @@ class PermissionSeeder extends Seeder
             'users.show',
             'users.edit',
             'users.delete',
+            'users.assign-roles',
+            'users.assign-permissions',
             'profile.edit',
             'profile.update',
+            // Permisos de perfil de usuario personal
+            'user.dashboard',
+            'user.profile.show',
+            'user.profile.edit',
+            'user.cv',
+            'user.profile.update-personal-info',
+            'user.profile.update-residence-info',
+            'user.profile.update-aspiration',
+            'user.profile.educational-skills.store',
+            'user.profile.educational-skills.destroy',
+            'user.profile.work-experiences.store',
+            'user.profile.work-experiences.destroy',
+            'user.profile.personal-references.store',
+            'user.profile.personal-references.destroy',
+            // Permisos de empresa
+            'company.dashboard',
+            'company.people.index',
+            'company.people.create',
+            'company.people.show',
+            'company.people.edit',
+            'company.people.update',
+            'company.people.destroy',
+            'company.work-integrities.index',
+            'company.work-integrities.create',
+            'company.work-integrities.show',
+            'company.work-integrities.edit',
+            'company.work-integrities.update',
+            'company.work-integrities.destroy',
+            // Permisos de registro público
+            'person-registration.generate-cv',
         ]);
 
         // Crear rol de Usuario con permisos de solo lectura
@@ -177,10 +243,63 @@ class PermissionSeeder extends Seeder
             'work-integrities.show',
             'profile.edit',
             'profile.update',
+            // Permisos de perfil de usuario personal
+            'user.dashboard',
+            'user.profile.show',
+            'user.profile.edit',
+            'user.cv',
+            'user.profile.update-personal-info',
+            'user.profile.update-residence-info',
+            'user.profile.update-aspiration',
+            'user.profile.educational-skills.store',
+            'user.profile.educational-skills.destroy',
+            'user.profile.work-experiences.store',
+            'user.profile.work-experiences.destroy',
+            'user.profile.personal-references.store',
+            'user.profile.personal-references.destroy',
+            // Permisos de registro público
+            'person-registration.generate-cv',
+        ]);
+
+        // Crear rol de Empresa con permisos para gestionar sus propias personas y depuraciones
+        $companyRole = Role::firstOrCreate(['name' => 'Empresa']);
+        $companyRole->syncPermissions([
+            'dashboard.view',
+            'people.index',
+            'people.create',
+            'people.show',
+            'people.edit',
+            'people.update-personal-info',
+            'people.update-residence-info',
+            'people.update-aspiration',
+            'people.manage-educational-skills',
+            'people.manage-work-experiences',
+            'people.manage-personal-references',
+            'work-integrities.index',
+            'work-integrities.create',
+            'work-integrities.show',
+            'work-integrities.edit',
+            'work-integrities.view-actual-results',
+            'profile.edit',
+            'profile.update',
+            // Permisos de empresa
+            'company.dashboard',
+            'company.people.index',
+            'company.people.create',
+            'company.people.show',
+            'company.people.edit',
+            'company.people.update',
+            'company.people.destroy',
+            'company.work-integrities.index',
+            'company.work-integrities.create',
+            'company.work-integrities.show',
+            'company.work-integrities.edit',
+            'company.work-integrities.update',
+            'company.work-integrities.destroy',
         ]);
 
         $this->command->info('Permisos creados correctamente.');
-        $this->command->info('Roles creados: Super Administrador, Administrador, Usuario.');
+        $this->command->info('Roles creados: Super Administrador, Administrador, Usuario, Empresa.');
     }
 }
 

@@ -24,6 +24,8 @@ class User extends Authenticatable
         'email',
         'password',
         'person_id',
+        'company_id',
+        'has_work_integrity_payment',
     ];
 
     /**
@@ -46,6 +48,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'has_work_integrity_payment' => 'boolean',
         ];
     }
 
@@ -58,5 +61,16 @@ class User extends Authenticatable
     public function person(): BelongsTo
     {
         return $this->belongsTo(Person::class);
+    }
+
+    /**
+     * Relación con la empresa.
+     * Un usuario pertenece a una empresa.
+     *
+     * @return BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 }

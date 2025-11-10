@@ -9,10 +9,76 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RecruiterController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WorkIntegrityController;
+use App\Http\Controllers\Public\PersonRegistrationController;
+use App\Http\Controllers\Public\CompanyRegistrationController;
+use App\Http\Controllers\User\PersonalProfileController;
+use App\Http\Controllers\Company\CompanyDashboardController;
+use App\Http\Controllers\Company\CompanyPersonController;
+use App\Http\Controllers\Company\CompanyWorkIntegrityController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+// Rutas públicas para registro de persona
+Route::prefix('registro-persona')->name('public.person-registration.')->group(function () {
+    Route::get('/', [PersonRegistrationController::class, 'show'])->name('wizard');
+    Route::post('/', [PersonRegistrationController::class, 'store'])->name('store');
+    Route::get('/districts-by-municipality', [PersonRegistrationController::class, 'getDistrictsByMunicipality'])->name('districts-by-municipality');
+});
+
+// Rutas públicas para registro de empresa
+Route::prefix('registro-empresa')->name('public.company-registration.')->group(function () {
+    Route::get('/', [CompanyRegistrationController::class, 'show'])->name('wizard');
+    Route::post('/', [CompanyRegistrationController::class, 'store'])->name('store');
+    Route::get('/municipalities-by-province', [CompanyRegistrationController::class, 'getMunicipalitiesByProvince'])->name('municipalities-by-province');
+});
+
+// Ruta para descargar CV (requiere autenticación)
+Route::middleware('auth')->group(function () {
+    Route::get('/registro-persona/cv/{person}', [PersonRegistrationController::class, 'generateCV'])->name('public.person-registration.cv');
+});
+
+// Rutas para usuarios personales (solo su propia información)
+Route::middleware(['auth', 'user.owns.person'])->prefix('mi-perfil')->name('user.')->group(function () {
+    Route::get('/', [PersonalProfileController::class, 'index'])->name('dashboard');
+    Route::get('/informacion', [PersonalProfileController::class, 'show'])->name('profile.show');
+    Route::get('/informacion/editar', [PersonalProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/cv', [PersonalProfileController::class, 'generateCV'])->name('cv');
+    
+    // Rutas para actualizar información
+    Route::patch('/informacion/personal', [PersonalProfileController::class, 'updatePersonalInfo'])->name('profile.update-personal-info');
+    Route::patch('/informacion/residencia', [PersonalProfileController::class, 'updateResidenceInfo'])->name('profile.update-residence-info');
+    Route::patch('/informacion/aspiraciones', [PersonalProfileController::class, 'updateAspiration'])->name('profile.update-aspiration');
+    
+    // Rutas para habilidades educativas
+    Route::post('/informacion/habilidades-educativas', [PersonalProfileController::class, 'storeEducationalSkill'])->name('profile.educational-skills.store');
+    Route::delete('/informacion/habilidades-educativas/{educationalSkill}', [PersonalProfileController::class, 'destroyEducationalSkill'])->name('profile.educational-skills.destroy');
+    
+    // Rutas para experiencias laborales
+    Route::post('/informacion/experiencias-laborales', [PersonalProfileController::class, 'storeWorkExperience'])->name('profile.work-experiences.store');
+    Route::delete('/informacion/experiencias-laborales/{workExperience}', [PersonalProfileController::class, 'destroyWorkExperience'])->name('profile.work-experiences.destroy');
+    
+    // Rutas para referencias personales
+    Route::post('/informacion/referencias-personales', [PersonalProfileController::class, 'storePersonalReference'])->name('profile.personal-references.store');
+    Route::delete('/informacion/referencias-personales/{personalReference}', [PersonalProfileController::class, 'destroyPersonalReference'])->name('profile.personal-references.destroy');
+    
+    // AJAX
+    Route::get('/districts-by-municipality', [PersonalProfileController::class, 'getDistrictsByMunicipality'])->name('districts-by-municipality');
+});
+
+// Rutas para empresas (solo su propia información)
+Route::middleware(['auth', 'company.owns'])->prefix('empresa')->name('company.')->group(function () {
+    Route::get('/dashboard', [CompanyDashboardController::class, 'index'])->name('dashboard');
+    
+    // Rutas para personas de la empresa
+    Route::resource('people', CompanyPersonController::class)->names('people');
+    
+    // Rutas para depuraciones de la empresa (requiere pago activo)
+    Route::middleware('work-integrity.payment')->group(function () {
+        Route::resource('work-integrities', CompanyWorkIntegrityController::class)->names('work-integrities');
+    });
 });
 
 Route::get('/dashboard', function () {

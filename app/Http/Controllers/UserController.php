@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Person;
+use App\Models\Company;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use App\Helpers\PermissionHelper;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Gate;
@@ -32,10 +35,24 @@ class UserController extends Controller
         // Obtener personas que NO tienen usuario asignado
         $availablePeople = Person::whereDoesntHave('user')->orderBy('name')->get();
         
+        // Obtener todas las empresas disponibles
+        $companies = Company::orderBy('business_name')->get();
+        
         // Obtener todos los roles disponibles
         $roles = Role::orderBy('name')->get();
         
-        return view('users.create', compact('availablePeople', 'roles'));
+        // Obtener todos los permisos agrupados por módulo (solo si tiene permiso para asignar permisos)
+        $groupedPermissions = null;
+        if (auth()->user()->can('users.assign-permissions')) {
+            $permissions = Permission::orderBy('name')->get();
+            $groupedPermissions = $permissions->groupBy(function($permission) {
+                $parts = explode('.', $permission->name);
+                return $parts[0] ?? 'general';
+            });
+            $groupedPermissions = PermissionHelper::sortModules($groupedPermissions->toArray());
+        }
+        
+        return view('users.create', compact('availablePeople', 'companies', 'roles', 'groupedPermissions'));
     }
 
     /**
@@ -47,10 +64,14 @@ class UserController extends Controller
         Gate::authorize('create', User::class);
 
         $validated = $request->validate([
-            'person_id' => 'required|exists:people,id|unique:users,person_id',
+            'person_id' => 'nullable|exists:people,id|unique:users,person_id',
+            'company_id' => 'nullable|exists:companies,id',
             'email' => 'required|string|email|max:255|unique:users,email',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role_id' => 'required|exists:roles,id',
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'exists:permissions,name',
+            'has_work_integrity_payment' => 'nullable|boolean',
         ], [
             'person_id.required' => 'Debe seleccionar una persona.',
             'person_id.exists' => 'La persona seleccionada no existe.',
@@ -64,21 +85,31 @@ class UserController extends Controller
             'role_id.exists' => 'El rol seleccionado no es válido.',
         ]);
 
-        // Obtener el nombre de la persona para el usuario
-        $person = Person::findOrFail($validated['person_id']);
-        $userName = $person->name . ' ' . $person->last_name;
+        // Obtener el nombre de la persona para el usuario (si se proporcionó)
+        $userName = $validated['email']; // Por defecto usar el email
+        if (!empty($validated['person_id'])) {
+            $person = Person::findOrFail($validated['person_id']);
+            $userName = $person->name . ' ' . $person->last_name;
+        }
 
         // Crear el usuario
         $user = User::create([
             'name' => $userName,
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'person_id' => $validated['person_id'],
+            'person_id' => $validated['person_id'] ?? null,
+            'company_id' => $validated['company_id'] ?? null,
+            'has_work_integrity_payment' => $validated['has_work_integrity_payment'] ?? false,
         ]);
 
         // Asignar el rol
         $role = Role::findOrFail($validated['role_id']);
         $user->assignRole($role);
+
+        // Asignar permisos directos si se proporcionaron y el usuario tiene permiso
+        if (auth()->user()->can('users.assign-permissions') && !empty($validated['permissions'])) {
+            $user->syncPermissions($validated['permissions']);
+        }
 
         return redirect()->route('config.users.index')
             ->with('success', "Usuario \"{$user->name}\" creado correctamente con el rol \"{$role->name}\".");
@@ -105,13 +136,31 @@ class UserController extends Controller
             ->orderBy('name')
             ->get();
         
+        // Obtener todas las empresas disponibles
+        $companies = Company::orderBy('business_name')->get();
+        
         // Obtener todos los roles
         $roles = Role::orderBy('name')->get();
         
         // Obtener el rol actual del usuario
         $userRole = $user->roles->first();
         
-        return view('users.edit', compact('user', 'availablePeople', 'roles', 'userRole'));
+        // Obtener todos los permisos agrupados por módulo (solo si tiene permiso para asignar permisos)
+        $groupedPermissions = null;
+        $userPermissions = [];
+        if (auth()->user()->can('users.assign-permissions')) {
+            $permissions = Permission::orderBy('name')->get();
+            $groupedPermissions = $permissions->groupBy(function($permission) {
+                $parts = explode('.', $permission->name);
+                return $parts[0] ?? 'general';
+            });
+            $groupedPermissions = PermissionHelper::sortModules($groupedPermissions->toArray());
+            
+            // Obtener los permisos directos actuales del usuario (no los del rol)
+            $userPermissions = $user->permissions->pluck('name')->toArray();
+        }
+        
+        return view('users.edit', compact('user', 'availablePeople', 'companies', 'roles', 'userRole', 'groupedPermissions', 'userPermissions'));
     }
 
     /**
@@ -123,10 +172,14 @@ class UserController extends Controller
         Gate::authorize('update', $user);
 
         $validated = $request->validate([
-            'person_id' => 'required|exists:people,id|unique:users,person_id,' . $user->id,
+            'person_id' => 'nullable|exists:people,id|unique:users,person_id,' . $user->id,
+            'company_id' => 'nullable|exists:companies,id',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
             'role_id' => 'required|exists:roles,id',
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'exists:permissions,name',
+            'has_work_integrity_payment' => 'nullable|boolean',
         ], [
             'person_id.required' => 'Debe seleccionar una persona.',
             'person_id.exists' => 'La persona seleccionada no existe.',
@@ -140,7 +193,7 @@ class UserController extends Controller
         ]);
 
         // Actualizar nombre si cambió la persona
-        if ($user->person_id != $validated['person_id']) {
+        if (!empty($validated['person_id']) && $user->person_id != $validated['person_id']) {
             $person = Person::findOrFail($validated['person_id']);
             $validated['name'] = $person->name . ' ' . $person->last_name;
         }
@@ -149,7 +202,9 @@ class UserController extends Controller
         $user->update([
             'name' => $validated['name'] ?? $user->name,
             'email' => $validated['email'],
-            'person_id' => $validated['person_id'],
+            'person_id' => $validated['person_id'] ?? null,
+            'company_id' => $validated['company_id'] ?? null,
+            'has_work_integrity_payment' => $validated['has_work_integrity_payment'] ?? false,
         ]);
 
         // Actualizar contraseña si se proporcionó
@@ -162,6 +217,11 @@ class UserController extends Controller
         // Sincronizar rol (elimina el anterior y asigna el nuevo)
         $role = Role::findOrFail($validated['role_id']);
         $user->syncRoles([$role]);
+
+        // Sincronizar permisos directos si se proporcionaron y el usuario tiene permiso
+        if (auth()->user()->can('users.assign-permissions')) {
+            $user->syncPermissions($validated['permissions'] ?? []);
+        }
 
         return redirect()->route('config.users.index')
             ->with('success', "Usuario \"{$user->name}\" actualizado correctamente.");

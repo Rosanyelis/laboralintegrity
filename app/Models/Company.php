@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -132,5 +133,27 @@ class Company extends Model
     public function scopeMunicipality($query, int $municipalityId)
     {
         return $query->where('municipality_id', $municipalityId);
+    }
+
+    /**
+     * Relación con los usuarios.
+     * Una empresa puede tener múltiples usuarios.
+     *
+     * @return HasMany
+     */
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class);
+    }
+
+    /**
+     * Relación con las personas.
+     * Una empresa puede tener múltiples personas registradas.
+     *
+     * @return HasMany
+     */
+    public function people(): HasMany
+    {
+        return $this->hasMany(Person::class);
     }
 }
