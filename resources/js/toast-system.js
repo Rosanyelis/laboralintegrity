@@ -258,6 +258,24 @@ function registerAlpineComponents() {
         handleFileSelect(event) {
             const file = event.target.files[0];
             if (file) {
+                // Validar tamaño del archivo (800KB máximo)
+                if (file.size > 800 * 1024) {
+                    alert('El archivo es demasiado grande. El tamaño máximo es 800KB.');
+                    // Resetear el input de forma segura
+                    try {
+                        event.target.value = '';
+                    } catch (e) {
+                        // Si falla, crear un nuevo input
+                        const newInput = event.target.cloneNode(true);
+                        newInput.value = '';
+                        if (event.target.parentNode) {
+                            event.target.parentNode.replaceChild(newInput, event.target);
+                        }
+                    }
+                    this.previewImage = null;
+                    return;
+                }
+                
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     this.previewImage = e.target.result;
@@ -269,8 +287,25 @@ function registerAlpineComponents() {
         resetImage() {
             this.previewImage = null;
             const fileInput = document.getElementById('profile_photo');
-            if (fileInput) {
-                fileInput.value = '';
+            if (fileInput && fileInput.type === 'file') {
+                try {
+                    // Solo se puede establecer una cadena vacía en inputs de tipo file
+                    // Usar setTimeout para asegurar que el DOM esté completamente listo
+                    setTimeout(() => {
+                        try {
+                            fileInput.value = '';
+                        } catch (e) {
+                            // Si aún falla, crear un nuevo input para reemplazar el anterior
+                            const newInput = fileInput.cloneNode(true);
+                            newInput.value = '';
+                            if (fileInput.parentNode) {
+                                fileInput.parentNode.replaceChild(newInput, fileInput);
+                            }
+                        }
+                    }, 0);
+                } catch (error) {
+                    console.warn('Error al resetear input de archivo:', error);
+                }
             }
         }
     }));
