@@ -28,12 +28,12 @@ Route::prefix('registro-persona')->name('public.person-registration.')->group(fu
     Route::get('/districts-by-municipality', [PersonRegistrationController::class, 'getDistrictsByMunicipality'])->name('districts-by-municipality');
 });
 
-// Rutas públicas para registro de empresa
-Route::prefix('registro-empresa')->name('public.company-registration.')->group(function () {
-    Route::get('/', [CompanyRegistrationController::class, 'show'])->name('wizard');
-    Route::post('/', [CompanyRegistrationController::class, 'store'])->name('store');
-    Route::get('/municipalities-by-province', [CompanyRegistrationController::class, 'getMunicipalitiesByProvince'])->name('municipalities-by-province');
-});
+// Rutas públicas para registro de empresa - DESHABILITADO
+// Route::prefix('registro-empresa')->name('public.company-registration.')->group(function () {
+//     Route::get('/', [CompanyRegistrationController::class, 'show'])->name('wizard');
+//     Route::post('/', [CompanyRegistrationController::class, 'store'])->name('store');
+//     Route::get('/municipalities-by-province', [CompanyRegistrationController::class, 'getMunicipalitiesByProvince'])->name('municipalities-by-province');
+// });
 
 // Ruta para descargar CV (requiere autenticación)
 Route::middleware('auth')->group(function () {
@@ -73,9 +73,27 @@ Route::middleware(['auth', 'company.owns'])->prefix('empresa')->name('company.')
     Route::get('/dashboard', [CompanyDashboardController::class, 'index'])->name('dashboard');
     
     // Rutas para personas de la empresa
+    Route::get('/people/districts-by-municipality', [CompanyPersonController::class, 'getDistrictsByMunicipality'])
+        ->name('people.districts-by-municipality');
     Route::resource('people', CompanyPersonController::class)->names('people');
     Route::patch('/people/{person}/aspiration', [CompanyPersonController::class, 'updateAspiration'])
         ->name('people.update-aspiration');
+    Route::patch('/people/{person}/personal-info', [CompanyPersonController::class, 'updatePersonalInfo'])
+        ->name('people.update-personal-info');
+    Route::patch('/people/{person}/residence-info', [CompanyPersonController::class, 'updateResidenceInfo'])
+        ->name('people.update-residence-info');
+    Route::post('/people/{person}/educational-skills', [CompanyPersonController::class, 'storeEducationalSkill'])
+        ->name('people.educational-skills.store');
+    Route::delete('/people/{person}/educational-skills/{educationalSkill}', [CompanyPersonController::class, 'destroyEducationalSkill'])
+        ->name('people.educational-skills.destroy');
+    Route::post('/people/{person}/work-experiences', [CompanyPersonController::class, 'storeWorkExperience'])
+        ->name('people.work-experiences.store');
+    Route::delete('/people/{person}/work-experiences/{workExperience}', [CompanyPersonController::class, 'destroyWorkExperience'])
+        ->name('people.work-experiences.destroy');
+    Route::post('/people/{person}/personal-references', [CompanyPersonController::class, 'storePersonalReference'])
+        ->name('people.personal-references.store');
+    Route::delete('/people/{person}/personal-references/{personalReference}', [CompanyPersonController::class, 'destroyPersonalReference'])
+        ->name('people.personal-references.destroy');
     
     // Rutas para depuraciones de la empresa (requiere pago activo)
     Route::middleware('work-integrity.payment')->group(function () {

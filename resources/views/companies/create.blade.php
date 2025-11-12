@@ -139,30 +139,43 @@
                                 @enderror
                             </div>
                         
-                            <!-- Provincia -->
+                            <!-- Regional (autocompletado) -->
                             <div>
-                                <label for="province_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">
-                                    Provincia <span class="text-red-500">*</span>
+                                <label for="regional" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">
+                                    Regional
                                 </label>
-                                <select 
-                                    name="province_id" 
-                                    id="province_id"
-                                    required
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                                <input 
+                                    type="text" 
+                                    id="regional" 
+                                    name="regional"
+                                    value="{{ old('regional') }}"
+                                    readonly
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                                 >
-                                    <option value="">Seleccione una provincia</option>
-                                    @foreach($provinces as $province)
-                                        <option value="{{ $province->id }}" {{ old('province_id') == $province->id ? 'selected' : '' }}>
-                                            {{ $province->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('province_id')
+                                @error('regional')
                                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            <!-- Municipio -->
+                            <!-- Provincia (autocompletado) -->
+                            <div>
+                                <label for="provincia" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">
+                                    Provincia
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="provincia" 
+                                    name="provincia"
+                                    value="{{ old('provincia') }}"
+                                    readonly
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                                >
+                                @error('provincia')
+                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Municipio (selector principal activo) -->
                             <div>
                                 <label for="municipality_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">
                                     Municipio <span class="text-red-500">*</span>
@@ -173,7 +186,23 @@
                                     required
                                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                                 >
-                                    <option value="">Seleccione primero una provincia</option>
+                                    <option value="">Seleccione...</option>
+                                    @foreach($municipalities as $municipality)
+                                        @php
+                                            $regional = $municipality->province && $municipality->province->regional 
+                                                ? $municipality->province->regional->name 
+                                                : '';
+                                            $provincia = $municipality->province 
+                                                ? $municipality->province->name 
+                                                : '';
+                                        @endphp
+                                        <option value="{{ $municipality->id }}" 
+                                                data-regional="{{ $regional }}"
+                                                data-provincia="{{ $provincia }}"
+                                                {{ old('municipality_id') == $municipality->id ? 'selected' : '' }}>
+                                            {{ $municipality->name }}
+                                        </option>
+                                    @endforeach
                                 </select>
                                 @error('municipality_id')
                                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -339,6 +368,69 @@
                             </div>
                         </div>
 
+                        <hr class="my-6 border-gray-200 dark:border-gray-700">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Datos de Usuario para Acceso al Dashboard</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <!-- Email del Usuario -->
+                            <div class="md:col-span-2">
+                                <label for="user_email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">
+                                    Correo Electrónico del Usuario <span class="text-red-500">*</span>
+                                </label>
+                                <input 
+                                    type="email" 
+                                    name="user_email" 
+                                    id="user_email"
+                                    value="{{ old('user_email') }}"
+                                    required
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                                    placeholder="correo@empresa.com"
+                                >
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Este será el correo para iniciar sesión en el dashboard de la empresa</p>
+                                @error('user_email')
+                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Contraseña -->
+                            <div>
+                                <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">
+                                    Contraseña <span class="text-red-500">*</span>
+                                </label>
+                                <input 
+                                    type="password" 
+                                    name="password" 
+                                    id="password"
+                                    required
+                                    minlength="8"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                                    placeholder="Mínimo 8 caracteres"
+                                >
+                                @error('password')
+                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Confirmar Contraseña -->
+                            <div>
+                                <label for="password_confirmation" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">
+                                    Confirmar Contraseña <span class="text-red-500">*</span>
+                                </label>
+                                <input 
+                                    type="password" 
+                                    name="password_confirmation" 
+                                    id="password_confirmation"
+                                    required
+                                    minlength="8"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                                    placeholder="Confirma la contraseña"
+                                >
+                                @error('password_confirmation')
+                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
                         <!-- Botones de Acción -->
                         <div class="flex justify-end space-x-4 mt-6">
                             <a href="{{ route('companies.index') }}" 
@@ -363,35 +455,39 @@
     </div>
 
     <script>
-        // Cargar municipios cuando se selecciona una provincia
-        document.getElementById('province_id').addEventListener('change', function() {
-            const provinceId = this.value;
+        // Función para auto-completar regional y provincia cuando se selecciona un municipio
+        document.getElementById('municipality_id').addEventListener('change', function() {
+            const municipioSeleccionado = this.options[this.selectedIndex];
+            const regionalInput = document.getElementById('regional');
+            const provinciaInput = document.getElementById('provincia');
+            const provinceIdHidden = document.getElementById('province_id');
+
+            if (municipioSeleccionado.value) {
+                // Auto-completar campos readonly
+                regionalInput.value = municipioSeleccionado.getAttribute('data-regional') || '';
+                provinciaInput.value = municipioSeleccionado.getAttribute('data-provincia') || '';
+                
+                // Si existe un campo hidden para province_id, actualizarlo
+                if (provinceIdHidden) {
+                    // Necesitaríamos obtener el province_id del municipio, pero por ahora solo actualizamos los campos visuales
+                }
+            } else {
+                // Limpiar campos
+                regionalInput.value = '';
+                provinciaInput.value = '';
+            }
+        });
+
+        // Verificar estado inicial si hay valores old()
+        document.addEventListener('DOMContentLoaded', function() {
+            // Si hay un municipio seleccionado (old value), cargar sus datos
             const municipalitySelect = document.getElementById('municipality_id');
             
-            // Limpiar opciones actuales
-            municipalitySelect.innerHTML = '<option value="">Cargando municipios...</option>';
-            municipalitySelect.disabled = true;
-            
-            if (provinceId) {
-                fetch(`{{ url('companies/municipalities') }}/${provinceId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        municipalitySelect.innerHTML = '<option value="">Seleccione un municipio</option>';
-                        data.forEach(municipality => {
-                            const option = document.createElement('option');
-                            option.value = municipality.id;
-                            option.textContent = municipality.name;
-                            municipalitySelect.appendChild(option);
-                        });
-                        municipalitySelect.disabled = false;
-                    })
-                    .catch(error => {
-                        console.error('Error al cargar municipios:', error);
-                        municipalitySelect.innerHTML = '<option value="">Error al cargar municipios</option>';
-                    });
-            } else {
-                municipalitySelect.innerHTML = '<option value="">Seleccione primero una provincia</option>';
-                municipalitySelect.disabled = false;
+            if (municipalitySelect.value) {
+                // Trigger change para cargar regional/provincia
+                const selectedOption = municipalitySelect.options[municipalitySelect.selectedIndex];
+                document.getElementById('regional').value = selectedOption.getAttribute('data-regional') || '';
+                document.getElementById('provincia').value = selectedOption.getAttribute('data-provincia') || '';
             }
         });
 

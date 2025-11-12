@@ -1340,42 +1340,42 @@
                                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                                 @enderror
                                             </div>
+                                        </div>
 
-                                            <!-- Turno -->
-                                            <div>
-                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">
-                                                    Turno
-                                                </label>
-                                                <div class="space-y-2">
-                                                    @php
-                                                        $turnos = [
-                                                            'mañana' => 'Mañana',
-                                                            'tarde' => 'Tarde',
-                                                            'noche' => 'Noche'
-                                                        ];
-                                                        $selectedTurno = old('turno', $person->aspiration->turno ?? null);
-                                                    @endphp
-                                                    
-                                                    @foreach($turnos as $value => $label)
-                                                        <div class="flex items-center">
-                                                            <input 
-                                                                type="radio" 
-                                                                name="turno" 
-                                                                id="turno_{{ $value }}"
-                                                                value="{{ $value }}"
-                                                                {{ $selectedTurno == $value ? 'checked' : '' }}
-                                                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                                            >
-                                                            <label for="turno_{{ $value }}" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-                                                                {{ $label }}
-                                                            </label>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                                @error('turno')
-                                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                                @enderror
+                                        <!-- Turno -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">
+                                                Turno
+                                            </label>
+                                            <div class="space-y-2">
+                                                @php
+                                                    $turnos = [
+                                                        'mañana' => 'Mañana',
+                                                        'tarde' => 'Tarde',
+                                                        'noche' => 'Noche'
+                                                    ];
+                                                    $selectedTurno = old('turno', $person->aspiration->turno ?? null);
+                                                @endphp
+                                                
+                                                @foreach($turnos as $value => $label)
+                                                    <div class="flex items-center">
+                                                        <input 
+                                                            type="radio" 
+                                                            name="turno" 
+                                                            id="turno_{{ $value }}"
+                                                            value="{{ $value }}"
+                                                            {{ $selectedTurno == $value ? 'checked' : '' }}
+                                                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                                        >
+                                                        <label for="turno_{{ $value }}" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                                                            {{ $label }}
+                                                        </label>
+                                                    </div>
+                                                @endforeach
                                             </div>
+                                            @error('turno')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
                                         </div>
                                     </div>
                                 </div>
@@ -1401,13 +1401,14 @@
                                 <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
                                     Historial de Depuraciones
                                 </h3>
-                                <a href="{{ route('work-integrities.create', ['person_id' => $person->id]) }}" 
-                                   class="bg-green-600 hover:bg-green-700 text-white font-medium py-1.5 px-3 rounded-lg transition-colors duration-200 flex items-center space-x-1.5 text-sm">
+                                <button 
+                                   onclick="showToast(&quot;No está autorizado para realizar esta acción&quot;, &quot;error&quot;)"
+                                   class="bg-green-600 hover:bg-green-700 text-white font-medium py-1.5 px-3 rounded-lg transition-colors duration-200 flex items-center space-x-1.5 text-sm cursor-pointer">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                     </svg>
                                     <span>Nueva Depuración</span>
-                                </a>
+                                </button>
                             </div>
 
                             @php
@@ -1461,15 +1462,7 @@
                                                         <!-- Botones de acción -->
                                                         <div class="flex space-x-1">
                                                             
-                                                            @can('work-integrities.edit')
-                                                            <a href="{{ route('work-integrities.edit', ['workIntegrity' => $workIntegrity, 'return_to_person' => $person->id]) }}" 
-                                                               class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-yellow-600 hover:text-yellow-800 dark:text-yellow-400 dark:hover:text-yellow-300 transition-colors duration-200">
-                                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                                                </svg>
-                                                                Editar
-                                                            </a>
-                                                            @endcan
+                                                            
                                                         </div>
                                                         <!-- Icono de colapso -->
                                                         <svg class="w-5 h-5 text-gray-400 transition-transform duration-200" 
@@ -1593,13 +1586,14 @@
                                     <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">Sin depuraciones</h3>
                                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Esta persona no tiene depuraciones registradas.</p>
                                     <div class="mt-6">
-                                        <a href="{{ route('work-integrities.create', ['person_id' => $person->id]) }}" 
-                                           class="inline-flex items-center px-3 py-1.5 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        <button 
+                                           onclick="showToast(&quot;No está autorizado para realizar esta acción&quot;, &quot;error&quot;)"
+                                           class="inline-flex items-center px-3 py-1.5 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer">
                                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                             </svg>
                                             Nueva Depuración
-                                        </a>
+                                        </button>
                                     </div>
                                 </div>
                             @endif
@@ -1964,5 +1958,102 @@
                 }
             }
         });
+
+        // Función para mostrar toast notifications
+        function showToast(message, type = 'info') {
+            // Crear contenedor si no existe
+            let container = document.getElementById('toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toast-container';
+                container.className = 'fixed top-4 right-4 z-50 space-y-2';
+                document.body.appendChild(container);
+            }
+            
+            const toast = document.createElement('div');
+            
+            const bgColor = type === 'error' ? 'bg-red-500' : type === 'success' ? 'bg-green-500' : 'bg-blue-500';
+            const icon = type === 'error' ? 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' : 
+                        type === 'success' ? 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' :
+                        'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z';
+            
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 min-w-[300px] max-w-md transform transition-all duration-300 ease-in-out`;
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100%)';
+            const messageSpan = document.createElement('span');
+            messageSpan.className = 'flex-1';
+            messageSpan.textContent = message;
+            
+            const iconSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            iconSvg.setAttribute('class', 'w-6 h-6 flex-shrink-0');
+            iconSvg.setAttribute('fill', 'none');
+            iconSvg.setAttribute('stroke', 'currentColor');
+            iconSvg.setAttribute('viewBox', '0 0 24 24');
+            const iconPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            iconPath.setAttribute('stroke-linecap', 'round');
+            iconPath.setAttribute('stroke-linejoin', 'round');
+            iconPath.setAttribute('stroke-width', '2');
+            iconPath.setAttribute('d', icon);
+            iconSvg.appendChild(iconPath);
+            
+            const closeButton = document.createElement('button');
+            closeButton.className = 'text-white hover:text-gray-200';
+            closeButton.onclick = function() { toast.remove(); };
+            const closeSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            closeSvg.setAttribute('class', 'w-5 h-5');
+            closeSvg.setAttribute('fill', 'none');
+            closeSvg.setAttribute('stroke', 'currentColor');
+            closeSvg.setAttribute('viewBox', '0 0 24 24');
+            const closePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            closePath.setAttribute('stroke-linecap', 'round');
+            closePath.setAttribute('stroke-linejoin', 'round');
+            closePath.setAttribute('stroke-width', '2');
+            closePath.setAttribute('d', 'M6 18L18 6M6 6l12 12');
+            closeSvg.appendChild(closePath);
+            closeButton.appendChild(closeSvg);
+            
+            toast.appendChild(iconSvg);
+            toast.appendChild(messageSpan);
+            toast.appendChild(closeButton);
+            
+            container.appendChild(toast);
+            
+            // Animar entrada
+            setTimeout(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
     </script>
+    
+    <style>
+        @keyframes slide-in {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slide-out {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+    </style>
 </x-company-layout>

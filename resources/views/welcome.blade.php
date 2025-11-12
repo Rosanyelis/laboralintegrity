@@ -71,9 +71,9 @@
                                 <a href="{{ route('login') }}" class="px-4 py-2 text-sm font-medium text-white dark:text-white bg-transparent rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
                                     Iniciar Sesión
                                 </a>
-                                <button onclick="openRegistrationModal()" class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors cursor-pointer">
-                                        Registrarse
-                                    </button>
+                                <a href="{{ route('public.person-registration.wizard') }}" class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors cursor-pointer">
+                                    Registrarse
+                                </a>
                             @endauth
                         @endif
                     </div>
@@ -99,9 +99,9 @@
                                     <a href="{{ route('login') }}" class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium">
                                         Iniciar Sesión
                                     </a>
-                                    <button onclick="openRegistrationModal()" class="px-6 py-3 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors font-medium cursor-pointer">
-                                            Registrarse
-                                        </button>
+                                    <a href="{{ route('public.person-registration.wizard') }}" class="px-6 py-3 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors font-medium cursor-pointer">
+                                        Registrarse
+                                    </a>
                                 @endauth
                             @endif
                         </div>
@@ -138,44 +138,5 @@
                 </section>
             </main>
         </div>
-
-        <!-- Modal de Selección de Registro -->
-        <div id="registrationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" style="display: none;">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Selecciona tu tipo de registro</h3>
-                    <button onclick="closeRegistrationModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-                <div class="space-y-4">
-                    <a href="{{ route('public.person-registration.wizard') }}" class="block w-full px-6 py-4 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium text-center">
-                        Registrarse como Persona
-                    </a>
-                    <a href="{{ route('public.company-registration.wizard') }}" class="block w-full px-6 py-4 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium text-center">
-                        Registrarse como Empresa
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <script>
-            function openRegistrationModal() {
-                document.getElementById('registrationModal').style.display = 'flex';
-            }
-
-            function closeRegistrationModal() {
-                document.getElementById('registrationModal').style.display = 'none';
-            }
-
-            // Cerrar modal al hacer clic fuera
-            document.getElementById('registrationModal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    closeRegistrationModal();
-                }
-            });
-        </script>
     </body>
 </html>
